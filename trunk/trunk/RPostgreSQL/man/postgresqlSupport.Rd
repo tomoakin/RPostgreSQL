@@ -1,0 +1,266 @@
+% $Id: postgresqlSupport.Rd,v 1.2 2003/12/02 18:28:56 dj Exp dj $
+\name{postgresqlSupport}
+\alias{postgresqlInitDriver}            % driver-related function
+\alias{postgresqlDriverInfo}
+\alias{postgresqlDescribeDriver}
+\alias{postgresqlCloseDriver}           % connection-related
+\alias{postgresqlNewConnection}
+\alias{postgresqlCloneConnection}
+\alias{postgresqlConnectionInfo}
+\alias{postgresqlDescribeConnection}
+\alias{postgresqlCloseConnection}
+\alias{postgresqlExecStatement}         % result-related
+\alias{postgresqlFetch}
+\alias{postgresqlQuickSQL}
+\alias{postgresqlResultInfo}
+\alias{postgresqlDescribeResult}
+\alias{postgresqlCloseResult}
+\alias{postgresqlDescribeFields}
+\alias{postgresqlReadTable}
+\alias{postgresqlWriteTable}            % convenience functions
+\alias{postgresqlImportFile}
+\alias{postgresqlDataType}
+\alias{.PostgreSQLPkgName}              % constants
+\alias{.PostgreSQLPkgVersion}
+\alias{.PostgreSQLPkgRCS}
+\alias{.PostgreSQL.NA.string}
+\alias{.PostgreSQLSQLKeywords}
+\alias{.conflicts.OK}
+%\non_function{}
+\title{Support Functions}
+\description{
+   These functions are the workhorse behind the RPostgreSQL package, but
+   users need not invoke these directly.  For details see \code{\link{PostgreSQL}}.
+}
+\usage{
+   ## PostgreSQLDriver-related
+   postgresqlInitDriver(max.con=16, fetch.default.rec = 500, force.reload=FALSE)
+   postgresqlDriverInfo(obj, what, ...)
+   postgresqlDescribeDriver(obj, verbose = FALSE, ...)
+   postgresqlCloseDriver(drv, ...)
+
+   ## PostgreSQLConnection-related
+   postgresqlNewConnection(drv, host,hostaddr, port,dbname, user, password, options,tty)
+   postgresqlCloneConnection(con, ...)
+   postgresqlConnectionInfo(obj, what, ...)
+   postgresqlDescribeConnection(obj, verbose = FALSE, ...)
+   postgresqlCloseConnection(con, ...)
+
+   ## PostgreSQLResult-related
+   postgresqlExecStatement(con, statement)
+   postgresqlFetch(res, n=0, ...)
+   postgresqlQuickSQL(con, statement)
+   postgresqlResultInfo(obj, what, ...)
+   postgresqlDescribeResult(obj, verbose = FALSE, ...)
+   postgresqlCloseResult(res, ...)
+   postgresqlDescribeFields(res, ...)
+
+   ## data mappings, convenience functions, and extensions
+   postgresqlDataType(obj, ...)
+   postgresqlReadTable(con, name, row.names = "row_names", check.names = TRUE, ...)
+   postgresqlWriteTable(con, name, value, field.types, row.names = TRUE,
+      overwrite=FALSE, append=FALSE, ..., allow.keywords = FALSE)
+   postgresqlImportFile(con, name, value, field.types, overwrite=FALSE,
+      append=FALSE, header, row.names, nrows=50, sep=",", eol="\n", 
+      skip = 0, quote='"', ...)
+}
+\arguments{
+\item{max.con}{
+   positive integer specifying maximum number of open connections.
+   The current default of 10 is hardcoded in the C code.
+}
+\item{fetch.default.rec}{
+   default number of rows to fetch (move to R/S-Plus).  This default is
+   used in \code{postgresqlFetch}.
+   The default is 500.
+}
+\item{force.reload}{
+   logical indicating whether to re-initialize the driver.  This may be
+   useful if you want to change the defaults (e.g., \code{fetch.default.rec}).
+   Note that the driver is a singleton (subsequent inits just returned the
+   previously initialized driver, thus this argument).
+}
+\item{obj}{
+   any of the PostgreSQL DBI objects (e.g., \code{PostgreSQLConnection},
+   \code{PostgreSQLResult}).
+}
+\item{what}{
+   character vector of metadata to extract, e.g., "version", "statement",
+   "isSelect".
+}
+\item{verbose}{
+   logical controlling how much information to display.
+   Defaults to \code{FALSE}.
+}
+\item{drv}{
+   an \code{PostgreSQLDriver} object as produced by \code{postgresqlInitDriver}.
+}
+\item{con}{
+   an \code{PostgreSQLConnection} object as produced by \code{postgresqlNewConnection}
+   and \code{postgresqlCloneConnection}.
+}
+\item{res}{
+   an \code{PostgreSQLResult} object as produced by by \code{postgresqlExecStatement}.
+}
+\item{username}{
+   a character string with the PostgreSQL's user name.
+}
+\item{password}{
+   character string with the PostgreSQL's password.
+}
+\item{groups}{
+   character vector with one or more PostgreSQL group names.  For details
+   see \code{\link{PostgreSQL}}.
+}
+\item{default.file}{filename of an alternate PostgreSQL options file.}
+\item{dbname}{ character string with the PostgreSQL database name.}
+\item{host}{
+   character string with the name (or IP address) of the machine
+   hosting the database. Default is \code{""}, which is
+   interpreted as \code{localhost} by the PostgreSQL's API.
+}
+\item{unix.socket}{
+   (optional) character string with a filename for the socket
+   file name.  Consult the PostgreSQL documentation for details.
+}
+\item{port}{
+   (optional) positive integer specifying the TCP port number that
+   the PostgreSQL server is listening to.  Consult the PostgreSQL documentation
+   for details.
+}
+\item{client.flag}{
+   (optional) integer setting flags for the client.  Consult the
+   PostgreSQL documentation for details.
+}
+\item{force}{
+   logical indicating whether to close a connection that has open
+   result sets.  The default is \code{FALSE}.
+}
+\item{statement}{
+   character string holding one (and only one) SQL statement.
+}
+\item{n}{
+   number of rows to fetch from the given result set. A value of -1
+   indicates to retrieve all the rows.  The default of 0 specifies
+   to extract whatever the \code{fetch.default.rec} was specified
+   during driver initialization \code{postgresqlInit}.
+}
+\item{name}{
+   character vector of names (table names, fields, keywords).
+}
+\item{value}{
+   a data.frame.
+}
+\item{field.types}{
+   a list specifying the mapping from R/S-Plus fields in the data.frame
+   \code{value} to SQL data types.  The default is
+   \code{sapply(value,SQLDataType)}, see \code{PostgreSQLSQLType}.
+}
+\item{header}{
+  logical, does the input file have a header line?  Default is the
+  same heuristic used by \code{read.table}, i.e., TRUE if the first
+  line has one fewer column that the second line.
+}
+\item{row.names}{
+   a logical specifying whether to prepend the \code{value} data.frame 
+   row names or not.  The default is \code{TRUE}.
+}
+\item{check.names}{
+   a logical specifying whether to convert DBMS field names into
+   legal S names. Default is \code{TRUE}.
+}
+\item{overwrite}{
+   logical indicating whether to replace the table \code{name} with
+   the contents of the data.frame \code{value}.
+   The defauls is \code{FALSE}.
+}
+\item{append}{
+   logical indicating whether to append \code{value} to the existing
+   table \code{name}.
+}
+\item{nrows}{
+  number of lines to rows to import using \code{read.table} from the
+  input file to create the proper table definition. Default is 50.
+}
+\item{sep}{field separator character.}
+\item{eol}{end-of-line separator.}
+\item{skip}{number of lines to skip before reading data in the input file.}
+\item{quote}{the quote character used in the input file (defaults to \code{"}.}
+\item{allow.keywords}{
+   logical indicating whether column names that happen to be PostgreSQL
+   keywords be used as column names in the resulting relation (table)
+   being written.  Defaults to \code{FALSE}, forcing \code{postgresqlWriteTable}
+   to modify column names to make them legal PostgreSQL identifiers.
+   }
+\item{\dots}{
+   placeholder for future use.
+}
+}
+\value{
+   \code{postgresqlInitDriver} returns an \code{PostgreSQLDriver} object.
+
+   \code{postgresqlDriverInfo} returns a list of name-value metadata pairs.
+
+   \code{postgresqlDescribeDriver} returns \code{NULL} (displays the object's
+   metadata).
+
+   \code{postgresqlCloseDriver} returns a logical indicating whether the
+   operation succeeded or not.
+
+   \code{postgresqlNewConnection} returns an \code{PostgreSQLConnection} object.
+
+   \code{postgresqlCloneConnection} returns an \code{PostgreSQLConnection} object.
+
+   \code{postgresqlConnectionInfo}returns a list of name-value metadata pairs.
+
+   \code{postgresqlDescribeConnection} returns \code{NULL} (displays the
+   object's metadata).
+
+   \code{postgresqlCloseConnection} returns a logical indicating whether the
+   operation succeeded or not.
+
+   \code{postgresqlExecStatement} returns an \code{PostgreSQLResult} object.
+
+   \code{postgresqlFetch} returns a data.frame.
+
+   \code{postgresqlQuickSQL} returns either a data.frame if the \code{statement} is
+   a \code{select}-like or NULL otherwise.
+
+   \code{postgresqlDescribeResult} returns \code{NULL} (displays the object's
+   metadata).
+   
+   \code{postgresqlCloseResult} returns a logical indicating whether the
+   operation succeeded or not.
+   
+   \code{postgresqlDescribeFields} returns a data.frame with one row per field
+   with columns \code{name}, \code{Sclass}, \code{type}, \code{len}, 
+   \code{precision}, \code{scale}, and \code{nullOK} which fully describe
+   each field in a result set.  Except for \code{Sclass} (which shows the
+   mapping of the field type into an R/S-Plus class) all the information
+   pertains to PostgreSQL's data storage attributes.
+
+   \code{postgresqlReadTable}  returns a data.frame with the contents of the
+   DBMS table.
+   
+   \code{postgresqlWriteTable}  returns a logical indicating whether the
+   operation succeeded or not.
+   
+   \code{postgresqlDataType} retuns a character string with the closest
+   
+   \code{postgresqlResultInfo} returns a list of name-value metadata pairs.
+}
+\section{Constants}{
+\code{.PostgreSQLPkgName} (currently \code{"RPostgreSQL"}),
+\code{.PostgreSQLPkgVersion} (the R package version),
+\code{.PostgreSQLPkgRCS} (the RCS revision),
+\code{.PostgreSQL.NA.string} (character that PostgreSQL uses to
+denote \code{NULL} on input),
+\code{.PostgreSQLSQLKeywords} (a lot!)
+\code{.conflicts.OK}.
+%\non_function{}
+}
+\keyword{datasets}
+\keyword{interface}
+\keyword{database}
+%\keyword{internal}
+% vim:syntax=tex
