@@ -1,0 +1,2 @@
+rm -f config.log config.status
+rm -rf autom4te.cache
