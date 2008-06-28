@@ -2563,8 +2563,8 @@ ac_compiler_gnu=$ac_cv_c_compiler_gnu
 
 
 # Check for non-standard programs: pg_configg(1) to configure PostgreSQL builds
-# Extract the first word of "pg_config", so it can be a program name with args.
-set dummy pg_config; ac_word=$2
+# Extract the first word of "pg_configNOT", so it can be a program name with args.
+set dummy pg_configNOT; ac_word=$2
 { echo "$as_me:$LINENO: checking for $ac_word" >&5
 echo $ECHO_N "checking for $ac_word... $ECHO_C" >&6; }
 if test "${ac_cv_path_PG_CONFIG+set}" = set; then
@@ -2604,20 +2604,71 @@ fi
 
 
 
-# Test for error in preceding check and issue loud complaint if need be
-if test "${PG_CONFIG}" = ""; then
-   echo
-   echo "Error: pg_config not found."
-   echo "We cannot install RPostgreSQL without a PostgreSQL installation."
-   echo
-   { { echo "$as_me:$LINENO: error: aborting! " >&5
-echo "$as_me: error: aborting! " >&2;}
-   { (exit 1); exit 1; }; }
+# # Test for error in preceding check and issue loud complaint if need be
+# if test "${PG_CONFIG}" = ""; then
+#   echo
+#   echo "Error: pg_config not found."
+#   echo "We cannot install RPostgreSQL without a PostgreSQL installation."
+#   echo
+#   AC_MSG_ERROR( aborting! )
+# fi
+
+# If pg_config was found, let's use it
+if test "${PG_CONFIG}" != ""; then
+
+    # Use pg_config for header and linker arguments
+    PG_INCDIR=`${PG_CONFIG} --includedir`
+    PG_LIBDIR=`${PG_CONFIG} --libdir`
+
+else
+    # let's look around -- code copied from RdbuiPgSQL but modified to use test -f
+    { echo "$as_me:$LINENO: checking for PostgreSQL header files" >&5
+echo "$as_me: checking for PostgreSQL header files" >&6;}
+    if ! test $PG_INCDIR
+    then
+	for dir in \
+	/usr/include \
+	/usr/include/pgsql \
+	/usr/include/postgresql \
+	/usr/local/include \
+	/usr/local/include/pgsql \
+	/usr/local/include/postgresql \
+	/opt/include \
+	/opt/include/pgsql \
+	/opt/include/postgresql
+	do
+	    if test -f ${dir}/libpq-fe.h
+	    then
+	    	PG_INCDIR=${dir}
+		break
+	    fi
+	done
+    fi
+
+    if ! test $PG_LIBDIR
+    then
+	for dir in \
+	/usr/lib \
+	/usr/lib/pgsql \
+	/usr/lib/postgresql \
+	/usr/local/lib \
+	/usr/local/lib/pgsql \
+	/usr/local/lib/postgresql \
+	/opt/lib \
+	/opt/lib/pgsql \
+	/opt/lib/postgresql
+	do
+	    if test -f ${dir}/libpq.so
+	    then
+	    	PG_LIBDIR=${dir}
+		break
+	    fi
+	done
+    fi
+
 fi
 
-# Use pg_config for header and linker arguments
-PG_INCDIR=`${PG_CONFIG} --includedir`
-PG_LIBDIR=`${PG_CONFIG} --libdir`
+
 
 # Expand into arguments
 PKG_CPPFLAGS="-I${PG_INCDIR}"
