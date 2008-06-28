@@ -12,7 +12,7 @@ AC_INIT(RPostgreSQL, 0.1)
 AC_PROG_CC
 
 # Check for non-standard programs: pg_configg(1) to configure PostgreSQL builds
-AC_PATH_PROG([PG_CONFIG], [pg_configNOT])
+AC_PATH_PROG([PG_CONFIG], [pg_config])
 
 # If pg_config was found, let's use it
 if test "${PG_CONFIG}" != ""; then
@@ -34,6 +34,8 @@ else
 	/usr/local/include \
 	/usr/local/include/pgsql \
 	/usr/local/include/postgresql \
+	/usr/local/psql/include \
+	/usr/local/postgresql/include \
 	/opt/include \
 	/opt/include/pgsql \
 	/opt/include/postgresql
@@ -56,6 +58,8 @@ else
 	/usr/local/lib \
 	/usr/local/lib/pgsql \
 	/usr/local/lib/postgresql \
+	/usr/local/psql/lib \
+	/usr/local/postgresql/lib \
 	/opt/lib \
 	/opt/lib/pgsql \
 	/opt/lib/postgresql
