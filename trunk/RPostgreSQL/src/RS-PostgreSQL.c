@@ -18,7 +18,7 @@
 #  error("the function RS_DBI_invokeNewRecord()  has not been implemented in S")
 #endif
 
-/*   R and S DataBase Interface to PostgreSQL 
+/*   R and S DataBase Interface to PostgreSQL
  *
  *C function library which can be used to run SQL queries    * from inside of S4, Splus5.x, or R.
  * This Driver hooks R/S and PostgreSQL and implements the
@@ -44,8 +44,6 @@ RS_PostgreSQL_init(s_object *config_params, s_object *reload)
   Sint  fetch_default_rec, force_reload, max_con;
   const char *drvName = "PostgreSQL";
 
-/*  TODO Have to check the version compatability of server &   *   client versions
-*/
 
 max_con = INT_EL(config_params,0);
 fetch_default_rec=INT_EL(config_params,1);
@@ -81,7 +79,7 @@ return status;
 
 /* open a connection with the same parameters used for in
  *  conHandle
- */ 
+ */
 Con_Handle *
 RS_PostgreSQL_cloneConnection(Con_Handle *conHandle)
 {
@@ -101,7 +99,7 @@ conParams = con->conParams;
 mgrHandle = RS_DBI_asMgrHandle(MGR_ID(conHandle));
 
 
-  /* Connection parameters need to be put into a 7-element character
+  /* Connection parameters need to be put into a 8-element character
    * vector to be passed to the RS_PostgreSQL_newConnection() function.
    */
 
@@ -116,7 +114,7 @@ mgrHandle = RS_DBI_asMgrHandle(MGR_ID(conHandle));
   SET_CHR_EL(con_params,6,C_S_CPY(conParams->options));
   
   
-  MEM_UNPROTECT(2); 
+  MEM_UNPROTECT(1);
 
   return RS_PostgreSQL_newConnection(mgrHandle, con_params);
 }
@@ -160,7 +158,6 @@ RS_PostgreSQL_newConnection(Mgr_Handle *mgrHandle, s_object *con_params)
 {
   S_EVALUATOR
 
-
   RS_DBI_connection  *con;
   RS_PostgreSQL_conParams *conParams;
   Con_Handle  *conHandle;
@@ -172,7 +169,6 @@ RS_PostgreSQL_newConnection(Mgr_Handle *mgrHandle, s_object *con_params)
     RS_DBI_errorMessage("invalid PostgreSQLManager", RS_DBI_ERROR);
 
 #define IS_EMPTY(s1)   !strcmp((s1), "")
-
 
 
 
@@ -193,8 +189,7 @@ RS_PostgreSQL_newConnection(Mgr_Handle *mgrHandle, s_object *con_params)
 
 
 
-
-if(user==NULL) user=""; 
+if(user==NULL) user="";
 if(password==NULL) password="";
 if(host==NULL) host="localhost";
 if(port==NULL) port="";
@@ -202,7 +197,12 @@ if(options==NULL) options="";
 if(tty==NULL) tty="";
 if(dbname==NULL) dbname="";
 
+/*
+ char *buff[1000];
+ sprintf(buff,"user=%s password=%s host=%s dbname=%s port=%s tty=%s  options=%s",user,password,host,dbname,port,tty,options)
 
+            my_connection  = PQconnectdb(buff);
+*/
 
  my_connection = PQsetdbLogin(host,port,options,tty,dbname,user,password);
 
@@ -241,8 +241,7 @@ if(dbname==NULL) dbname="";
   conParams->options = RS_DBI_copyString(options);
 
 
-
-  conHandle = RS_DBI_allocConnection(mgrHandle, (Sint) 1); 
+  conHandle = RS_DBI_allocConnection(mgrHandle, (Sint) 1);
   con = RS_DBI_getConnection(conHandle);
   if(!con){
     PQfinish(my_connection);
@@ -273,13 +272,17 @@ RS_PostgreSQL_closeConnection(Con_Handle *conHandle)
      "close the pending result sets before closing this connection",
      RS_DBI_ERROR);
   }
- 
+  /* make sure we first free the conParams and postgresql connection from
+   * the RS-RBI connection object.
+   */
   if(con->conParams){
      RS_PostgreSQL_freeConParams(con->conParams);
      con->conParams = (RS_PostgreSQL_conParams *) NULL;
   }
   my_connection = (PGconn *) con->drvConnection;
 
+  PQfinish(my_connection);
+  con->drvConnection = (void *) NULL;
 
   RS_DBI_freeConnection(conHandle);
   
@@ -291,7 +294,7 @@ RS_PostgreSQL_closeConnection(Con_Handle *conHandle)
 }  
   
 /* Execute (currently) one sql statement (INSERT, DELETE, SELECT, etc.),
- * set coercion type mappings between the server internal data types and 
+ * set coercion type mappings between the server internal data types and
  * S classes.   Returns  an S handle to a resultSet object.
  */
 
@@ -315,22 +318,22 @@ RS_PostgreSQL_exec(Con_Handle *conHandle, s_object *statement)
   my_connection = (PGconn *) con->drvConnection;
   dyn_statement = RS_DBI_copyString(CHR_EL(statement,0));
 
-  /* Do we have a pending resultSet in the current connection?  
+  /* Do we have a pending resultSet in the current connection?
    * PostgreSQL only allows  one resultSet per connection.
    */
 
   if(con->num_res > 0){
     res_id = (Sint) con->resultSetIds[0]; /* recall, PostgreSQL has only 1 res */
-    rsHandle = RS_DBI_asResHandle(MGR_ID(conHandle), 
+    rsHandle = RS_DBI_asResHandle(MGR_ID(conHandle),
 	                          CON_ID(conHandle), res_id);
     result = RS_DBI_getResultSet(rsHandle);
     if(result->completed == 0){
       free(dyn_statement);
-      RS_DBI_errorMessage( 
+      RS_DBI_errorMessage(
        "connection with pending rows, close resultSet before continuing",
        RS_DBI_ERROR);
     }
-    else 
+    else
       RS_PostgreSQL_closeResultSet(rsHandle);
   }
 
@@ -346,8 +349,6 @@ RS_PostgreSQL_exec(Con_Handle *conHandle, s_object *statement)
 		PQerrorMessage(my_connection));
     RS_DBI_errorMessage(errMsg, RS_DBI_ERROR);
   }
-
-
 
 
 /* ExecStatusType PQresultStatus(const PGresult *res); */
@@ -373,7 +374,7 @@ free(dyn_statement);
 /*  Frees the storage associated with a PGresult.
  *  void PQclear(PGresult *res);   */
 
-  PQclear(my_result);   /* NOTE: check whether if result is cleared has any effects */
+  PQclear(my_result);   
 
 }
 
@@ -391,13 +392,13 @@ free(dyn_statement);
 
   if(!is_select){
 
-/* NOTE: caution: you are converting to an integer... but will the range be enuf */
+
 
     result->rowsAffected = (Sint) atoi(PQcmdTuples(my_result));
     result->completed = 1;
    }
   else {
-    result->rowsAffected = (Sint) -1; 
+    result->rowsAffected = (Sint) -1;
     result->completed = 0;
   }
   
@@ -410,13 +411,14 @@ free(dyn_statement);
 
 
 
+
 RS_DBI_fields *
 RS_PostgreSQL_createDataMappings(Res_Handle *rsHandle)
 {
   PGresult     *my_result;
 
   RS_DBI_connection  *con;
-  RS_DBI_resultSet   *result; 
+  RS_DBI_resultSet   *result;
   RS_DBI_fields      *flds;
 
   int     j, num_fields, internal_type;
@@ -436,23 +438,16 @@ RS_PostgreSQL_createDataMappings(Res_Handle *rsHandle)
 
   for (j = 0; j < num_fields; j++){
 
-   /* First, save the name, PostgreSQL internal field name, type, length, etc. */
 
-   /* Returns the column name associated with the given column number. Column numbers start at 0
-    * char *PQfname(const PGresult *res, int column_number);
-    */
     flds->name[j] = RS_DBI_copyString(PQfname(my_result,j));
 
-    flds->type[j] = (int) PQftype(my_result,j);  
+    flds->type[j] = (int) PQftype(my_result,j);
 
 
     flds->length[j] = (Sint) PQfsize(my_result,j);
     /* NOTE: PQfmod is -1 incase of no information */
-    flds->precision[j] = (Sint) PQfmod(my_result,j);  
+    flds->precision[j] = (Sint) PQfmod(my_result,j);
 
-    /*  flds->scale[j] = select_dp[j].decimals;  TODO: have to change ths... */
-
-    /* flds->nullOk[j] = (!IS_NOT_NULL(select_dp[j].flags)); TODO: have to change ths*/
 
     internal_type = (int) PQftype(my_result,j);
 
@@ -463,18 +458,19 @@ RS_PostgreSQL_createDataMappings(Res_Handle *rsHandle)
       break;
     case VARCHAROID:
     case TEXTOID:
-    case BYTEAOID: 
+    case BYTEAOID:
+    case NAMEOID:
       flds->Sclass[j] = CHARACTER_TYPE;
       flds->isVarLength[j] = (Sint) 1;
       break;
-    case INT2OID:            
-    case INT4OID:           
+    case INT2OID:
+    case INT4OID:
     flds->Sclass[j] = INTEGER_TYPE;
       break;
-    case INT8OID:        
+    case INT8OID:
       if(sizeof(Sint)>=8)
 	flds->Sclass[j] = INTEGER_TYPE;
-      else 
+      else
 	flds->Sclass[j] = NUMERIC_TYPE;
       break;
     case NUMERICOID:
@@ -499,13 +495,13 @@ RS_PostgreSQL_createDataMappings(Res_Handle *rsHandle)
     default:
       flds->Sclass[j] = CHARACTER_TYPE;
       flds->isVarLength[j] = (Sint) 1;
-      (void) sprintf(errMsg, 
+      (void) sprintf(errMsg,
 		     "unrecognized PostgreSQL field type %d in column %d",
 		     internal_type, j);
       RS_DBI_errorMessage(errMsg, RS_DBI_WARNING);
       break;
     }
-  }  
+  }
   return flds;
 }
 
@@ -526,21 +522,27 @@ RS_PostgreSQL_fetch(s_object *rsHandle, s_object *max_rec)
   int    i, j, null_item, expand;
   Sint   *fld_nullOk, completed;
   Stype  *fld_Sclass;
-  Sint   num_rec; 
+  Sint   num_rec;
   int    num_fields;
   int	 num_rows;  /*num_rows added to count number of rows */
+  int    k; /* This takes care of pointer to the required row */
 
   result = RS_DBI_getResultSet(rsHandle);
   flds = result->fields;
+
+    if (result->isSelect != 1)
+        RS_DBI_errorMessage("resultSet does not correspond to a SELECT statement", RS_DBI_ERROR);
+
   if(!flds)
     RS_DBI_errorMessage("corrupt resultSet, missing fieldDescription",
 		       RS_DBI_ERROR);
+
   num_rec = INT_EL(max_rec,0);
   expand = (num_rec < 0);   /* dyn expand output to accommodate all rows*/
   if(expand || num_rec == 0){
     mgr = RS_DBI_getManager(rsHandle);
      /* num_rec contains "default num of records per fetch"  */
-    num_rec = mgr->fetch_default_rec; 
+    num_rec = mgr->fetch_default_rec;
   }
   num_fields = flds->num_fields;
   MEM_PROTECT(output = NEW_LIST((Sint) num_fields));
@@ -562,8 +564,16 @@ RS_PostgreSQL_fetch(s_object *rsHandle, s_object *max_rec)
 
  num_rows = PQntuples(my_result);
 
+   k=result->rowCount;       /* ADDED */
+
   completed = (Sint) 0;
-  for(i = 0; ; i++) {
+  for(i = 0;; i++,k++) {
+
+ if(k>=num_rows) {
+ completed=1;
+ break;
+}
+
     if(i==num_rec){  /* exhausted the allocated space */
       if(expand){    /* do we extend or return the records fetched so far*/
 	num_rec = 2 * num_rec;
@@ -580,7 +590,9 @@ RS_PostgreSQL_fetch(s_object *rsHandle, s_object *max_rec)
 	break;       /* okay, no more fetching for now */
     }
 
-
+/* PQgetlength (Returns the actual length of a field value in bytes)  is used instead of lens
+ * Syntax: int PQgetlength(const PGresult *res, int row_number, int column_number);
+ */
 
 
     if(i==num_rows){    /* we finish  or encounter an error */
@@ -598,19 +610,20 @@ RS_PostgreSQL_fetch(s_object *rsHandle, s_object *max_rec)
 
     for(j = 0; j < num_fields; j++){
 
+
    /* Testing a field for a null value ...
     * Syntax: int PQgetisnull(const PGresult *res, int row_number, int column_number);
     * This function returns 1 if the field is null and 0 if it contains a non-null value.
     */
 
-     null_item = PQgetisnull(my_result,i,j);       
+     null_item = PQgetisnull(my_result,k,j);
 
       switch((int)fld_Sclass[j]){
       case INTEGER_TYPE:
 	if(null_item)
 	  NA_SET(&(LST_INT_EL(output,j,i)), INTEGER_TYPE);
 	else
-	  LST_INT_EL(output,j,i) = (Sint) atol(PQgetvalue(my_result,i,j));  /* NOTE: changed */
+	  LST_INT_EL(output,j,i) = (Sint) atol(PQgetvalue(my_result,k,j));  /* NOTE: changed */
 	break;
       case CHARACTER_TYPE:
 
@@ -623,31 +636,31 @@ RS_PostgreSQL_fetch(s_object *rsHandle, s_object *max_rec)
 	else {
 
 
-	  SET_LST_CHR_EL(output,j,i,C_S_CPY(PQgetvalue(my_result,i,j)));       /* NOTE: changed */
+	  SET_LST_CHR_EL(output,j,i,C_S_CPY(PQgetvalue(my_result,k,j)));     
 	}
 	break;
       case NUMERIC_TYPE:
 	if(null_item)
 	  NA_SET(&(LST_NUM_EL(output,j,i)), NUMERIC_TYPE);
 	else
-	  LST_NUM_EL(output,j,i) = (double) atof(PQgetvalue(my_result,i,j));     /* NOTE: changed */
+	  LST_NUM_EL(output,j,i) = (double) atof(PQgetvalue(my_result,k,j));     
 	break;
 #ifndef USING_R
       case SINGLE_TYPE:
 	if(null_item)
 	  NA_SET(&(LST_FLT_EL(output,j,i)), SINGLE_TYPE);
 	else
-	  LST_FLT_EL(output,j,i) = (float) atof(PQgetvalue(my_result,i,j));     /* NOTE: changed */
+	  LST_FLT_EL(output,j,i) = (float) atof(PQgetvalue(my_result,k,j));     
 	break;
       case RAW_TYPE:           /* these are blob's */
-	raw_obj = NEW_RAW((Sint) PQgetlength(my_result,i,j));                       /* NOTE: changed*/
-	memcpy(RAW_DATA(raw_obj), PQgetvalue(my_result,i,j), PQgetlength(my_result,i,j));          /* NOTE: changed */
-	raw_container = LST_EL(output,j);    /* get list of raw objects*/
+	raw_obj = NEW_RAW((Sint) PQgetlength(my_result,k,j));                       
+	memcpy(RAW_DATA(raw_obj), PQgetvalue(my_result,k,j), PQgetlength(my_result,k,j));          
+	raw_container = LST_EL(output,j);    
 	SET_ELEMENT(raw_container, (Sint) i, raw_obj);
 	SET_ELEMENT(output, (Sint) j, raw_container);
   	break;
 #endif
-      default:  /* error, but we'll try the field as character (!)*/
+      default:  
 	if(null_item)
 #ifdef USING_R
 	  SET_LST_CHR_EL(output,j,i, NA_STRING);
@@ -656,15 +669,15 @@ RS_PostgreSQL_fetch(s_object *rsHandle, s_object *max_rec)
 #endif
 	else {
 	    char warn[64];
-	    (void) sprintf(warn, 
+	    (void) sprintf(warn,
 			   "unrecognized field type %d in column %d",
 			   (int) fld_Sclass[j], (int) j);
 	    RS_DBI_errorMessage(warn, RS_DBI_WARNING);
-	    SET_LST_CHR_EL(output,j,i,C_S_CPY(PQgetvalue(my_result,i,j)));    /* NOTE: changed */
+	    SET_LST_CHR_EL(output,j,i,C_S_CPY(PQgetvalue(my_result,k,j)));    /* NOTE: changed */
 	  }
 	  break;
-      } 
-    } 
+      }
+    }
   }
   
   /* actual number of records fetched */
@@ -680,6 +693,7 @@ RS_PostgreSQL_fetch(s_object *rsHandle, s_object *max_rec)
   }
   if(completed < 0)
     RS_DBI_errorMessage("error while fetching rows", RS_DBI_WARNING);
+
 
   result->rowCount += num_rec;
   result->completed = (int) completed;
@@ -719,16 +733,8 @@ RS_PostgreSQL_getException(s_object *conHandle)
 
   my_connection = (PGconn *) con->drvConnection;
 
-/* NOTE: unsigned int mysql_errno(MYSQL *mysql)  for MySQL
- * HAVE to change specific to PostgreSQL... But the problem is MySQL has a function
- * called mysql_errno to  generate error number for every error message but postgre
- * does'nt seem to have such a function .... it has one to return the SQL codes for
- * result set ....
- */
 
 
- 
-/* NOTE: VERY IMP:  temporarily error number is set to zero.... HAVE TO CHANGE IT SOON > Sameer */
 
 
 LST_INT_EL(output,0,0) = 0;
@@ -749,7 +755,7 @@ SET_LST_CHR_EL(output,1,0,C_S_CPY("OK"));
 s_object *
 RS_PostgreSQL_closeResultSet(s_object *resHandle)
 {
-  S_EVALUATOR 
+  S_EVALUATOR
 
   RS_DBI_resultSet *result;
   PGresult         *my_result;
@@ -784,10 +790,10 @@ RS_PostgreSQL_managerInfo(Mgr_Handle *mgrHandle)
   Sint i, num_con, max_con, *cons, ncon;
   Sint j, n = 7;
   char *mgrDesc[] = {"drvName",   "connectionIds", "fetch_default_rec",
-                     "managerId", "length",        "num_con", 
+                     "managerId", "length",        "num_con",
                      "counter" /*,   "clientVersion"*/};
-  Stype mgrType[] = {CHARACTER_TYPE, INTEGER_TYPE, INTEGER_TYPE, 
-                     INTEGER_TYPE,   INTEGER_TYPE, INTEGER_TYPE, 
+  Stype mgrType[] = {CHARACTER_TYPE, INTEGER_TYPE, INTEGER_TYPE,
+                     INTEGER_TYPE,   INTEGER_TYPE, INTEGER_TYPE,
                      INTEGER_TYPE /*,   CHARACTER_TYPE*/};
   Sint  mgrLen[]  = {1, 1, 1, 1, 1, 1, 1 /*, 1*/};
   
@@ -803,13 +809,13 @@ RS_PostgreSQL_managerInfo(Mgr_Handle *mgrHandle)
   if(IS_LIST(output))
     output = AS_LIST(output);
   else
-    RS_DBI_errorMessage("internal error: could not alloc named list", 
+    RS_DBI_errorMessage("internal error: could not alloc named list",
 			RS_DBI_ERROR);
 #endif
   j = (Sint) 0;
   if(mgr->drvName)
     SET_LST_CHR_EL(output,j++,0,C_S_CPY(mgr->drvName));
-  else 
+  else
     SET_LST_CHR_EL(output,j++,0,C_S_CPY(""));
 
   cons = (Sint *) S_alloc((long)max_con, (int)sizeof(Sint));
@@ -869,7 +875,6 @@ RS_PostgreSQL_connectionInfo(Con_Handle *conHandle)
   SET_LST_CHR_EL(output,2,0,C_S_CPY(conParams->dbname));
 
 
-
 /* PQserverVersion: Returns an integer representing the backend version.
  * Syntax: int PQserverVersion(const PGconn *conn);
  */
@@ -896,7 +901,6 @@ sprintf(buf1,"%d.%d.%d",major,minor,revision_num);
  * Syntax: int PQbackendPID(const PGconn *conn);
  */
 
-/* TODO: Sameer:  Have to change to names from Thread ID to  Process ID   */
   LST_INT_EL(output,5/*6*/,0) = (Sint) PQbackendPID(my_con);
 
   res = (Sint *) S_alloc( (long) con->length, (int) sizeof(Sint));
@@ -906,7 +910,6 @@ sprintf(buf1,"%d.%d.%d",major,minor,revision_num);
 	  "internal error: corrupt RS_DBI resultSet table",
 	  RS_DBI_ERROR);
   }
-
 
 
   for( i = 0; i < con->num_res; i++){
@@ -969,7 +972,6 @@ RS_PostgreSQL_typeNames(s_object *type)
   for(i = 0; i < n; i++) {
 
 
-
     SET_CHR_EL(typeNames, i,
           C_S_CPY(RS_DBI_getTypeName(typeCodes[i], RS_PostgreSQL_dataTypes)));
   }
@@ -991,34 +993,34 @@ RS_PostgreSQL_typeNames(s_object *type)
  * and END_GROUP (just finished with the current group). At these points
  * we invoke the R functions group.end() and group.begin() in the
  * environment() of dbApply
- * [should it be the environment where dbApply was called from (i.e., 
- * dbApply's parent's * frame)?]  
- * Except for the very first group, the order of invocation is 
+ * [should it be the environment where dbApply was called from (i.e.,
+ * dbApply's parent's * frame)?]
+ * Except for the very first group, the order of invocation is
  * end.group() followed by begin.group()
  *
  * NOTE: We're thinking of groups as commonly defined in awk scripts
  * (but also in SAP's ABAP/4) were rows are assumed to be sorted by
  * the "group" fields and we detect a different (new) group when any of
  * the "group" fields changes.  Our implementation does not require
- * the result set to be sorted by group, but for performance-sake, 
+ * the result set to be sorted by group, but for performance-sake,
  * it better be.
  *
  * TODO: 1. Notify the reason for exiting (normal, exhausted maxBatches, etc.)
  *       2. Allow INDEX to be a list, as in tapply().
- *       3. Handle NA's (SQL NULL's) in the INDEX and/or data fields.  
+ *       3. Handle NA's (SQL NULL's) in the INDEX and/or data fields.
  *          Currently they are ignored, thus effectively causing a
  *          new BEGIN_GROUP event.
- *       4. Re-write fetch() in terms of events (END_OF_DATA, 
+ *       4. Re-write fetch() in terms of events (END_OF_DATA,
  *          EXHAUST_DATAFRAME, DB_ERROR, etc.)
  *       5. Create a table of R callback functions indexed by events,
  *          then a handle_event() could conveniently handle all the events.
  */
 
 s_object    *expand_list(s_object *old, Sint new_len);
-void         add_group(s_object *group_names, s_object *data, 
-		             Stype *fld_Sclass, Sint group, 
+void         add_group(s_object *group_names, s_object *data,
+		             Stype *fld_Sclass, Sint group,
 			     Sint ngroup, Sint i);
-unsigned int check_groupEvents(s_object *data, Stype fld_Sclass[], 
+unsigned int check_groupEvents(s_object *data, Stype fld_Sclass[],
                           Sint row, Sint col);
 
 /* The following are the masks for the events/states we recognize as we
@@ -1120,17 +1122,17 @@ RS_PostgreSQL_dbApply(s_object *rsHandle,     /* resultset handle */
    RS_DBI_fields    *flds;
 
    PGresult *my_result;
+  /* POSTGRESQL_ROW  row;   NOTE: REMOVED  ths.... because it is MySQL specific */
 
-
-   int row_counter=-1;  
-   int row_max;        
+   int row_counter=-1;  /* NOTE: added this.... to maintain a counter for the rows */
+   int row_max;        /* NOTE: added this.... fetch the maximum number of rows in the resultset */
  
 
    s_object  *data, *cur_rec, *out_list, *group_names, *val;
 #ifndef USING_R
    s_object  *raw_obj, *raw_container;
 #endif
-
+ /*  unsigned long  *lens = (unsigned long *)0; NOTE: not being used */
    Stype  *fld_Sclass;
    Sint   i, j, null_item, expand, *fld_nullOk, completed;
    Sint   num_rec, num_groups;
@@ -1140,7 +1142,7 @@ RS_PostgreSQL_dbApply(s_object *rsHandle,     /* resultset handle */
    long   total_records;
    Sint   pushed_back = FALSE;
 
-   unsigned int event = NEVER; 
+   unsigned int event = NEVER;
    int    np = 0;        /* keeps track of MEM_PROTECT()'s */
    s_object    *beginGroupCall, *beginGroupFun = LST_EL(s_funs, 2);
    s_object    *endGroupCall,   *endGroupFun   = LST_EL(s_funs, 3);
@@ -1149,7 +1151,7 @@ RS_PostgreSQL_dbApply(s_object *rsHandle,     /* resultset handle */
    int        invoke_endGroup   = (GET_LENGTH(endGroupFun)>0);
    int        invoke_newRecord  = (GET_LENGTH(newRecordFun)>0);
 
-
+  /* row = NULL;     NOTE: REMOVED  ths.... because it is MySQL specific */
 
 
    beginGroupCall = R_NilValue;    /* -Wall */
@@ -1160,7 +1162,7 @@ RS_PostgreSQL_dbApply(s_object *rsHandle,     /* resultset handle */
    endGroupCall = R_NilValue;    /* -Wall */
    if(invoke_endGroup){
       /* TODO: append list(...) to the call object */
-      MEM_PROTECT(endGroupCall = lang4(endGroupFun, R_NilValue, 
+      MEM_PROTECT(endGroupCall = lang4(endGroupFun, R_NilValue,
 	          R_NilValue, R_NilValue));
       ++np;
    }
@@ -1221,7 +1223,7 @@ RS_PostgreSQL_dbApply(s_object *rsHandle,     /* resultset handle */
      }
 
      if(!pushed_back)
-
+     /*   row = postgresql_fetch_row(my_result); Removed.... MYSQL specific */
       ++row_counter;
 
      if(row_counter == row_max){    /*finish  */ /*NOTE:Changed */
@@ -1230,7 +1232,14 @@ RS_PostgreSQL_dbApply(s_object *rsHandle,     /* resultset handle */
            /* TODO: error handling has to be done */
        break;
 
-
+/*  NOTE: Removed
+	unsigned int  err_no;
+        RS_DBI_connection   *con;
+        con = RS_DBI_getConnection(rsHandle);
+        err_no = postgresql_errno((POSTGRESQL *) con->drvConnection);
+        completed = (Sint) (err_no ? -1 : 1);
+        break;
+*/
    }
 
      if(!pushed_back){                      /* recompute fields lengths? */
@@ -1251,7 +1260,7 @@ RS_PostgreSQL_dbApply(s_object *rsHandle,     /* resultset handle */
  
         switch((int)fld_Sclass[j]){
 
-	   case INTEGER_TYPE: 
+	   case INTEGER_TYPE:
 	      if(null_item)
 		 NA_SET(&(LST_INT_EL(data,j,i)), INTEGER_TYPE);
 	      else
@@ -1259,7 +1268,7 @@ RS_PostgreSQL_dbApply(s_object *rsHandle,     /* resultset handle */
 	      LST_INT_EL(cur_rec,j,0) = LST_INT_EL(data,j,i);
 	      break;
 
-	   case CHARACTER_TYPE: 
+	   case CHARACTER_TYPE:
 	      /* BUG: I need to verify that a TEXT field (which is stored as
 	       * a BLOB by PostgreSQL!) is indeed char and not a true
 	       * Binary obj (PostgreSQL does not truly distinguish them). This
@@ -1274,7 +1283,7 @@ RS_PostgreSQL_dbApply(s_object *rsHandle,     /* resultset handle */
 	      else {
 	         if((size_t) PQfsize(my_result,j) != strlen(PQgetvalue(my_result,row_counter,j))){ /* NOTE: changed */
 	            char warn[128];
-	            (void) sprintf(warn, 
+	            (void) sprintf(warn,
 			   "internal error: row %ld field %ld truncated",
 			   (long) i, (long) j);
 	            RS_DBI_errorMessage(warn, RS_DBI_WARNING);
@@ -1305,7 +1314,7 @@ RS_PostgreSQL_dbApply(s_object *rsHandle,     /* resultset handle */
 	      raw_obj = NEW_RAW((Sint) PQfsize(my_result,j));/* NOTE: changed */
 	      memcpy(RAW_DATA(raw_obj), PQgetvalue(my_result,row_counter,j), PQfsize(my_result,j));/* NOTE: changed */
 	      raw_container = LST_EL(data,j);    /* get list of raw objects*/
-	      SET_ELEMENT(raw_container, (Sint) i, raw_obj); 
+	      SET_ELEMENT(raw_container, (Sint) i, raw_obj);
 	      SET_ELEMENT(data, (Sint) j, raw_container);
     	      break;
 #endif
@@ -1319,7 +1328,7 @@ RS_PostgreSQL_dbApply(s_object *rsHandle,     /* resultset handle */
 #endif
 	      else {
 	         char warn[64];
-	         (void) sprintf(warn, 
+	         (void) sprintf(warn,
 			   "unrecognized field type %d in column %d",
 			   (int) fld_Sclass[j], (int) j);
 	         RS_DBI_errorMessage(warn, RS_DBI_WARNING);
@@ -1327,10 +1336,10 @@ RS_PostgreSQL_dbApply(s_object *rsHandle,     /* resultset handle */
 	      }
 	      SET_LST_CHR_EL(cur_rec,j,0, C_S_CPY(LST_CHR_EL(data,j,i)));
 	      break;
-        } 
+        }
      }
 
-     /* We just finished processing the new record, now we check 
+     /* We just finished processing the new record, now we check
       * for some events (in addition to NEW_RECORD, of course).
       */
      event = check_groupEvents(data, fld_Sclass, i, group_field);
@@ -1338,8 +1347,8 @@ RS_PostgreSQL_dbApply(s_object *rsHandle,     /* resultset handle */
      if(BEGIN_GROUP & event){
         if(ngroup==num_groups){                  /* exhausted output list? */
            num_groups = 2 * num_groups;
-           MEM_PROTECT(SET_LENGTH(out_list, num_groups)); 
-           MEM_PROTECT(SET_LENGTH(group_names, num_groups)); 
+           MEM_PROTECT(SET_LENGTH(out_list, num_groups));
+           MEM_PROTECT(SET_LENGTH(group_names, num_groups));
 	   np += 2;
         }
 	if(invoke_beginGroup)
@@ -1351,31 +1360,31 @@ RS_PostgreSQL_dbApply(s_object *rsHandle,     /* resultset handle */
 	RS_DBI_invokeNewRecord(newRecordCall, cur_rec, rho);
      }
 
-     if(END_GROUP & event){                     
+     if(END_GROUP & event){
      
 	add_group(group_names, data, fld_Sclass, group_field, ngroup, i-1);
 
 	RS_DBI_allocOutput(data, flds, i, expand++);
-        RS_DBI_makeDataFrame(data); 
+        RS_DBI_makeDataFrame(data);
      
 	val = RS_DBI_invokeEndGroup(endGroupCall, data,
 		                    CHR_EL(group_names, ngroup), rho);
         SET_ELEMENT(out_list, ngroup, val);
 
-        /* set length of data to zero to force initialization 
-	 * for next group 
+        /* set length of data to zero to force initialization
+	 * for next group
 	 */
 	RS_DBI_allocOutput(data, flds, (Sint) 0, (Sint) 1);
         i = 0;                                  /* flush */
-	++ngroup;   
+	++ngroup;
         pushed_back = TRUE;
         continue;
      }
 
      i++;
-   }    
+   }
   
-   /* we fetched all the rows we needed/could; compute actual number of 
+   /* we fetched all the rows we needed/could; compute actual number of
     * records fetched.
     * TODO: What should we return in the case of partial groups???
     */
@@ -1387,16 +1396,16 @@ RS_PostgreSQL_dbApply(s_object *rsHandle,     /* resultset handle */
        event = PARTIAL_GROUP;
 
    /* wrap up last group */
-   if((END_GROUP & event) || (PARTIAL_GROUP & event)){ 
+   if((END_GROUP & event) || (PARTIAL_GROUP & event)){
 
       add_group(group_names, data, fld_Sclass, group_field, ngroup, i-i);
 
       if(i<num_rec){
 	 RS_DBI_allocOutput(data, flds, i, expand++);
-	 RS_DBI_makeDataFrame(data); 
+	 RS_DBI_makeDataFrame(data);
       }
       if(invoke_endGroup){
-	 val = RS_DBI_invokeEndGroup(endGroupCall, data, 
+	 val = RS_DBI_invokeEndGroup(endGroupCall, data,
 	                             CHR_EL(group_names, ngroup), rho);
          SET_ELEMENT(out_list, ngroup++, val);
       }
@@ -1417,7 +1426,7 @@ RS_PostgreSQL_dbApply(s_object *rsHandle,     /* resultset handle */
       np += 2;
    }
 
-   result->rowCount += total_records;  
+   result->rowCount += total_records;
    result->completed = (int) completed;
  
    SET_NAMES(out_list, group_names);       /* do I need to PROTECT? */
@@ -1469,17 +1478,17 @@ check_groupEvents(s_object *data, Stype fld_Sclass[], Sint irow, Sint jcol)
 	   "un-regongnized R/S data type %d", fld_Sclass[jcol]
 	 ERROR;
          break;
-   }      
+   }
 
    return NEW_RECORD;
 }
 
 /* append current group (as character) to the vector of group names */
 void
-add_group(s_object *group_names, s_object *data, 
+add_group(s_object *group_names, s_object *data,
 		Stype *fld_Sclass, Sint group_field, Sint ngroup, Sint i)
 {
-   char  buff[1024];   
+   char  buff[1024];
 
    switch((int) fld_Sclass[group_field]){
 
@@ -1508,3 +1517,46 @@ add_group(s_object *group_names, s_object *data,
    return;
 }
 
+/* the following function was kindly provided by Mikhail Kondrin
+ * it returns the last inserted index.
+ * TODO: It returns an int, but it can potentially be inadequate
+ *       if the index is anunsigned integer.  Should we return
+ *       a numeric instead?
+ */
+
+/*  TODO: Sameer
+1. postgresql_insert_id is mysql specific.... so replace it with corresponding func....
+2. once compare any todo's for this function wit RMySQL.... because some have been removed for commenting
+
+This function is not used anywhere..... so commented just for a while <<REMoVE LATER>>
+
+s_object *
+RS_PostgreSQL_insertid(Con_Handle *conHandle)
+{
+  S_EVALUATOR
+ 
+  PGconn   *my_con;
+  RS_DBI_connection  *con;
+  s_object   *output;
+  char *conDesc[] = {"iid"};
+  Stype conType[] = {INTEGER_TYPE};
+  Sint  conLen[]  = {1};
+
+  con = RS_DBI_getConnection(conHandle);
+  my_con = (PGconn *) con->drvConnection;
+  output = RS_DBI_createNamedList(conDesc, conType, conLen, 1);
+#ifndef USING_R
+  if(IS_LIST(output))
+    output = AS_LIST(output);
+  else
+    RS_DBI_errorMessage("internal error: could not alloc named list",
+                        RS_DBI_ERROR);
+#endif
+
+  LST_INT_EL(output,0,0) = (Sint) postgresql_insert_id(my_con);
+
+  return output;
+
+}
+
+*/
