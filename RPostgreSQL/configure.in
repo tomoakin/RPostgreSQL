@@ -34,12 +34,13 @@ else
 	/usr/local/include \
 	/usr/local/include/pgsql \
 	/usr/local/include/postgresql \
-	/usr/local/psql/include \
+	/usr/local/pgsql/include \
 	/usr/local/postgresql/include \
 	/opt/include \
 	/opt/include/pgsql \
 	/opt/include/postgresql
 	do
+
 	    if test -f ${dir}/libpq-fe.h
 	    then 
 	    	PG_INCDIR=${dir}
@@ -58,7 +59,7 @@ else
 	/usr/local/lib \
 	/usr/local/lib/pgsql \
 	/usr/local/lib/postgresql \
-	/usr/local/psql/lib \
+	/usr/local/pgsql/lib \
 	/usr/local/postgresql/lib \
 	/opt/lib \
 	/opt/lib/pgsql \
