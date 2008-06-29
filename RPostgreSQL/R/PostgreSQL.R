@@ -184,13 +184,15 @@ setMethod("dbRemoveTable",
 setMethod("dbListFields", 
    signature(conn="PostgreSQLConnection", name="character"),
    def = function(conn, name, ...){
-      flds <- dbGetQuery(conn, paste("describe", name))[,1]
+      flds <- dbGetQuery(conn, paste("SELECT a.attname FROM pg_class c,pg_attribute a,pg_type t WHERE c.relname = '", name,"' and a.attnum > 0 and a.attrelid = c.oid and a.atttypid = t.oid",sep=""))[,1]
+
       if(length(flds)==0)
          flds <- character()
       flds
    },
   valueClass = "character"
 )
+
 
 setMethod("dbCommit", "PostgreSQLConnection",
    def = function(conn, ...) .NotYetImplemented()
