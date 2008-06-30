@@ -14,7 +14,7 @@ function(max.con=16, fetch.default.rec = 500, force.reload=FALSE)
 ## create a PostgreSQL database connection manager.  By default we allow
 ## up to "max.con" connections and single fetches of up to "fetch.default.rec"
 ## records.  These settings may be changed by re-loading the driver
-## using the "force.reload" = T flag (note that this will close all 
+## using the "force.reload" = T flag (note that this will close all
 ## currently open connections).
 ## Returns an object of class "PostgreSQLManger".
 ## Note: This class is a singleton.
@@ -85,7 +85,7 @@ function(obj, what="", ...)
 
 "postgresqlNewConnection" <-
 ## note that dbname may be a database name, an empty string "", or NULL.
-## The distinction between "" and NULL is that "" is interpreted by 
+## The distinction between "" and NULL is that "" is interpreted by
 ## the PostgreSQL API as the default database (PostgreSQL config specific)
 ## while NULL means "no database".
 function(drv, user="",
@@ -140,7 +140,7 @@ function(obj, verbose = FALSE, ...)
          cat("   ", i, " ")
          print(info$rsId[[i]])
       }
-   } else 
+   } else
       cat("  No resultSet available\n")
    invisible(NULL)
 }
@@ -177,7 +177,7 @@ function(obj, what="", ...)
    else
       info
 }
-       
+
 "postgresqlExecStatement" <-
 function(con, statement)
 ## submits the sql statement to PostgreSQL and creates a
@@ -214,7 +214,7 @@ function(con, statement)
    res <- fetch(rs, n = -1)
    if(dbHasCompleted(rs))
       dbClearResult(rs)
-   else 
+   else
       warning("pending rows")
    res
 }
@@ -224,7 +224,7 @@ function(res, ...)
 {
    flds <- dbGetInfo(res, "fieldDescription")[[1]][[1]]
    if(!is.null(flds)){
-      flds$Sclass <- .Call("RS_DBI_SclassNames", flds$Sclass, 
+      flds$Sclass <- .Call("RS_DBI_SclassNames", flds$Sclass,
                         PACKAGE = .PostgreSQLPkgName)
       flds$type <- .Call("RS_PostgreSQL_typeNames", as.integer(flds$type),
                         PACKAGE = .PostgreSQLPkgName)
@@ -236,22 +236,22 @@ function(res, ...)
 }
 
 "postgresqlDBApply" <-
-function(res, INDEX, FUN = stop("must specify FUN"), 
-         begin = NULL, 
-         group.begin =  NULL, 
-         new.record = NULL, 
-         end = NULL, 
-         batchSize = 100, maxBatch = 1e6, 
+function(res, INDEX, FUN = stop("must specify FUN"),
+         begin = NULL,
+         group.begin =  NULL,
+         new.record = NULL,
+         end = NULL,
+         batchSize = 100, maxBatch = 1e6,
          ..., simplify = TRUE)
 ## (Experimental)
-## This function is meant to handle somewhat gracefully(?) large amounts 
-## of data from the DBMS by bringing into R manageable chunks (about 
+## This function is meant to handle somewhat gracefully(?) large amounts
+## of data from the DBMS by bringing into R manageable chunks (about
 ## batchSize records at a time, but not more than maxBatch); the idea
 ## is that the data from individual groups can be handled by R, but
-## not all the groups at the same time.  
+## not all the groups at the same time.
 ##
 ## dbApply apply functions to groups of rows coming from a remote
-## database resultSet upon the following fetching events: 
+## database resultSet upon the following fetching events:
 ##   begin         (prior to fetching the first record)
 ##   group.begin   (the record just fetched begins a new group)
 ##   new_record    (a new record just fetched)
@@ -259,15 +259,15 @@ function(res, INDEX, FUN = stop("must specify FUN"),
 ##   end           (the record just fetched is the very last record)
 ##
 ## The "begin", "begin.group", etc., specify R functions to be
-## invoked upon the corresponding events.  (For compatibility 
+## invoked upon the corresponding events.  (For compatibility
 ## with other apply functions the arg FUN is used to specify the
 ## most common case where we only specify the "group.end" event.)
-## 
+##
 ## The following describes the exact order and form of invocation for the
-## various callbacks in the underlying  C code.  All callback function 
+## various callbacks in the underlying  C code.  All callback function
 ## (except FUN) are optional.
 ##  begin()
-##    group.begin(group.name)   
+##    group.begin(group.name)
 ##    new.record(df.record)
 ##    FUN(df.group, group.name)   (aka group.end)
 ##  end()
@@ -291,11 +291,11 @@ function(res, INDEX, FUN = stop("must specify FUN"),
    if(INDEX<1)
       stop(paste("INDEX field", INDEX, "not in result set"))
 
-   "null.or.fun" <- function(fun) # get fun obj, but a NULL is ok 
+   "null.or.fun" <- function(fun) # get fun obj, but a NULL is ok
    {
-      if(is.null(fun)) 
-         fun 
-      else 
+      if(is.null(fun))
+         fun
+      else
          match.fun(fun)
    }
    begin <- null.or.fun(begin)
@@ -313,7 +313,7 @@ function(res, INDEX, FUN = stop("must specify FUN"),
 
       })
    ## BEGIN event handler (re-entrant, only prior to reading first row)
-   if(!is.null(begin) && dbGetRowCount(res)==0) 
+   if(!is.null(begin) && dbGetRowCount(res)==0)
       begin()
    rho <- environment()
    funs <- list(begin = begin, end = end,
@@ -334,18 +334,18 @@ function(res, n=0, ...)
 ## Fetch at most n records from the opened resultSet (n = -1 means
 ## all records, n=0 means extract as many as "default_fetch_rec",
 ## as defined by PostgreSQLDriver (see describe(drv, T)).
-## The returned object is a data.frame. 
+## The returned object is a data.frame.
 ## Note: The method dbHasCompleted() on the resultSet tells you whether
-## or not there are pending records to be fetched. 
-## 
+## or not there are pending records to be fetched.
+##
 ## TODO: Make sure we don't exhaust all the memory, or generate
 ## an object whose size exceeds option("object.size").  Also,
 ## are we sure we want to return a data.frame?
-{    
+{
    n <- as(n, "integer")
    rsId <- as(res, "integer")
    rel <- .Call("RS_PostgreSQL_fetch", rsId, nrec = n, PACKAGE = .PostgreSQLPkgName)
-   if(length(rel)==0 || length(rel[[1]])==0) 
+   if(length(rel)==0 || length(rel[[1]])==0)
       return(NULL)
    ## create running row index as of previous fetch (if any)
    cnt <- dbGetRowCount(res)
@@ -391,7 +391,7 @@ function(obj, verbose = FALSE, ...)
    cat("  Rows fetched:", dbGetRowCount(obj), "\n")
    flds <- dbColumnInfo(obj)
    if(verbose && !is.null(flds)){
-      cat("  Fields:\n")  
+      cat("  Fields:\n")
       out <- print(dbColumnInfo(obj))
    }
    invisible(NULL)
@@ -417,12 +417,12 @@ function(con, name, row.names = "row_names", check.names = TRUE, ...)
    nms <- names(out)
    j <- switch(mode(row.names),
            "character" = if(row.names=="") 0 else
-               match(tolower(row.names), tolower(nms), 
+               match(tolower(row.names), tolower(nms),
                      nomatch = if(missing(row.names)) 0 else -1),
            "numeric" = row.names,
            "NULL" = 0,
            0)
-   if(j==0) 
+   if(j==0)
       return(out)
    if(j<0 || j>ncol(out)){
       warning("row.names not set on output data.frame (non-existing field)")
@@ -434,22 +434,22 @@ function(con, name, row.names = "row_names", check.names = TRUE, ...)
       row.names(out) <- rnms
    } else warning("row.names not set on output (duplicate elements in field)")
    out
-} 
+}
 
 "postgresqlImportFile" <-
-function(con, name, value, field.types = NULL, overwrite = FALSE, 
-  append = FALSE, header, row.names, nrows = 50, sep = ",", 
+function(con, name, value, field.types = NULL, overwrite = FALSE,
+  append = FALSE, header, row.names, nrows = 50, sep = ",",
   eol="\n", skip = 0, quote = '"', ...)
 {
   if(overwrite && append)
     stop("overwrite and append cannot both be TRUE")
 
   ## Do we need to clone the connection (ie., if it is in use)?
-  if(length(dbListResults(con))!=0){ 
+  if(length(dbListResults(con))!=0){
     new.con <- dbConnect(con)              ## there's pending work, so clone
     on.exit(dbDisconnect(new.con))
-  } 
-  else 
+  }
+  else
     new.con <- con
 
   if(dbExistsTable(con,name)){
@@ -469,7 +469,7 @@ function(con, name, value, field.types = NULL, overwrite = FALSE,
   fn <- file.path(dirname(value), basename(value))
   if(missing(header) || missing(row.names)){
     f <- file(fn, open="r")
-    if(skip>0) 
+    if(skip>0)
       readLines(f, n=skip)
     flds <- count.fields(textConnection(readLines(f, n=2)), sep)
     close(f)
@@ -489,22 +489,22 @@ function(con, name, value, field.types = NULL, overwrite = FALSE,
   if(new.table){
     ## need to init table, say, with the first nrows lines
     d <- read.table(fn, sep=sep, header=header, skip=skip, nrows=nrows, ...)
-    sql <- 
+    sql <-
       dbBuildTableDefinition(new.con, name, obj=d, field.types = field.types,
         row.names = row.names)
     rs <- try(dbSendQuery(new.con, sql))
     if(inherits(rs, ErrorClass)){
       warning("could not create table: aborting sqliteImportFile")
       return(FALSE)
-    } 
-    else 
+    }
+    else
       dbClearResult(rs)
   }
   else if(!append){
     warning(sprintf("table %s already exists -- use append=TRUE?", name))
   }
 
-  fmt <- 
+  fmt <-
      paste("LOAD DATA LOCAL INFILE '%s' INTO TABLE  %s ",
            "FIELDS TERMINATED BY '%s' ",
            if(!is.null(quote)) "OPTIONALLY ENCLOSED BY '%s' " else "",
@@ -519,22 +519,22 @@ function(con, name, value, field.types = NULL, overwrite = FALSE,
   if(inherits(rs, ErrorClass)){
      warning("could not load data into table")
      return(FALSE)
-  } 
+  }
   dbClearResult(rs)
   TRUE
 }
 
 "postgresqlWriteTable" <-
-function(con, name, value, field.types, row.names = TRUE, 
+function(con, name, value, field.types, row.names = TRUE,
    overwrite = FALSE, append = FALSE, ..., allow.keywords = FALSE)
 ## Create table "name" (must be an SQL identifier) and populate
 ## it with the values of the data.frame "value"
 ## TODO: This function should execute its sql as a single transaction,
 ##       and allow converter functions.
 ## TODO: In the unlikely event that value has a field called "row_names"
-##       we could inadvertently overwrite it (here the user should set 
+##       we could inadvertently overwrite it (here the user should set
 ##       row.names=F)  I'm (very) reluctantly adding the code re: row.names,
-##       because I'm not 100% comfortable using data.frames as the basic 
+##       because I'm not 100% comfortable using data.frames as the basic
 ##       data for relations.
 {
    if(overwrite && append)
@@ -549,7 +549,7 @@ function(con, name, value, field.types, row.names = TRUE,
       ## the following mapping should be coming from some kind of table
       ## also, need to use converter functions (for dates, etc.)
       field.types <- sapply(value, dbDataType, dbObj = con)
-   } 
+   }
 
    ## Do we need to coerce any field prior to write it out?
    ## TODO: PostgreSQL has boolean data type.
@@ -560,13 +560,13 @@ function(con, name, value, field.types, row.names = TRUE,
    i <- match("row.names", names(field.types), nomatch=0)
    if(i>0) ## did we add a row.names value?  If so, it's a text field.
       field.types[i] <- dbDataType(dbObj=con, field.types$row.names)
-   names(field.types) <- make.db.names(con, names(field.types), 
+   names(field.types) <- make.db.names(con, names(field.types),
                              allow.keywords = allow.keywords)
    ## Do we need to clone the connection (ie., if it is in use)?
-   if(length(dbListResults(con))!=0){ 
+   if(length(dbListResults(con))!=0){
       new.con <- dbConnect(con)              ## there's pending work, so clone
       on.exit(dbDisconnect(new.con))
-   } 
+   }
    else {
       new.con <- con
    }
@@ -582,8 +582,8 @@ function(con, name, value, field.types, row.names = TRUE,
          warning(paste("table",name,"exists in database: aborting assignTable"))
          return(F)
       }
-   } 
-   if(!dbExistsTable(con,name)){      ## need to re-test table for existance 
+   }
+   if(!dbExistsTable(con,name)){      ## need to re-test table for existance
       ## need to create a new (empty) table
       sql1 <- paste("create table ", name, "\n(\n\t", sep="")
       sql2 <- paste(paste(names(field.types), field.types), collapse=",\n\t",
@@ -594,8 +594,8 @@ function(con, name, value, field.types, row.names = TRUE,
       if(inherits(rs, ErrorClass)){
          warning("could not create table: aborting assignTable")
          return(F)
-      } 
-      else 
+      }
+      else
          dbClearResult(rs)
    }
 
@@ -607,14 +607,14 @@ function(con, name, value, field.types, row.names = TRUE,
    safe.write(value, file = fn)
    on.exit(unlink(fn), add = TRUE)
    sql4 <- paste("LOAD DATA LOCAL INFILE '", fn, "'",
-                  " INTO TABLE ", name, 
+                  " INTO TABLE ", name,
                   " LINES TERMINATED BY '\n' ", sep="")
    rs <- try(dbSendQuery(new.con, sql4))
    if(inherits(rs, ErrorClass)){
       warning("could not load data into table")
       return(F)
-   } 
-   else 
+   }
+   else
       dbClearResult(rs)
    TRUE
 }
@@ -626,17 +626,17 @@ function(dbObj, name, obj, field.types = NULL, row.names = TRUE, ...)
     obj <- as.data.frame(obj)
   if(!is.null(row.names) && row.names){
     obj  <- cbind(row.names(obj), obj)  ## can't use row.names= here
-    names(obj)[1] <- "row.names" 
+    names(obj)[1] <- "row.names"
   }
   if(is.null(field.types)){
     ## the following mapping should be coming from some kind of table
     ## also, need to use converter functions (for dates, etc.)
     field.types <- sapply(obj, dbDataType, dbObj = dbObj)
-  } 
+  }
   i <- match("row.names", names(field.types), nomatch=0)
   if(i>0) ## did we add a row.names value?  If so, it's a text field.
     field.types[i] <- dbDataType(dbObj, field.types$row.names)
-  names(field.types) <- 
+  names(field.types) <-
     make.db.names(dbObj, names(field.types), allow.keywords = FALSE)
 
   ## need to create a new (empty) table
@@ -644,12 +644,12 @@ function(dbObj, name, obj, field.types = NULL, row.names = TRUE, ...)
   paste("CREATE TABLE", name, "\n(", paste(flds, collapse=",\n\t"), "\n)")
 }
 
-## the following is almost exactly from the ROracle driver 
-"safe.write" <- 
+## the following is almost exactly from the ROracle driver
+"safe.write" <-
 function(value, file, batch, ...)
 ## safe.write makes sure write.table doesn't exceed available memory by batching
 ## at most batch rows (but it is still slowww)
-{  
+{
    N <- nrow(value)
    if(N<1){
       warning("no rows in data.frame")
@@ -659,19 +659,22 @@ function(value, file, batch, ...)
    on.exit(options(digits))
    if(missing(batch) || is.null(batch))
       batch <- 10000
-   else if(batch<=0) 
+   else if(batch<=0)
       batch <- N
-   from <- 1 
+   from <- 1
    to <- min(batch, N)
    while(from<=N){
       if(usingR())
-         write.table(value[from:to,, drop=FALSE], file = file, append = TRUE, 
+         write.table(value[from:to,, drop=FALSE], file = file, append = TRUE,
                quote = FALSE, sep="\t", na = .PostgreSQL.NA.string,
                row.names=FALSE, col.names=FALSE, eol = '\n', ...)
       else
-         write.table(value[from:to,, drop=FALSE], file = file, append = TRUE, 
-               quote.string = FALSE, sep="\t", na = .PostgreSQL.NA.string,
-               dimnames.write=FALSE, end.of.row = '\n', ...)
+         write.table(value[from:to,, drop=FALSE], file = file, append = TRUE,
+               #quote.string = FALSE,
+               sep="\t", na = .PostgreSQL.NA.string,
+               #dimnames.write=FALSE,
+               #end.of.row = '\n',
+               ...)
       from <- to+1
       to <- min(to+batch, N)
    }
@@ -692,7 +695,7 @@ function(obj, ...)
    rs.mode <- storage.mode(obj)
    if(rs.class=="numeric" || rs.class == "integer"){
       sql.type <- if(rs.mode=="integer") "bigint" else  "double"
-   } 
+   }
    else {
       sql.type <- switch(rs.class,
                      character = "text",
@@ -710,5 +713,5 @@ function(obj, ...)
 ".PostgreSQLKeywords" <-
 c( "ALL", "ANALYSE", "ANALYZE", "AND", "ANY", "ARRAY", "AS", "ASC", "ASYMMETRIC", "AUTHORIZATION", "BETWEEN", "BINARY", "BOTH", "CASE", "CAST", "CHECK", "COLLATE", "COLUMN", "CONSTRAINT", "CREATE", "CROSS", "CURRENT_DATE", "CURRENT_ROLE", "CURRENT_TIME", "CURRENT_TIMESTAMP", "CURRENT_USER", "DEFAULT", "DEFERRABLE", "DESC", "DISTINCT", "DO", "ELSE", "END", "EXCEPT", "FALSE", "FOR", "FOREIGN", "FREEZE", "FROM", "FULL", "GRANT", "GROUP", "HAVING", "ILIKE", "IN", "INITIALLY", "INNER","INTERSECT", "INTO", "IS", "ISNULL", "JOIN", "LEADING", "LEFT", "LIKE", "LIMIT", "LOCALTIME", "LOCALTIMESTAMP", "NATURAL", "NEW", "NOT", "NULL", "OFF", "OFFSET", "OLD", "ON", "ONLY", "OR", "ORDER", "OUTER", "OVERLAPS", "PLACING", "PRIMARY", "REFERENCES", "RESERVED", "SELECT", "SESSION_USER", "SIMILAR", "SOME", "SYMMETRIC", "TABLE", "THEN", "TO", "TRAILING", "TRUE", "UNION", "UNIQUE", "USER", "USING", "VERBOSE", "WHEN", "WHERE", "WITH"
   )
- 
- 
+
+
