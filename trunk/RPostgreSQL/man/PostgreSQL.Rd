@@ -10,7 +10,7 @@ It returns an driver object that allows you to connect
 to one or several PostgreSQL servers.
 }
 \usage{
-PostgreSQL(max.con = 16, fetch.default.rec = 500, force.reload = F)
+PostgreSQL(max.con = 16, fetch.default.rec = 500, force.reload = FALSE)
 }
 \arguments{
 \item{max.con }{
