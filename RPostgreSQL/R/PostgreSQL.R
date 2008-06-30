@@ -28,7 +28,7 @@ setClass("PostgreSQLObject", representation("DBIObject", "dbObjectId", "VIRTUAL"
 ##
 
 "PostgreSQL" <-
-function(max.con=16, fetch.default.rec = 500, force.reload=F)
+function(max.con=16, fetch.default.rec = 500, force.reload=FALSE)
 {
    postgresqlInitDriver(max.con = max.con, fetch.default.rec = fetch.default.rec,
       force.reload = force.reload)

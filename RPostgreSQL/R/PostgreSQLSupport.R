@@ -575,12 +575,12 @@ function(con, name, value, field.types, row.names = TRUE,
       if(overwrite){
          if(!dbRemoveTable(con, name)){
          warning(paste("table", name, "couldn't be overwritten"))
-         return(F)
+         return(FALSE)
          }
       }
       else if(!append){
          warning(paste("table",name,"exists in database: aborting assignTable"))
-         return(F)
+         return(FALSE)
       }
    }
    if(!dbExistsTable(con,name)){      ## need to re-test table for existance
@@ -593,7 +593,7 @@ function(con, name, value, field.types, row.names = TRUE,
       rs <- try(dbSendQuery(new.con, sql))
       if(inherits(rs, ErrorClass)){
          warning("could not create table: aborting assignTable")
-         return(F)
+         return(FALSE)
       }
       else
          dbClearResult(rs)
@@ -612,7 +612,7 @@ function(con, name, value, field.types, row.names = TRUE,
    rs <- try(dbSendQuery(new.con, sql4))
    if(inherits(rs, ErrorClass)){
       warning("could not load data into table")
-      return(F)
+      return(FALSE)
    }
    else
       dbClearResult(rs)
