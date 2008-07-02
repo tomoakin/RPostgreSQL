@@ -1,0 +1,63 @@
+
+R version 2.7.1 RC (2008-06-20 r45965)
+Copyright (C) 2008 The R Foundation for Statistical Computing
+ISBN 3-900051-07-0
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for an HTML browser interface to help.
+Type 'q()' to quit R.
+
+> 
+> 
+> ## First rough version of a test script
+> ##
+> ## Assumes that 
+> ##  a) PostgreSQL is running, and
+> ##  b) the current user can connect
+> ## both of which are not viable for release bui suitable while we test
+> ##
+> ## Dirk Eddelbuettel, 02 July 2008
+> 
+> ## try to load our module and abort if this fails
+> stopifnot(require(RPostgreSQL))
+Loading required package: RPostgreSQL
+Loading required package: DBI
+> 
+> ## load the PostgresSQL driver
+> drv <- dbDriver("PostgreSQL")
+> # can't print result as it contains process id which changes  print(summary(drv))
+> 
+> ## connect to the default db
+> con <- dbConnect(drv, dbname="template1")
+> # -- idem  print(con)
+> 
+> ## run a simple query and show the top of the query
+> res <- dbGetQuery(con, "select * from pg_tables")
+> print(head(res))
+          schemaname               tablename tableowner tablespace hasindexes
+1 information_schema              sql_sizing   postgres       <NA>          f
+2 information_schema     sql_sizing_profiles   postgres       <NA>          f
+3 information_schema            sql_features   postgres       <NA>          f
+4 information_schema sql_implementation_info   postgres       <NA>          f
+5         pg_catalog               pg_authid   postgres  pg_global          t
+6 information_schema           sql_languages   postgres       <NA>          f
+  hasrules hastriggers
+1        f           f
+2        f           f
+3        f           f
+4        f           f
+5        f           t
+6        f           f
+> 
+> ## and disconnect
+> dbDisconnect(con)
+[1] TRUE
+> 
