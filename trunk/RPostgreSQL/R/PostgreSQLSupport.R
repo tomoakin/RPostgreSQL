@@ -539,7 +539,7 @@ function(con, name, value, field.types, row.names = TRUE,
 {
    if(overwrite && append)
       stop("overwrite and append cannot both be TRUE")
-   if(!is.data.frame(value))
+   if(!is.data.frame(value)) 
       value <- as.data.frame(value)
    if(row.names){
       value <- cbind(row.names(value), value)  ## can't use row.names= here
@@ -559,7 +559,8 @@ function(con, name, value, field.types, row.names = TRUE,
    }
    i <- match("row.names", names(field.types), nomatch=0)
    if(i>0) ## did we add a row.names value?  If so, it's a text field.
-      field.types[i] <- dbDataType(dbObj=con, field.types$row.names)
+    ## MODIFIED -- Sameer  
+      field.types[i] <- dbDataType(dbObj=con, field.types[row.names])
    names(field.types) <- make.db.names(con, names(field.types),
                              allow.keywords = allow.keywords)
    ## Do we need to clone the connection (ie., if it is in use)?
@@ -605,11 +606,14 @@ function(con, name, value, field.types, row.names = TRUE,
    fn <- tempfile("rsdbi")
    fn <- gsub("\\\\", "/", fn)  # Since PostgreSQL on Windows wants \ double (BDR)
    safe.write(value, file = fn)
-   on.exit(unlink(fn), add = TRUE)
-   sql4 <- paste("LOAD DATA LOCAL INFILE '", fn, "'",
-                  " INTO TABLE ", name,
-                  " LINES TERMINATED BY '\n' ", sep="")
+  ## on.exit(unlink(fn), add = TRUE)
+
+   sql4 <- paste("COPY ",name," FROM '",fn,"' ",sep="")
+
+
    rs <- try(dbSendQuery(new.con, sql4))
+
+
    if(inherits(rs, ErrorClass)){
       warning("could not load data into table")
       return(FALSE)
@@ -617,6 +621,7 @@ function(con, name, value, field.types, row.names = TRUE,
    else
       dbClearResult(rs)
    TRUE
+
 }
 
 "dbBuildTableDefinition" <-
