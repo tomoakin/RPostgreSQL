@@ -15,9 +15,6 @@
 extern  "C" {
 #endif
 
-/* We use HAVE_GETOPT_LONG to signal we can use getopt_long() 
- * (by default we assume we're running on a GNU-aware system)
- */
 
 
 #include "libpq-fe.h"
@@ -62,7 +59,7 @@ s_object   *RS_PostgreSQL_close(Mgr_Handle *mgrHandle);
 
 /* dbConnection */
 Con_Handle *RS_PostgreSQL_newConnection(Mgr_Handle *mgrHandle,
-				   s_object *con_params);  /*NOTE: groups & default_files removed because they are MySQL specific */
+				   s_object *con_params);  
 Con_Handle *RS_PostgreSQL_cloneConnection(Con_Handle *conHandle);
 s_object   *RS_PostgreSQL_closeConnection(Con_Handle *conHandle);
 s_object   *RS_PostgreSQL_getException(Con_Handle *conHandle);    /* err No, Msg */
