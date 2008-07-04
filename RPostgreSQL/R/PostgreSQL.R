@@ -311,8 +311,8 @@ setMethod("dbDataType",
 ## MODIFIED : -- sameer
 setMethod("make.db.names", 
    signature(dbObj="PostgreSQLObject", snames = "character"),
-   def = function(dbObj, snames,keywords,unique, allow.keywords){
-      make.db.names.default(snames, keywords = .PostgreSQLKeywords, ...)
+   def = function(dbObj, snames,keywords,unique, allow.keywords,...){
+      make.db.names.default(snames, keywords = .PostgreSQLKeywords,unique, allow.keywords)
    },
    valueClass = "character"
 )
