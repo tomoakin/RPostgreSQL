@@ -19,7 +19,7 @@ Type 'q()' to quit R.
 > 
 > ## First rough version of a test script
 > ##
-> ## Assumes that 
+> ## Assumes that
 > ##  a) PostgreSQL is running, and
 > ##  b) the current user can connect
 > ## both of which are not viable for release bui suitable while we test
@@ -39,23 +39,12 @@ Loading required package: DBI
 > con <- dbConnect(drv, dbname="template1")
 > # -- idem  print(con)
 > 
-> ## run a simple query and show the top of the query
-> res <- dbGetQuery(con, "select * from pg_tables")
-> print(head(res))
-          schemaname               tablename tableowner tablespace hasindexes
-1 information_schema              sql_sizing   postgres       <NA>          f
-2 information_schema     sql_sizing_profiles   postgres       <NA>          f
-3 information_schema            sql_features   postgres       <NA>          f
-4 information_schema sql_implementation_info   postgres       <NA>          f
-5         pg_catalog               pg_authid   postgres  pg_global          t
-6 information_schema           sql_languages   postgres       <NA>          f
-  hasrules hastriggers
-1        f           f
-2        f           f
-3        f           f
-4        f           f
-5        f           t
-6        f           f
+> ## run a simple query and show the query result
+> res <- dbGetQuery(con, "select datname,encoding,datallowconn from pg_database where datname like 'template%'")
+> print(res)
+    datname encoding datallowconn
+1 template1        6            t
+2 template0        6            f
 > 
 > ## and disconnect
 > dbDisconnect(con)

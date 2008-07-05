@@ -2,7 +2,7 @@
 
 ## First rough version of a test script
 ##
-## Assumes that 
+## Assumes that
 ##  a) PostgreSQL is running, and
 ##  b) the current user can connect
 ## both of which are not viable for release bui suitable while we test
@@ -20,9 +20,9 @@ drv <- dbDriver("PostgreSQL")
 con <- dbConnect(drv, dbname="template1")
 # -- idem  print(con)
 
-## run a simple query and show the top of the query
-res <- dbGetQuery(con, "select * from pg_tables")
-print(head(res))
+## run a simple query and show the query result
+res <- dbGetQuery(con, "select datname,encoding,datallowconn from pg_database where datname like 'template%'")
+print(res)
 
 ## and disconnect
 dbDisconnect(con)
