@@ -21,7 +21,7 @@ con <- dbConnect(drv, dbname="template1")
 # -- idem  print(con)
 
 ## run a simple query and show the query result
-res <- dbGetQuery(con, "select datname,encoding,datallowconn from pg_database where datname like 'template%'")
+res <- dbGetQuery(con, "select datname,encoding,datallowconn from pg_database where datname like 'template%' order by datname")
 print(res)
 
 ## and disconnect
