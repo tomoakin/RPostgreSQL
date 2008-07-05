@@ -40,11 +40,11 @@ Loading required package: DBI
 > # -- idem  print(con)
 > 
 > ## run a simple query and show the query result
-> res <- dbGetQuery(con, "select datname,encoding,datallowconn from pg_database where datname like 'template%'")
+> res <- dbGetQuery(con, "select datname,encoding,datallowconn from pg_database where datname like 'template%' order by datname")
 > print(res)
     datname encoding datallowconn
-1 template1        6            t
-2 template0        6            f
+1 template0        6            f
+2 template1        6            t
 > 
 > ## and disconnect
 > dbDisconnect(con)
