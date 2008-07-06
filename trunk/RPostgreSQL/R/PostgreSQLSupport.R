@@ -539,7 +539,7 @@ function(con, name, value, field.types, row.names = TRUE,
 {
    if(overwrite && append)
       stop("overwrite and append cannot both be TRUE")
-   if(!is.data.frame(value)) 
+   if(!is.data.frame(value))
       value <- as.data.frame(value)
    if(row.names){
       value <- cbind(row.names(value), value)  ## can't use row.names= here
@@ -559,7 +559,7 @@ function(con, name, value, field.types, row.names = TRUE,
    }
    i <- match("row.names", names(field.types), nomatch=0)
    if(i>0) ## did we add a row.names value?  If so, it's a text field.
-    ## MODIFIED -- Sameer  
+    ## MODIFIED -- Sameer
       field.types[i] <- dbDataType(dbObj=con, field.types[row.names])
    names(field.types) <- make.db.names(con, names(field.types),
                              allow.keywords = allow.keywords)
@@ -603,7 +603,7 @@ function(con, name, value, field.types, row.names = TRUE,
    ## TODO: here, we should query the PostgreSQL to find out if it supports
    ## LOAD DATA thru pipes; if so, should open the pipe instead of a file.
 
-   fn <- tempfile("rsdbi")
+   fn <- tempfile("rsdbi", "/tmp")
    fn <- gsub("\\\\", "/", fn)  # Since PostgreSQL on Windows wants \ double (BDR)
    safe.write(value, file = fn)
   ## on.exit(unlink(fn), add = TRUE)
@@ -698,13 +698,13 @@ function(obj, ...)
    rs.class <- data.class(obj)    ## this differs in R 1.4 from older vers
    rs.mode <- storage.mode(obj)
    if(rs.class=="numeric" || rs.class == "integer"){
-      sql.type <- if(rs.mode=="integer") "bigint" else  "float8" 
+      sql.type <- if(rs.mode=="integer") "bigint" else  "float8"
    }
    else {
       sql.type <- switch(rs.class,
                      character = "text",
-                     logical = "boolean", 
-                     factor = "text",      
+                     logical = "boolean",
+                     factor = "text",
                      ordered = "text",
                      "text")
    }
