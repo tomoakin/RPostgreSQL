@@ -40,7 +40,7 @@
    postgresqlCloseDriver(drv, ...)
 
    ## PostgreSQLConnection-related
-   postgresqlNewConnection(drv, host,hostaddr, port,dbname, user, password, options,tty)
+   postgresqlNewConnection(drv,user,password,host,dbname,port,tty,options)
    postgresqlCloneConnection(con, ...)
    postgresqlConnectionInfo(obj, what, ...)
    postgresqlDescribeConnection(obj, verbose = FALSE, ...)
@@ -102,35 +102,28 @@
 \item{res}{
    an \code{PostgreSQLResult} object as produced by by \code{postgresqlExecStatement}.
 }
-\item{username}{
+\item{user}{
    a character string with the PostgreSQL's user name.
 }
 \item{password}{
    character string with the PostgreSQL's password.
 }
-\item{groups}{
-   character vector with one or more PostgreSQL group names.  For details
-   see \code{\link{PostgreSQL}}.
-}
-\item{default.file}{filename of an alternate PostgreSQL options file.}
 \item{dbname}{ character string with the PostgreSQL database name.}
 \item{host}{
    character string with the name (or IP address) of the machine
    hosting the database. Default is \code{""}, which is
    interpreted as \code{localhost} by the PostgreSQL's API.
 }
-\item{unix.socket}{
-   (optional) character string with a filename for the socket
-   file name.  Consult the PostgreSQL documentation for details.
-}
 \item{port}{
    (optional) positive integer specifying the TCP port number that
    the PostgreSQL server is listening to.  Consult the PostgreSQL documentation
    for details.
 }
-\item{client.flag}{
-   (optional) integer setting flags for the client.  Consult the
-   PostgreSQL documentation for details.
+\item{tty}{
+Ignored (formerly, this specified where to send server debug output)
+}
+\item{options}{
+Command-line options to be sent to the server
 }
 \item{force}{
    logical indicating whether to close a connection that has open
