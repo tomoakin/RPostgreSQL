@@ -1,0 +1,16 @@
+Things yet to be Completed:
+1. Complete the dbWriteTable part
+2. Add the following commands for transaction management:
+3. Add hostadr to the connection string & make corresponding changes. (Dont forget to check RCMD       check) and try to add the functionality to specify the connection parameters in any order.
+4. Matching between the error messages & error codes in pg.
+5. In dbGetInfo(rs), $fieldDescription[[1]]$Sclass & $fieldDescription[[1]]$type are displaying        numbers instead of words (like in SQLite). So Correct the code.
+6. Scale & nullOk are not given values yet in dbGetInfo(result_set) because of lack of functions in    pg. So Remove them or try to hardcode the appropriate details in the code.For more details          refer to : "RS_PostgreSQL_createDataMappings".
+7. Make test script & a test folder.
+8. Improve the documentation & remove the examples from don't run mode.
+9. Just verify whether all the key words are included in the reserved keywords section.
+10.Add the mappings for all the datatypes in RS-PostgreSQL.h
+11.Check whether it works in windows or not & make corresponding changes.
+12.Check whether all the data mappings are working perfectly fine & finetune some datatypes like       date,blogs etc..For checking, perform this test. Try to convert a data to & fo via R & pg           and see whether datatype is being preserved.
+13.In RS_PostgreSQL_connectionInfo, you are assigning threadid to processid. So Check that.
+14.Add comments to the code & some extra files for information sake as in RMySQL & RSQLite.
+ 
