@@ -27,4 +27,4 @@ Things yet to be Completed:
    processid. So Check that.
 14.Add comments to the code & some extra files for information sake as   
    in RMySQL & RSQLite.
- 
+15.Replace all occurrences of the old 'T' and 'F' with 'TRUE' and 'FALSE' 
