@@ -8,18 +8,17 @@
 ## Also Thanks to my GSoC mentor Dirk Eddelbuettel for helping me in the development.
 
 
-".conflicts.OK" <- TRUE
+# DE: is this needed:   ".conflicts.OK" <- TRUE
 
-library(methods)
-library(DBI, warn.conflicts = FALSE)
+# DE: commenting out library() calls as DESCRIPTION takes care of it
+#library(methods)
+#library(DBI, warn.conflicts = FALSE)
 
-".First.lib" <-
-function(lib, pkg) 
-{
-   library(methods)
-   library(DBI, warn.conflicts = FALSE)
-  library.dynam("RPostgreSQL", pkg, lib)
+.First.lib <- function(lib, pkg) {
+    ##   library(methods)
+    ##   library(DBI, warn.conflicts = FALSE)
+    library.dynam("RPostgreSQL", pkg, lib)
 }
 
 
- 
+
