@@ -567,8 +567,7 @@ function(con, name, value, field.types, row.names = TRUE,
    if(length(dbListResults(con))!=0){
       new.con <- dbConnect(con)              ## there's pending work, so clone
       on.exit(dbDisconnect(new.con))
-   }
-   else {
+   } else {
       new.con <- con
    }
 
@@ -595,31 +594,34 @@ function(con, name, value, field.types, row.names = TRUE,
       if(inherits(rs, ErrorClass)){
          warning("could not create table: aborting assignTable")
          return(FALSE)
-      }
-      else
+      } else {
          dbClearResult(rs)
+     }
    }
 
    ## TODO: here, we should query the PostgreSQL to find out if it supports
    ## LOAD DATA thru pipes; if so, should open the pipe instead of a file.
-
-   fn <- tempfile("rsdbi", "/tmp")
-   fn <- gsub("\\\\", "/", fn)  # Since PostgreSQL on Windows wants \ double (BDR)
+   ##
+   ## It appears that this will fail under SELinux as the temporary file (created
+   ## in the R per-session temporary directory) is outside of Postgresql's directory
+   ## So if you use SELinux, you may have to manually insert data or temporarily turn
+   ## SELinux off to use this function
+   fn <- tempfile("rsdbi")
+   ## copied from MySQL, not sure we need it  fn <- gsub("\\\\", "/", fn)  # Since PostgreSQL on Windows wants \ double (BDR)
    safe.write(value, file = fn)
-  ## on.exit(unlink(fn), add = TRUE)
+   on.exit(unlink(fn), add = TRUE)
 
    sql4 <- paste("COPY ",name," FROM '",fn,"' ",sep="")
-
 
    rs <- try(dbSendQuery(new.con, sql4))
 
 
-   if(inherits(rs, ErrorClass)){
+   if (inherits(rs, ErrorClass)) {
       warning("could not load data into table")
       return(FALSE)
-   }
-   else
+   } else {
       dbClearResult(rs)
+   }
    TRUE
 
 }
