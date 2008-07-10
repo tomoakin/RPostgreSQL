@@ -195,7 +195,7 @@ if(host==NULL) host="localhost";
 if(port==NULL) port="";
 if(options==NULL) options="";
 if(tty==NULL) tty="";
-if(dbname==NULL) dbname="";
+if(dbname==NULL) dbname="template1";
 
 /*
  char *buff[1000];
