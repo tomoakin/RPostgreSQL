@@ -218,27 +218,14 @@ if(dbname==NULL) dbname="template1";
 
 
   /* save actual connection parameters */
-  if(!user)
-     user = "";
-  conParams->user = RS_DBI_copyString(user);
-  if(!password)
-     password = "";
-  conParams->password = RS_DBI_copyString(password);
-  if(!host)
-     host = "";
-  conParams->host = RS_DBI_copyString(host);
-  if(!dbname)
-     dbname = "";
-  conParams->dbname = RS_DBI_copyString(dbname);
-  if(!port)
-     port = "";
-  conParams->port = RS_DBI_copyString(port);
-  if(!tty)
-     tty = "";
-  conParams->tty = RS_DBI_copyString(tty);
-  if(!options)
-     options = "";
-  conParams->options = RS_DBI_copyString(options);
+
+  conParams->user = RS_DBI_copyString(PQuser(my_connection));
+  conParams->password = RS_DBI_copyString(PQpass(my_connection));
+  conParams->host = RS_DBI_copyString(PQhost(my_connection));
+  conParams->dbname = RS_DBI_copyString(PQdb(my_connection));
+  conParams->port = RS_DBI_copyString(PQport(my_connection));
+  conParams->tty = RS_DBI_copyString(PQtty(my_connection));
+  conParams->options = RS_DBI_copyString(PQoptions(my_connection));
 
 
   conHandle = RS_DBI_allocConnection(mgrHandle, (Sint) 1);
