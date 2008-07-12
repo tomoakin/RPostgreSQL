@@ -421,7 +421,10 @@ RS_PostgreSQL_createDataMappings(Res_Handle *rsHandle)
 
   flds = RS_DBI_allocFields(num_fields);
 
-
+char buff[1000]; /* Buffer to hold the sql query to check whether the given column is nullable */
+PGconn *conn;
+PGresult *res;
+conn = (PGconn *) con->drvConnection;
 
   for (j = 0; j < num_fields; j++){
 
@@ -434,6 +437,16 @@ RS_PostgreSQL_createDataMappings(Res_Handle *rsHandle)
     flds->length[j] = (Sint) PQfsize(my_result,j);
     /* NOTE: PQfmod is -1 incase of no information */
     flds->precision[j] = (Sint) PQfmod(my_result,j);
+    flds->scale[j] = (Sint)-1;
+
+
+  /* Code to find whether a row can be nullable or not */
+sprintf(buff,"select attnotnull from pg_attribute where attrelid=%d and attname='%s'",
+                                           PQftable(my_result,j),(char*)PQfname(my_result,j));
+res = PQexec (conn, buff ); 
+if(strcmp(PQgetvalue(res,0,0),"f")==0) flds->nullOk[j]=(Sint)1;
+                                       else  flds->nullOk[j]=(Sint)0; 
+PQclear(res);
 
 
     internal_type = (int) PQftype(my_result,j);
@@ -836,9 +849,9 @@ RS_PostgreSQL_connectionInfo(Con_Handle *conHandle)
   RS_DBI_connection  *con;
   s_object   *output;
   Sint       i, n = 7 /*8*/, *res, nres;
-  char *conDesc[] = {"host", "user", "dbname", /*"conType",*/
+  char *conDesc[] = {"host", "user", "dbname", 
 		     "serverVersion", "protocolVersion",
-		     "threadId", "rsId"};
+		     "Backend PId", "rsId"};
   Stype conType[] = {CHARACTER_TYPE, CHARACTER_TYPE, CHARACTER_TYPE,
 		     /* CHARACTER_TYPE,*/ CHARACTER_TYPE, INTEGER_TYPE,
 		      INTEGER_TYPE, INTEGER_TYPE};
