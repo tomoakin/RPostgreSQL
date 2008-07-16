@@ -350,7 +350,7 @@ is_select = (Sint)FALSE;
 
 /* char *PQresultErrorMessage(const PGresult *res); */
 
-if( (PQresultStatus( my_result ) !=PGRES_TUPLES_OK &&        PQresultStatus( my_result ) !=PGRES_COMMAND_OK )   ||  PQresultErrorMessage(my_result) == NULL)  {
+if(strcmp(PQresultErrorMessage(my_result),"") != 0 )   {
 
 free(dyn_statement);
  char errResultMsg[256];
@@ -439,15 +439,29 @@ conn = (PGconn *) con->drvConnection;
     flds->precision[j] = (Sint) PQfmod(my_result,j);
     flds->scale[j] = (Sint)-1;
 
+ /* PQftablecol returns the column number (within its table) of the column making up the      *   * specified query result column.Zero is returned if the column number is out of range, or if    * the specified column is not a simple reference to a table column, or when using pre-3.0    *  * protocol. So "if(PQftablecol(my_result,j) !=0)" checks whether the particular colomn in the   * result set is column of table or not. Or else there is no meaning in checking whether a   *   * column is nullable or not if it does not belong to the original table.
+  */
+
+if(PQftablecol(my_result,j) !=0) {
 
   /* Code to find whether a row can be nullable or not */
 sprintf(buff,"select attnotnull from pg_attribute where attrelid=%d and attname='%s'",
                                            PQftable(my_result,j),(char*)PQfname(my_result,j));
-res = PQexec (conn, buff ); 
-if(strcmp(PQgetvalue(res,0,0),"f")==0) flds->nullOk[j]=(Sint)1;
-                                       else  flds->nullOk[j]=(Sint)0; 
+res = PQexec (conn, buff );
+
+if(strcmp(PQgetvalue(res,0,0),"f")==0) {
+flds->nullOk[j]=(Sint)1;
+}else {
+flds->nullOk[j]=(Sint)0;
+}
+
 PQclear(res);
 
+} else {
+/* 'else' gets executed when the column in result does not belong to the table.for eg. in the     * query "SELECT COUNT(*) FROM TABLE_NAME" or "SHOW DateStyle", nullOK is always false
+ */
+flds->nullOk[j]=(Sint)0;
+}
 
     internal_type = (int) PQftype(my_result,j);
 
@@ -851,7 +865,7 @@ RS_PostgreSQL_connectionInfo(Con_Handle *conHandle)
   Sint       i, n = 7 /*8*/, *res, nres;
   char *conDesc[] = {"host", "user", "dbname", 
 		     "serverVersion", "protocolVersion",
-		     "Backend PId", "rsId"};
+		     "backendPId", "rsId"};
   Stype conType[] = {CHARACTER_TYPE, CHARACTER_TYPE, CHARACTER_TYPE,
 		     /* CHARACTER_TYPE,*/ CHARACTER_TYPE, INTEGER_TYPE,
 		      INTEGER_TYPE, INTEGER_TYPE};
