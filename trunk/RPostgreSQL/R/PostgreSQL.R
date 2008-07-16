@@ -18,6 +18,22 @@
 
 setOldClass("data.frame")      ## to appease setMethod's signature warnings...
 
+## ------------------------------------------------------------------
+## Begin DBI extensions: 
+##
+## dbBeginTransaction
+##
+
+setGeneric("dbBeginTransaction", 
+   def = function(conn, ...)
+           standardGeneric("dbBeginTransaction"),
+   valueClass = "logical"
+)
+##
+## End DBI extensions
+## ------------------------------------------------------------------
+
+
 ##
 ## Class: DBIObject
 ##
@@ -92,6 +108,7 @@ setMethod("dbSendQuery",
    def = function(conn, statement,...) postgresqlExecStatement(conn, statement,...),
    valueClass = "PostgreSQLResult"
 )
+
 
 setMethod("dbGetQuery", 
    signature(conn = "PostgreSQLConnection", statement = "character"),
@@ -194,16 +211,25 @@ setMethod("dbListFields",
 )
 
 
-setMethod("dbCommit", "PostgreSQLConnection",
+setMethod("dbCallProc", "PostgreSQLConnection",
    def = function(conn, ...) .NotYetImplemented()
+)
+
+setMethod("dbCommit", "PostgreSQLConnection",
+   def = function(conn, ...) postgresqlTransactionStatement(conn, "COMMIT")
 )
 
 setMethod("dbRollback", "PostgreSQLConnection",
-   def = function(conn, ...) .NotYetImplemented()
+   def = function(conn, ...) {
+       rsList <- dbListResults(conn)
+       if (length(rsList))
+         dbClearResult(rsList[[1]])
+       postgresqlTransactionStatement(conn, "ROLLBACK")
+   }
 )
 
-setMethod("dbCallProc", "PostgreSQLConnection",
-   def = function(conn, ...) .NotYetImplemented()
+setMethod("dbBeginTransaction", "PostgreSQLConnection",
+   def = function(conn, ...) postgresqlTransactionStatement(conn, "BEGIN")
 )
 
 ##
@@ -302,11 +328,14 @@ setMethod("summary", "PostgreSQLResult",
    def = function(object, ...) postgresqlDescribeResult(object, ...)
 )
 
+
+
 setMethod("dbDataType", 
    signature(dbObj = "PostgreSQLObject", obj = "ANY"),
    def = function(dbObj, obj, ...) postgresqlDataType(obj, ...),
    valueClass = "character"
 )
+
 
 ## MODIFIED : -- sameer
 setMethod("make.db.names", 

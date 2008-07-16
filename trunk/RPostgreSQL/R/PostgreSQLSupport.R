@@ -178,6 +178,27 @@ function(obj, what="", ...)
       info
 }
 
+
+postgresqlTransactionStatement <-
+function(con, statement)
+## checks for any open resultsets, and closes them if completed.
+## the statement is then executed on the connection, and returns
+## whether it executed without an error or not.
+{
+  ## are there resultSets pending on con?
+  if(length(dbListResults(con)) > 0){
+    res <- dbListResults(con)[[1]]
+    if(!dbHasCompleted(res)){
+      stop("connection with pending rows, close resultSet before continuing")
+    }
+    dbClearResult(res)
+  }
+
+  rc <- try(dbGetQuery(con, statement))
+  !inherits(rc, ErrorClass)
+}
+
+
 "postgresqlExecStatement" <-
 function(con, statement)
 ## submits the sql statement to PostgreSQL and creates a
