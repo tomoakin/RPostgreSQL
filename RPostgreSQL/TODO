@@ -1,9 +1,13 @@
 Things yet to be Completed:
 1. Complete the dbWriteTable part
+   [To be improved: try to implement this using network connections ]
 2. Add the commands for transaction management.
+   [DONE: Added dbBeginTransaction, dbRollback and dbCommit]
 3. Add hostadr to the connection string & make corresponding changes.
    (Dont forget to check RCMD check) and try to add the functionality
-   to specify the connection parameters in any order. [DONE]
+   to specify the connection parameters in any order.
+   [DONE: follow-up analysis revealed that hostaddr
+   was not needed as host could take numeric address]
 4. Matching between the error messages & error codes in pg. [DONE]
 5. In dbGetInfo(rs), $fieldDescription[[1]]$Sclass & $fieldDescription
    [[1]]$type are displaying numbers instead of words (like in
@@ -11,8 +15,9 @@ Things yet to be Completed:
 6. Scale & nullOk are not given values yet in dbGetInfo(result_set)
    because of lack of functions in pg. So Remove them or try to
    hardcode the appropriate details in the code.For more details
-   refer to : "RS_PostgreSQL_createDataMappings". [DONE]
-7. Make test script & a test folder.
+   refer to : "RS_PostgreSQL_createDataMappings".
+   [DONE: Added an SQL query to do that]
+7. Make test script & a test folder. 
 8. Improve the documentation & remove the examples from don't run
    mode.
 9. Just verify whether all the key words are included in the reserved
@@ -25,6 +30,8 @@ Things yet to be Completed:
    datatype is being preserved.
 13.In RS_PostgreSQL_connectionInfo, you are assigning threadid to
    processid. So Check that.
+   [DONE: changed the name from thread to backendPId]
 14.Add comments to the code & some extra files for information sake as   
    in RMySQL & RSQLite.
 15.Replace all occurrences of the old 'T' and 'F' with 'TRUE' and 'FALSE' 
+16.Add commands for prepared statements.
