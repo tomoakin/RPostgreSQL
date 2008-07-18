@@ -620,7 +620,9 @@ RS_PostgreSQL_fetch(s_object *rsHandle, s_object *max_rec)
       switch((int)fld_Sclass[j]){
 
       case LOGICAL_TYPE:
-      if(strcmp(PQgetvalue(my_result,k,j),"f") == 0)
+      if(null_item)
+      NA_SET(&(LST_INT_EL(output,j,i)), LOGICAL_TYPE);
+      else if(strcmp(PQgetvalue(my_result,k,j),"f") == 0)
       LST_LGL_EL(output,j,i) = (Sint) 0; /* FALSE */
       else if(strcmp(PQgetvalue(my_result,k,j),"t") == 0)
       LST_LGL_EL(output,j,i) = (Sint) 1;   /* TRUE */
