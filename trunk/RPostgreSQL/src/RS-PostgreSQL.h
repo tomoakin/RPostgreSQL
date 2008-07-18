@@ -174,6 +174,7 @@ static struct data_types RS_PostgreSQL_dataTypes[] = {
      {"FLOAT" ,      700			}, /* ALSO CALLED FLOAT4 (SINGLE PRECISION) */
      {"INTEGER",     23				}, /*ALSO KNOWN AS INT 4 */
      {"SMALLINT",    21				}, /* ALSO KNOWN AS INT2 */
+     {"MONEY"   ,    790                        }, /* MONEY (8 bytes) */
 
      {"CHAR",        1042	                }, /* FIXED LENGTH STRING-BLANK PADDED */
      {"VARCHAR",     1043		        }, /* VARIABLE LENGTH STRING WITH SPECIFIED LIMIT*/
