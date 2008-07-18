@@ -197,12 +197,6 @@ if(options==NULL) options="";
 if(tty==NULL) tty="";
 if(dbname==NULL) dbname="template1";
 
-/*
- char *buff[1000];
- sprintf(buff,"user=%s password=%s host=%s dbname=%s port=%s tty=%s  options=%s",user,password,host,dbname,port,tty,options)
-
-            my_connection  = PQconnectdb(buff);
-*/
 
  my_connection = PQsetdbLogin(host,port,options,tty,dbname,user,password);
 
@@ -378,13 +372,9 @@ free(dyn_statement);
  */
 
   if(!is_select){
-
-
-
     result->rowsAffected = (Sint) atoi(PQcmdTuples(my_result));
     result->completed = 1;
-   }
-  else {
+} else {
     result->rowsAffected = (Sint) -1;
     result->completed = 0;
   }
@@ -414,8 +404,6 @@ RS_PostgreSQL_createDataMappings(Res_Handle *rsHandle)
   result = RS_DBI_getResultSet(rsHandle);
   my_result = (PGresult *) result->drvResultSet;
 
-
-
   con = RS_DBI_getConnection(rsHandle);
   num_fields = PQnfields(my_result);
 
@@ -428,18 +416,18 @@ conn = (PGconn *) con->drvConnection;
 
   for (j = 0; j < num_fields; j++){
 
-
     flds->name[j] = RS_DBI_copyString(PQfname(my_result,j));
 
     flds->type[j] = (int) PQftype(my_result,j);
 
-
     flds->length[j] = (Sint) PQfsize(my_result,j);
+
     /* NOTE: PQfmod is -1 incase of no information */
     flds->precision[j] = (Sint) PQfmod(my_result,j);
+
     flds->scale[j] = (Sint)-1;
 
- /* PQftablecol returns the column number (within its table) of the column making up the      *   * specified query result column.Zero is returned if the column number is out of range, or if    * the specified column is not a simple reference to a table column, or when using pre-3.0    *  * protocol. So "if(PQftablecol(my_result,j) !=0)" checks whether the particular colomn in the   * result set is column of table or not. Or else there is no meaning in checking whether a   *   * column is nullable or not if it does not belong to the original table.
+ /* PQftablecol returns the column number (within its table) of the column making up the      *   * specified query result column.Zero is returned if the column number is out of range, or if    * the specified column is not a simple reference to a table column, or when using pre-3.0    *  * protocol. So "if(PQftablecol(my_result,j) !=0)" checks whether the particular colomn in the   * result set is column of table or not. Or else there is no meaning in checking whether a   *   * column is nullable or not if it does not belong to the table.
   */
 
 if(PQftablecol(my_result,j) !=0) {
@@ -466,6 +454,9 @@ flds->nullOk[j]=(Sint)0;
     internal_type = (int) PQftype(my_result,j);
 
     switch(internal_type) {
+    case BOOLOID:
+      flds->Sclass[j] = LOGICAL_TYPE;
+      break;
     case BPCHAROID:
       flds->Sclass[j] = CHARACTER_TYPE;
       flds->isVarLength[j] = (Sint) 0;
@@ -479,6 +470,7 @@ flds->nullOk[j]=(Sint)0;
       break;
     case INT2OID:
     case INT4OID:
+    case OIDOID:
     flds->Sclass[j] = INTEGER_TYPE;
       break;
     case INT8OID:
@@ -491,8 +483,7 @@ flds->nullOk[j]=(Sint)0;
     case FLOAT8OID:
     case FLOAT4OID:
       flds->Sclass[j] = NUMERIC_TYPE;
-      break;
-
+      break;       
     case DATEOID:
     case TIMEOID:
     case TIMESTAMPOID:
@@ -500,12 +491,6 @@ flds->nullOk[j]=(Sint)0;
       flds->Sclass[j] = CHARACTER_TYPE;
       flds->isVarLength[j] = (Sint) 1;
       break;
-
-    case BOOLOID:
-      flds->Sclass[j] = CHARACTER_TYPE;
-      flds->isVarLength[j] = (Sint) 0;
-      break;
-
     default:
       flds->Sclass[j] = CHARACTER_TYPE;
       flds->isVarLength[j] = (Sint) 1;
@@ -633,14 +618,22 @@ RS_PostgreSQL_fetch(s_object *rsHandle, s_object *max_rec)
      null_item = PQgetisnull(my_result,k,j);
 
       switch((int)fld_Sclass[j]){
+
+      case LOGICAL_TYPE:
+      if(strcmp(PQgetvalue(my_result,k,j),"f") == 0)
+      LST_LGL_EL(output,j,i) = (Sint) 0; /* FALSE */
+      else if(strcmp(PQgetvalue(my_result,k,j),"t") == 0)
+      LST_LGL_EL(output,j,i) = (Sint) 1;   /* TRUE */
+       break;
+
       case INTEGER_TYPE:
 	if(null_item)
 	  NA_SET(&(LST_INT_EL(output,j,i)), INTEGER_TYPE);
 	else
 	  LST_INT_EL(output,j,i) = (Sint) atol(PQgetvalue(my_result,k,j));  /* NOTE: changed */
 	break;
-      case CHARACTER_TYPE:
 
+      case CHARACTER_TYPE:
 	if(null_item)
 #ifdef USING_R
 	  SET_LST_CHR_EL(output,j,i,NA_STRING);
@@ -648,17 +641,17 @@ RS_PostgreSQL_fetch(s_object *rsHandle, s_object *max_rec)
 	  NA_CHR_SET(LST_CHR_EL(output,j,i));
 #endif
 	else {
-
-
 	  SET_LST_CHR_EL(output,j,i,C_S_CPY(PQgetvalue(my_result,k,j)));     
 	}
 	break;
+
       case NUMERIC_TYPE:
 	if(null_item)
 	  NA_SET(&(LST_NUM_EL(output,j,i)), NUMERIC_TYPE);
 	else
 	  LST_NUM_EL(output,j,i) = (double) atof(PQgetvalue(my_result,k,j));     
 	break;
+
 #ifndef USING_R
       case SINGLE_TYPE:
 	if(null_item)
@@ -666,6 +659,7 @@ RS_PostgreSQL_fetch(s_object *rsHandle, s_object *max_rec)
 	else
 	  LST_FLT_EL(output,j,i) = (float) atof(PQgetvalue(my_result,k,j));     
 	break;
+
       case RAW_TYPE:           /* these are blob's */
 	raw_obj = NEW_RAW((Sint) PQgetlength(my_result,k,j));                       
 	memcpy(RAW_DATA(raw_obj), PQgetvalue(my_result,k,j), PQgetlength(my_result,k,j));          
@@ -1531,46 +1525,3 @@ add_group(s_object *group_names, s_object *data,
    return;
 }
 
-/* the following function was kindly provided by Mikhail Kondrin
- * it returns the last inserted index.
- * TODO: It returns an int, but it can potentially be inadequate
- *       if the index is anunsigned integer.  Should we return
- *       a numeric instead?
- */
-
-/*  TODO: Sameer
-1. postgresql_insert_id is mysql specific.... so replace it with corresponding func....
-2. once compare any todo's for this function wit RMySQL.... because some have been removed for commenting
-
-This function is not used anywhere..... so commented just for a while <<REMoVE LATER>>
-
-s_object *
-RS_PostgreSQL_insertid(Con_Handle *conHandle)
-{
-  S_EVALUATOR
- 
-  PGconn   *my_con;
-  RS_DBI_connection  *con;
-  s_object   *output;
-  char *conDesc[] = {"iid"};
-  Stype conType[] = {INTEGER_TYPE};
-  Sint  conLen[]  = {1};
-
-  con = RS_DBI_getConnection(conHandle);
-  my_con = (PGconn *) con->drvConnection;
-  output = RS_DBI_createNamedList(conDesc, conType, conLen, 1);
-#ifndef USING_R
-  if(IS_LIST(output))
-    output = AS_LIST(output);
-  else
-    RS_DBI_errorMessage("internal error: could not alloc named list",
-                        RS_DBI_ERROR);
-#endif
-
-  LST_INT_EL(output,0,0) = (Sint) postgresql_insert_id(my_con);
-
-  return output;
-
-}
-
-*/
