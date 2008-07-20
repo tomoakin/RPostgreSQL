@@ -180,10 +180,12 @@ static struct data_types RS_PostgreSQL_dataTypes[] = {
      {"VARCHAR",     1043		        }, /* VARIABLE LENGTH STRING WITH SPECIFIED LIMIT*/
      {"TEXT",	     25				}, /* VARIABLE LENGTH STRING */
 
-     {"DATE",	     1082			},
-     {"TIME",        1083	                },
-     {"TIMESTAMP",    1114		        },
-     {"INTERVAL",    1186			},
+     {"DATE",	             1082		},
+     {"TIME",                1083	        },
+     {"TIMESTAMP",           1114		},
+     {"TIMESTAMPTZOID",      1184               },
+     {"INTERVAL",            1186		},
+     {"TIMETZOID",           1266               },
 
      {"BOOL", 	     16				}, /* BOOLEAN */
 
