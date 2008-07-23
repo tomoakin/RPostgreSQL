@@ -37,7 +37,7 @@ print(class(then))
 tempdb <- "pgdatetime"
 system(paste("createdb", tempdb))   # create a temp database
 
-stopifnot(library(RPostgreSQL))
+stopifnot(require(RPostgreSQL))
 drv <- dbDriver("PostgreSQL")
 con <- dbConnect(drv, dbname=tempdb)
 
@@ -46,8 +46,8 @@ dbSendQuery(con, "insert into foo values('2008-07-01 14:15:16.123');")
 
 dbSendQuery(con, paste("insert into foo values('", format(now), "');", sep=""))
 
-#res <- dbReadTable(con, "foo")  ## fails with 'RS-DBI driver warning: (unrecognized PostgreSQL field type 1184 in column 0)'
-#print(res)
+res <- dbReadTable(con, "foo")  ## fails with 'RS-DBI driver warning: (unrecognized PostgreSQL field type 1184 in column 0)'
+print(res)
 
 res <- dbSendQuery(con, "select to_char(tt, 'YYYY-MM-DD HH24:MI:SS.US TZ') as character from foo;")
 data <- fetch(res, n=-1)
