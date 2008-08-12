@@ -1,12 +1,11 @@
 /* 
- *    RS-DBI.c     Last Modified:
+ *    RS-DBI.c
  *
  * This package was developed as a part of Summer of Code program organized by Google.
  * Thanks to David A. James & Saikat DebRoy, the authors of RMySQL package.
  * Code from RMySQL package was reused with the permission from the authors.
  * Also Thanks to my GSoC mentor Dirk Eddelbuettel for helping me in the development.
  */
-
 
 #include "RS-DBI.h"
 
@@ -1241,6 +1240,7 @@ RS_is_na(void *ptr, Stype type)
    return out;
 }
 #endif
+
 /* the codes come from from R/src/main/util.c */
 const struct data_types RS_dataTypeTable[] = {
 #ifdef USING_R
@@ -1266,6 +1266,7 @@ const struct data_types RS_dataTypeTable[] = {
     /* aliases : */
     { "numeric",	REALSXP	   },
     { "name",		SYMSXP	   },
+
     { (char *)0,	-1	   }
 #else
     { "logical",	LGL	  },
@@ -1278,6 +1279,7 @@ const struct data_types RS_dataTypeTable[] = {
     { "raw",		RAW	  },
     { "any",		ANY	  },
     { "structure",	STRUCTURE },
+
     { (char *)0,	-1	  }
 #endif
 };

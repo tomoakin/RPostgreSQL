@@ -1,4 +1,4 @@
-% $Id: postgresqlDBApply.Rd,v 1.2 2003/12/02 18:28:56 dj Exp dj $
+% $Id: postgresqlDBApply.Rd,v 0.1 2008/07/23 03:09:11 psk Exp $
 \name{postgresqlDBApply}
 \alias{postgresqlDBApply}
 \title{Apply R/S-Plus functions to remote groups of DBMS rows (experimental)}
@@ -75,8 +75,8 @@ a factor (grouping field in our terminology).
 \seealso{\code{\link{PostgreSQL}}, \code{\link[DBI]{dbSendQuery}}, \code{\link[DBI]{fetch}}.}
 
 \examples{\dontrun{
-## compute quanitiles for each network agent
-con <- dbConnect(PostgreSQL(), user ="usrname", password="pword", dname="database"s)
+drv <- dbDriver(RPostgreSQL)
+con <- dbConnect(drv, user ="usrname", password="pword", dname="database")
 res <- dbSendQuery(con, 
              "select Agent, ip_addr, DATA from pseudo_data order by Agent")
 out <- dbApply(res, INDEX = "Agent", 

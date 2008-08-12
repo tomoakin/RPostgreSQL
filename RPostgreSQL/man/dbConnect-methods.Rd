@@ -1,4 +1,4 @@
-% $Id: dbConnect-methods.Rd,v 1.1 2003/12/02 14:53:01 dj Exp dj $
+% $Id: dbConnect-methods.Rd,v 0.1 2008/07/28 20:56:01 psk Exp $
 \name{dbConnect-methods}
 \docType{methods}
 \alias{dbDisconnect-methods}
@@ -22,14 +22,20 @@
 \item{conn}{
   an \code{PostgreSQLConnection} object as produced by \code{dbConnect}.
   }
-\item{host}{Name of host to connect to. If this begins with a slash, it specifies Unix-domain communication rather than TCP/IP communication; the value is the name of the directory in which the socket file is stored. The default behavior when host is not specified is to connect to a Unix-domain socket in /tmp (or whatever socket directory was specified when PostgreSQL was built). On machines without Unix-domain sockets, the default is to connect to localhost.}
-\item{dbname}{The database name. Defaults to be the same as the user name.}
-\item{user}{PostgreSQL user name to connect as. Defaults to be the same as the operating system name of the user running the application.}
-\item{password}{Password to be used if the server demands password authentication.}
-\item{hostaddr}{Numeric IP address of host to connect to. This should be in the standard IPv4 address format, e.g., 172.28.40.9. If your machine supports IPv6, you can also use those addresses. TCP/IP communication is always used when a nonempty string is specified for this parameter.}
-\item{port}{Port number to connect to at the server host, or socket file name extension for Unix-domain connections.}
-\item{tty}{Ignored (formerly, this specified where to send server debug output).}
-\item{options}{Command-line options to be sent to the server}
+\item{host}{Name or the numeric IPaddress of the host to connect to. If address is specified, it should be in the standard IPv4 address format, e.g., 172.28.40.9 or if your machine supports IPv6, you can also use those addresses. The default is to connect to localhost.
+ }
+\item{dbname}{The database name. Defaults to 'template1' i.e if this argument is not specified, it is taken as dbname="template1".
+ }
+\item{user}{PostgreSQL user name to connect as. Defaults to be the same as the operating system name of the user running the application.
+ }
+\item{password}{Password to be used if the server demands password authentication.
+ }
+\item{port}{Port number to connect to at the server host, or socket file name extension for Unix-domain connections.
+ }
+\item{tty}{Ignored (formerly, this specified where to send server debug output).
+ }
+\item{options}{Command-line options to be sent to the server
+ }
 }
 }
 \section{Side Effects}{
@@ -57,17 +63,17 @@
 drv <- dbDriver("PostgreSQL")
 
 # open the connection using user, passsword, etc., as
-con <- dbConnect(drv, user = "user", password="password")
+con <- dbConnect(drv, dbname = "postgres")
 
 # Run an SQL statement by creating first a resultSet object
 rs <- dbSendQuery(con, statement = paste(
-                      "SELECT w.laser_id, w.wavelength, p.cut_off",
-                      "FROM WL w, PURGE P", 
-                      "WHERE w.laser_id = p.laser_id", 
-                      "SORT BY w.laser_id")
+                      "SELECT itemCode, itemCost, itemProfit",
+                      "FROM sales",
+                      "SORT BY itemName"));
+
 # we now fetch records from the resultSet into a data.frame
-data <- fetch(rs, n = -1)   # extract all rows
-dim(data)
+df <- fetch(rs, n = -1)   # extract all rows
+dim(df)
 }
 }
 \keyword{methods}

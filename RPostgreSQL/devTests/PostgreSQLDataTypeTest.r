@@ -45,6 +45,7 @@ j <- as.logical(FALSE)
 
 sql <- paste("insert into testlogical ",
             "values (",i, "," ,j ,") ", sep="")
+
 res <- dbSendQuery(con, sql);
 
 dat <- dbReadTable(con, "testlogical")
@@ -97,4 +98,4 @@ dbUnloadDriver(drv)
 
 system(paste("dropdb", tempdb))
 
-cat("DONE\n") 
+cat("DONE\n")

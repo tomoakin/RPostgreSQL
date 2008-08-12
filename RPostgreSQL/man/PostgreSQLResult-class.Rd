@@ -1,4 +1,4 @@
-% $Id: PostgreSQLResult-class.Rd,v 1.1 2003/12/02 14:53:01 dj Exp dj $
+% $Id: PostgreSQLResult-class.Rd,v 0.1 2008/07/22 20:56:01 psk Exp $
 \name{PostgreSQLResult-class}
 \docType{class}
 \alias{PostgreSQLResult-class}
@@ -36,7 +36,7 @@ Class \code{"dbObjectId"}, by class "PostgreSQLObject".
 \references{
   See the Database Interface definition document
   \code{DBI.pdf} in the base directory of this package
-  or \url{http://developer.r-project.org/db}.
+  or \url{http://developer.r-project.org/db}
 }
 
 \seealso{
@@ -58,7 +58,11 @@ Class \code{"dbObjectId"}, by class "PostgreSQLObject".
 
 \examples{\dontrun{
 drv <- dbDriver("PostgreSQL")
-con <- dbConnect(drv, dbname = "rsdbi.db")
+con <- dbConnect(drv, dbname = "template1")
+## rs is the result set
+rs <- dbSendQuery(con,"select * from sales")
+## display the first three values of result set
+fetch(rs,n=3)
 }
 }
 \keyword{database}
