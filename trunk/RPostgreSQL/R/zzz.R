@@ -1,6 +1,4 @@
-
-
-## zzz.R     Last Modified:
+## zzz.R                                           Last Modified:10-08-2008 12:24:00
 
 ## This package was developed as a part of Summer of Code program organized by Google.
 ## Thanks to David A. James & Saikat DebRoy, the authors of RMySQL package.

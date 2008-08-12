@@ -1,4 +1,4 @@
-## Class: dbObjectId		Last Modified:
+## Class: dbObjectId		                 Last Modified: 10-08-2008 12:24:00
 
 ## This package was developed as a part of Summer of Code program organized by Google.
 ## Thanks to David A. James & Saikat DebRoy, the authors of RMySQL package.
@@ -15,6 +15,7 @@
 ## A dbObjectId is an  identifier into an actual remote database objects.  
 ## This class and its derived classes <driver-manager>Object need to 
 ## be VIRTUAL to avoid coercion (green book, p.293) during method dispatching.
+##
 
 setClass("dbObjectId", representation(Id = "integer", "VIRTUAL"))
 

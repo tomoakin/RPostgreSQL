@@ -1,4 +1,4 @@
-% $Id: fetch-methods.Rd,v 1.1 2003/12/02 14:53:01 dj Exp dj $
+% $Id: fetch-methods.Rd,v 0.1 2008/07/23 02:38:31 psk Exp $
 \name{fetch-methods}
 \docType{methods}
 \alias{fetch-methods}
@@ -49,13 +49,12 @@
 }
 \examples{\dontrun{
 drv <- dbDriver("PostgreSQL")
-con <- dbConnect(drv, user = "opto", password="pure-light", 
-                 host = "localhost", dbname="lasers")
+con <- dbConnect(drv, user = "ruser",password = "123456",dbname = "status")
 res <- dbSendQuery(con, statement = paste(
-                      "SELECT w.laser_id, w.wavelength, p.cut_off",
-                      "FROM WL w, PURGE P", 
-                      "WHERE w.laser_id = p.laser_id",
-                      "ORDER BY w.laser_id"))
+                      "SELECT w.category, w.cost, p.type",
+                      "FROM items w, sales P",
+                      "WHERE w.category = p.type",
+                      "ORDER BY w.cost"))
 # we now fetch the first 100 records from the resultSet into a data.frame
 data1 <- fetch(res, n = 100)   
 dim(data1)

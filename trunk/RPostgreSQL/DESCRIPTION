@@ -11,4 +11,4 @@ Imports: methods, DBI (>= 0.1-4)
 License: GPL
 URL: www.stat.bell-labs.com/RS-DBI, www.postgresql.org, www.r-project.org
 Collate:  S4R.R zzz.R PostgreSQLSupport.R dbObjectId.R PostgreSQL.R
-Packaged: Sat Jun 26 17:15:00 2008; Sameer
+Packaged: Sun Aug 10 17:00:00 2008; Sameer

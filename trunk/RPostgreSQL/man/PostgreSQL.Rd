@@ -1,4 +1,4 @@
-% $Id: PostgreSQL.Rd,v 1.1 2003/12/02 14:53:01 dj Exp dj $
+% $Id: PostgreSQL.Rd,v 0.1 2008/07/23 03:07:31 psk Exp $
 \name{PostgreSQL}
 \alias{PostgreSQL}
 \title{
@@ -14,7 +14,7 @@ PostgreSQL(max.con = 16, fetch.default.rec = 500, force.reload = FALSE)
 }
 \arguments{
 \item{max.con }{
-  maximum number of connections that are intended to have open at one time.
+  Maximum number of connections that are intended to have open at one time.
   There's no intrinic limit, since strictly speaking this limit applies 
   to PostgreSQL \emph{servers}, but clients can have (at least in theory)
   more than this.  Typically there are at most a handful of open connections,
@@ -53,13 +53,10 @@ to multiple host servers and run multiple connections on each server
 simultaneously.
 }
 \section{User authentication}{
-TO BE FILLED LATER ..............
+The passed string can be empty to use all default parameters, or it can contain one or more parameter settings separated by comma. Each parameter setting is in the form parameter = "value". Spaces around the equal sign are optional.
+
+The most important parameters are \code{user}, \code{password}, \code{host}, \code{dbname}, \code{port}, \code{tty} and \code{options}
 }
-\note{
-The \code{dbname} cannot go in the
-\code{[client]} section, but you may safely include 
-it under the \code{[rs-dbi]} section or one you define
-yourself.
 }
 \author{David A. James}
 \section{References}{
@@ -67,7 +64,7 @@ See \url{stat.bell-labs.com/RS-DBI}
 for more details on the R/S-Plus database interface.
 
 See the documentation at the PostgreSQL Web site
-\url{http://www.mysql.com} for details.
+\url{http://www.postgresql.org} for details.
 }
 \seealso{
 On database managers:
@@ -109,9 +106,8 @@ On meta-data:
 > m <- dbDriver("PostgreSQL")
 <PostgreSQLDriver:(4378)>
 
-
 > con <- dbConnect(m, user="username", password="passwd", dbname="database_name")
-> rs <- dbSendQuery(con, "select * from HTTP_ACCESS where IP_ADDRESS = '127.0.0.1'")
+> rs <- dbSendQuery(con, "select * sales where price < 10")
 > df <- fetch(rs, n = 50)
 > dbHasCompleted(rs)
 [1] FALSE
@@ -119,8 +115,6 @@ On meta-data:
 > dbHasCompleted(rs)
 [1] TRUE
 > dbClearResult(rs)
-> dim(dbGetQuery(con, "show tables"))
-[1] 74   1
 > dbListTables(con)    
 }
 }

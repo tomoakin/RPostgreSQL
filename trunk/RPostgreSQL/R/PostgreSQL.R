@@ -1,5 +1,4 @@
-
-## PostgreSQL.R			Last Modified:
+## PostgreSQL.R			                    Last Modified:10-08-2008 12:26:00
 
 ## This package was developed as a part of Summer of Code program organized by Google.
 ## Thanks to David A. James & Saikat DebRoy, the authors of RMySQL package.
@@ -11,15 +10,17 @@
 ## Constants
 ##
 
-.PostgreSQLRCS <- "$Id: PostgreSQL.R,v 0.1 2008/06/10 14:00:00$"
+.PostgreSQLRCS <- "$Id: PostgreSQL.R,v 0.1 2008/08/10 12:26:00$"
 .PostgreSQLPkgName <- "RPostgreSQL" 
-.PostgreSQLVersion <- "0.1-0"       ##package.description(.PostgreSQLPkgName, fields = "Version")
-.PostgreSQL.NA.string <- "\\N"      ## on input, PostgreSQL interprets \N as NULL (NA)
+.PostgreSQLVersion <- "0.1-0" ##package.description(.PostgreSQLPkgName, fields = "Version")
+.PostgreSQL.NA.string <- "\\N"   ## on input, PostgreSQL interprets \N as NULL (NA)
 
-setOldClass("data.frame")      ## to appease setMethod's signature warnings...
+ setOldClass("data.frame")      ## to appease setMethod's signature warnings...
+
 
 ## ------------------------------------------------------------------
-## Begin DBI extensions: 
+## Begin DBI extensions:
+
 ##
 ## dbBeginTransaction
 ##
@@ -29,7 +30,16 @@ setGeneric("dbBeginTransaction",
            standardGeneric("dbBeginTransaction"),
    valueClass = "logical"
 )
+
 ##
+## dbApply
+##
+
+setGeneric("dbApply",
+   def = function(res, ...)
+            standardGeneric("dbApply")
+)
+
 ## End DBI extensions
 ## ------------------------------------------------------------------
 
@@ -165,7 +175,7 @@ setMethod("dbWriteTable",
    valueClass = "logical"
 )
 
-## write table from filename (TODO: connections)
+## write table from filename 
 setMethod("dbWriteTable", 
    signature(conn="PostgreSQLConnection", name="character", value="character"),
    def = function(conn, name, value, ...){
@@ -328,14 +338,11 @@ setMethod("summary", "PostgreSQLResult",
    def = function(object, ...) postgresqlDescribeResult(object, ...)
 )
 
-
-
 setMethod("dbDataType", 
    signature(dbObj = "PostgreSQLObject", obj = "ANY"),
    def = function(dbObj, obj, ...) postgresqlDataType(obj, ...),
    valueClass = "character"
 )
-
 
 ## MODIFIED : -- sameer
 setMethod("make.db.names", 
@@ -345,7 +352,7 @@ setMethod("make.db.names",
    },
    valueClass = "character"
 )
-      
+
 setMethod("SQLKeywords", "PostgreSQLObject",
    def = function(dbObj, ...) .PostgreSQLKeywords,
    valueClass = "character"
@@ -358,10 +365,7 @@ setMethod("isSQLKeyword",
    },
    valueClass = "character"
 )
-## extension to the DBI 0.1-4
-setGeneric("dbApply", def = function(res, ...) standardGeneric("dbApply"))
+
 setMethod("dbApply", "PostgreSQLResult",
    def = function(res, ...)  postgresqlDBApply(res, ...),
 )
-
- 

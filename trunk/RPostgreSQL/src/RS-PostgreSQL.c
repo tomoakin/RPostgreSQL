@@ -1,5 +1,5 @@
 /* 
- *    RS-PostgreSQL.c     Last Modified:
+ *    RS-PostgreSQL.c                              Last Modified:10-08-2008 13:34:00
  *
  * This package was developed as a part of Summer of Code program organized by Google.
  * Thanks to David A. James & Saikat DebRoy, the authors of RMySQL package.
@@ -7,10 +7,7 @@
  * Also Thanks to my GSoC mentor Dirk Eddelbuettel for helping me in the development.
  */
 
-
-
 #include "RS-PostgreSQL.h"
-
 
 #ifndef USING_R
 #  error("the function RS_DBI_invokeBeginGroup() has not been implemented in S")
@@ -18,9 +15,9 @@
 #  error("the function RS_DBI_invokeNewRecord()  has not been implemented in S")
 #endif
 
-/*   R and S DataBase Interface to PostgreSQL
+/* R and S DataBase Interface to PostgreSQL
  *
- *C function library which can be used to run SQL queries    * from inside of S4, Splus5.x, or R.
+ *  C function library which can be used to run SQL queries                                  * from inside of S4, Splus5.x, or R.
  * This Driver hooks R/S and PostgreSQL and implements the
  * the proposed RS-DBI generic database interface.
  *
@@ -28,9 +25,8 @@
  * On R,
  * "R extensions" manual
  * On PostgreSQL,
- *     "PostgreSQL 8.3.1 documentation"
+ * "PostgreSQL 8.3.1 documentation"
  */
-
 
 Mgr_Handle *
 RS_PostgreSQL_init(s_object *config_params, s_object *reload)
@@ -76,7 +72,6 @@ return status;
 }
 
 
-
 /* open a connection with the same parameters used for in
  *  conHandle
  */
@@ -98,11 +93,9 @@ conParams = con->conParams;
 
 mgrHandle = RS_DBI_asMgrHandle(MGR_ID(conHandle));
 
-
-  /* Connection parameters need to be put into a 8-element character
+  /* Connection parameters need to be put into a 7-element character
    * vector to be passed to the RS_PostgreSQL_newConnection() function.
    */
-
 
   MEM_PROTECT(con_params = NEW_CHARACTER((Sint) 7));
   SET_CHR_EL(con_params,0,C_S_CPY(conParams->user));
@@ -113,12 +106,10 @@ mgrHandle = RS_DBI_asMgrHandle(MGR_ID(conHandle));
   SET_CHR_EL(con_params,5,C_S_CPY(conParams->tty));
   SET_CHR_EL(con_params,6,C_S_CPY(conParams->options));
   
-  
   MEM_UNPROTECT(1);
 
   return RS_PostgreSQL_newConnection(mgrHandle, con_params);
 }
-
 
 
 RS_PostgreSQL_conParams *
@@ -134,7 +125,6 @@ RS_postgresql_allocConParams(void)
   }
   return conParams;
 }
-
 
 
 void
@@ -170,8 +160,6 @@ RS_PostgreSQL_newConnection(Mgr_Handle *mgrHandle, s_object *con_params)
 
 #define IS_EMPTY(s1)   !strcmp((s1), "")
 
-
-
   if(!IS_EMPTY(CHR_EL(con_params,0)))
     user = (char *) CHR_EL(con_params,0);
   if(!IS_EMPTY(CHR_EL(con_params,1)))
@@ -188,7 +176,6 @@ RS_PostgreSQL_newConnection(Mgr_Handle *mgrHandle, s_object *con_params)
     options = (char *) CHR_EL(con_params,6);
 
 
-
 if(user==NULL) user="";
 if(password==NULL) password="";
 if(host==NULL) host="localhost";
@@ -196,7 +183,6 @@ if(port==NULL) port="";
 if(options==NULL) options="";
 if(tty==NULL) tty="";
 if(dbname==NULL) dbname="template1";
-
 
  my_connection = PQsetdbLogin(host,port,options,tty,dbname,user,password);
 
@@ -208,8 +194,6 @@ if(dbname==NULL) dbname="template1";
   }
 
   conParams = RS_postgresql_allocConParams();
-
-
 
   /* save actual connection parameters */
 
@@ -273,7 +257,7 @@ RS_PostgreSQL_closeConnection(Con_Handle *conHandle)
 
   return status;
 }  
-  
+
 /* Execute (currently) one sql statement (INSERT, DELETE, SELECT, etc.),
  * set coercion type mappings between the server internal data types and
  * S classes.   Returns  an S handle to a resultSet object.
@@ -283,7 +267,6 @@ Res_Handle *
 RS_PostgreSQL_exec(Con_Handle *conHandle, s_object *statement)
 {
   S_EVALUATOR
-
 
   RS_DBI_connection *con;
   Res_Handle        *rsHandle;
@@ -320,7 +303,9 @@ RS_PostgreSQL_exec(Con_Handle *conHandle, s_object *statement)
 
   /* Here is where we actually run the query */
 
-  /* Example: PGresult *PQexec(PGconn *conn, const char *command); */
+  /* Syntax: PGresult *PQexec(PGconn *conn, const char *command);
+   * PQexec submits a command to the server and waits for the result.
+   */ 
 
   my_result = PQexec(my_connection, dyn_statement);
   if(my_result == NULL) {
@@ -332,8 +317,9 @@ RS_PostgreSQL_exec(Con_Handle *conHandle, s_object *statement)
   }
 
 
-/* ExecStatusType PQresultStatus(const PGresult *res); */
-
+/* Syntax: ExecStatusType PQresultStatus(const PGresult *res);
+ * PQresultStatus returns the result status of the command.
+ */
 
 if( PQresultStatus( my_result ) == PGRES_TUPLES_OK )
 is_select = (Sint)TRUE;
@@ -342,7 +328,9 @@ if( PQresultStatus( my_result ) == PGRES_COMMAND_OK )
 is_select = (Sint)FALSE;
 
 
-/* char *PQresultErrorMessage(const PGresult *res); */
+/* Syntax: char *PQresultErrorMessage(const PGresult *res);
+ * PQresultErrorMessage returns the error message associated with the command, or an empty string if there was no error.
+*/
 
 if(strcmp(PQresultErrorMessage(my_result),"") != 0 )   {
 
@@ -353,7 +341,8 @@ free(dyn_statement);
     RS_DBI_errorMessage(errResultMsg, RS_DBI_ERROR);
 
 /*  Frees the storage associated with a PGresult.
- *  void PQclear(PGresult *res);   */
+ *  void PQclear(PGresult *res);
+ */
 
   PQclear(my_result);   
 
@@ -387,8 +376,6 @@ free(dyn_statement);
 }
 
 
-
-
 RS_DBI_fields *
 RS_PostgreSQL_createDataMappings(Res_Handle *rsHandle)
 {
@@ -409,7 +396,9 @@ RS_PostgreSQL_createDataMappings(Res_Handle *rsHandle)
 
   flds = RS_DBI_allocFields(num_fields);
 
-char buff[1000]; /* Buffer to hold the sql query to check whether the given column is nullable */
+/* Buffer to hold the sql query to check whether the given column is nullable */
+char buff[1000];
+
 PGconn *conn;
 PGresult *res;
 conn = (PGconn *) con->drvConnection;
@@ -427,7 +416,7 @@ conn = (PGconn *) con->drvConnection;
 
     flds->scale[j] = (Sint)-1;
 
- /* PQftablecol returns the column number (within its table) of the column making up the      *   * specified query result column.Zero is returned if the column number is out of range, or if    * the specified column is not a simple reference to a table column, or when using pre-3.0    *  * protocol. So "if(PQftablecol(my_result,j) !=0)" checks whether the particular colomn in the   * result set is column of table or not. Or else there is no meaning in checking whether a   *   * column is nullable or not if it does not belong to the table.
+ /* PQftablecol returns the column number (within its table) of the column making up the      specified query result column.Zero is returned if the column number is out of range, or if   the specified column is not a simple reference to a table column, or when using pre-3.0   protocol. So "if(PQftablecol(my_result,j) !=0)" checks whether the particular colomn in the  result set is column of table or not. Or else there is no meaning in checking whether a   column is nullable or not if it does not belong to the table.
   */
 
 if(PQftablecol(my_result,j) !=0) {
@@ -446,7 +435,7 @@ flds->nullOk[j]=(Sint)0;
 PQclear(res);
 
 } else {
-/* 'else' gets executed when the column in result does not belong to the table.for eg. in the     * query "SELECT COUNT(*) FROM TABLE_NAME" or "SHOW DateStyle", nullOK is always false
+/* 'else' gets executed when the column in result does not belong to the table.for eg. in the  * query "SELECT COUNT(*) FROM TABLE_NAME" or "SHOW DateStyle", nullOK is always false
  */
 flds->nullOk[j]=(Sint)0;
 }
@@ -491,8 +480,8 @@ flds->nullOk[j]=(Sint)0;
     case TIMESTAMPTZOID:
     case INTERVALOID:
       flds->Sclass[j] = CHARACTER_TYPE;
-      flds->isVarLength[j] = (Sint) 1;
       break;
+
     default:
       flds->Sclass[j] = CHARACTER_TYPE;
       flds->isVarLength[j] = (Sint) 1;
@@ -559,7 +548,6 @@ RS_PostgreSQL_fetch(s_object *rsHandle, s_object *max_rec)
   fld_nullOk = flds->nullOk;
 
 
-
   /* actual fetching....*/
   my_result = (PGresult *) result->drvResultSet;
 
@@ -594,7 +582,6 @@ RS_PostgreSQL_fetch(s_object *rsHandle, s_object *max_rec)
 /* PQgetlength (Returns the actual length of a field value in bytes)  is used instead of lens
  * Syntax: int PQgetlength(const PGresult *res, int row_number, int column_number);
  */
-
 
     if(i==num_rows){    /* we finish  or encounter an error */
       RS_DBI_connection   *con;
@@ -747,9 +734,8 @@ RS_PostgreSQL_getException(s_object *conHandle)
   my_connection = (PGconn *) con->drvConnection;
 
 
-
-
-
+/* NOTE: Error number is shown as zero in all cases because there is no way of mapping error  *  numbers to their corresponding error messages in PostgreSQL.
+ */
 LST_INT_EL(output,0,0) = 0;
 
 /* PQerrorMessage: Returns the error message most recently generated by an  * operation on the connection.
@@ -778,8 +764,6 @@ RS_PostgreSQL_closeResultSet(s_object *resHandle)
 
   my_result = (PGresult *) result->drvResultSet;
 
-
-
   PQclear(my_result);
 
   /* need to NULL drvResultSet, otherwise can't free the rsHandle */
@@ -793,6 +777,7 @@ RS_PostgreSQL_closeResultSet(s_object *resHandle)
   return status;
 }
 
+
 s_object *
 RS_PostgreSQL_managerInfo(Mgr_Handle *mgrHandle)
 {
@@ -804,11 +789,11 @@ RS_PostgreSQL_managerInfo(Mgr_Handle *mgrHandle)
   Sint j, n = 7;
   char *mgrDesc[] = {"drvName",   "connectionIds", "fetch_default_rec",
                      "managerId", "length",        "num_con",
-                     "counter" /*,   "clientVersion"*/};
+                     "counter"};
   Stype mgrType[] = {CHARACTER_TYPE, INTEGER_TYPE, INTEGER_TYPE,
                      INTEGER_TYPE,   INTEGER_TYPE, INTEGER_TYPE,
-                     INTEGER_TYPE /*,   CHARACTER_TYPE*/};
-  Sint  mgrLen[]  = {1, 1, 1, 1, 1, 1, 1 /*, 1*/};
+                     INTEGER_TYPE};
+  Sint  mgrLen[]  = {1, 1, 1, 1, 1, 1, 1};
   
   mgr = RS_DBI_getManager(mgrHandle);
   if(!mgr)
@@ -847,10 +832,9 @@ RS_PostgreSQL_managerInfo(Mgr_Handle *mgrHandle)
   LST_INT_EL(output,j++,0) = mgr->num_con;
   LST_INT_EL(output,j++,0) = mgr->counter;
 
-
-
   return output;
 }
+
 
 s_object *
 RS_PostgreSQL_connectionInfo(Con_Handle *conHandle)
@@ -861,17 +845,17 @@ RS_PostgreSQL_connectionInfo(Con_Handle *conHandle)
   RS_PostgreSQL_conParams *conParams;
   RS_DBI_connection  *con;
   s_object   *output;
-  Sint       i, n = 7 /*8*/, *res, nres;
+  Sint       i, n = 7 , *res, nres;
   char *conDesc[] = {"host", "user", "dbname", 
 		     "serverVersion", "protocolVersion",
 		     "backendPId", "rsId"};
   Stype conType[] = {CHARACTER_TYPE, CHARACTER_TYPE, CHARACTER_TYPE,
-		     /* CHARACTER_TYPE,*/ CHARACTER_TYPE, INTEGER_TYPE,
+		     CHARACTER_TYPE, INTEGER_TYPE,
 		      INTEGER_TYPE, INTEGER_TYPE};
-  Sint  conLen[]  = {1, 1, 1 /*, 1*/ , 1, 1, 1, 1};
+  Sint  conLen[]  = {1, 1, 1, 1, 1, 1, 1};
 
   con = RS_DBI_getConnection(conHandle);
-  conLen[6/*7*/] = con->num_res;         /* num of open resultSets */
+  conLen[6] = con->num_res;         /* num of open resultSets */
   my_con = (PGconn *) con->drvConnection;
   output = RS_DBI_createNamedList(conDesc, conType, conLen, n);
 #ifndef USING_R
@@ -903,18 +887,19 @@ char buf1[50];
 
 sprintf(buf1,"%d.%d.%d",major,minor,revision_num);
 
- SET_LST_CHR_EL(output,3,0,C_S_CPY(buf1));
+SET_LST_CHR_EL(output,3,0,C_S_CPY(buf1));
+
 
 /* PQprotocolVersion: Interrogates the frontend/backend protocol being used.
  * int PQprotocolVersion(const PGconn *conn);
  */
-  LST_INT_EL(output,4/*5*/,0) = (Sint)  PQprotocolVersion(my_con);
+  LST_INT_EL(output,4,0) = (Sint)  PQprotocolVersion(my_con);
+
 
 /* PQbackendPID: Returns the process ID (PID) of the backend server process handling     * this connection.
  * Syntax: int PQbackendPID(const PGconn *conn);
  */
-
-  LST_INT_EL(output,5/*6*/,0) = (Sint) PQbackendPID(my_con);
+  LST_INT_EL(output,5,0) = (Sint) PQbackendPID(my_con);
 
   res = (Sint *) S_alloc( (long) con->length, (int) sizeof(Sint));
   nres = RS_DBI_listEntries(con->resultSetIds, con->length, res);
@@ -932,6 +917,7 @@ sprintf(buf1,"%d.%d.%d",major,minor,revision_num);
   return output;
 
 }
+
 
 s_object *
 RS_PostgreSQL_resultSetInfo(Res_Handle *rsHandle)
@@ -1135,7 +1121,6 @@ RS_PostgreSQL_dbApply(s_object *rsHandle,     /* resultset handle */
    RS_DBI_fields    *flds;
 
    PGresult *my_result;
-  /* POSTGRESQL_ROW  row;   NOTE: REMOVED  ths.... because it is MySQL specific */
 
    int row_counter=-1;  /* NOTE: added this.... to maintain a counter for the rows */
    int row_max;        /* NOTE: added this.... fetch the maximum number of rows in the resultset */
@@ -1282,11 +1267,7 @@ RS_PostgreSQL_dbApply(s_object *rsHandle,     /* resultset handle */
 	      break;
 
 	   case CHARACTER_TYPE:
-	      /* BUG: I need to verify that a TEXT field (which is stored as
-	       * a BLOB by PostgreSQL!) is indeed char and not a true
-	       * Binary obj (PostgreSQL does not truly distinguish them). This
-	       * test is very gross.
-	       */
+
 	      if(null_item)
 #ifdef USING_R
 	          SET_LST_CHR_EL(data,j,i,NA_STRING);
@@ -1529,4 +1510,3 @@ add_group(s_object *group_names, s_object *data,
    SET_CHR_EL(group_names, ngroup, C_S_CPY(buff));
    return;
 }
-
