@@ -230,7 +230,7 @@ function(res, ...)
                         PACKAGE = .PostgreSQLPkgName)
 
 ## -------
-## This is actually a bug. In dbGetInfo, it displays the Sclass for Date/Time datatypes in Pg 
+## This is actually a bug. In dbGetInfo, it displays the Sclass for Date/Time datatypes in Pg
 ## as character. But in dbColumnInfo, it displays it as 'POSIXct'. This is because there is no
 ## datatype corresponding to Date/Time defined in R-defines.h & R-internals.h
 
@@ -377,48 +377,48 @@ function(res, n=0, ...)
    else
       oldClass(rel) <- "data.frame"
 
-flds <- dbGetInfo(res)$fieldDescription[[1]]$type
-for(i in 1:length(flds)) {
+   flds <- dbGetInfo(res)$fieldDescription[[1]]$type
+   for(i in 1:length(flds)) {
 
-## Note: All the Date-Time datatypes in pg except date and TimeStamp were mapped to character
+       ## Note: All the Date-Time datatypes in pg except date and TimeStamp were mapped to character
 
-if(flds[[i]] == 1114) {  ## 1114 corresponds to Timestamp without TZ (mapped to POSIXct class)
-rel[,i] <- as.POSIXct(rel[,i])
-} else if(flds[[i]] == 1082) {  ## 1082 corresponds to Date (mapped to Date class)
-rel[,i] <- as.Date(rel[,i])
-}
+       if(flds[[i]] == 1114) {  ## 1114 corresponds to Timestamp without TZ (mapped to POSIXct class)
+           rel[,i] <- as.POSIXct(rel[,i])
+       } else if(flds[[i]] == 1082) {  ## 1082 corresponds to Date (mapped to Date class)
+           rel[,i] <- as.Date(rel[,i])
+       }
 
-## HAVE TO CHANGE THIS (IMP)  STARTS.........
-if(0) {  
-if(flds[[i]] == 1184) {  ## 1184 corresponds to Timestamp with TimeZone
-## This code assumes pg is using ISO format (eg: 2004-10-19 13:53:54+05:30)
+       ## HAVE TO CHANGE THIS (IMP)  STARTS.........
+       if(0) {
+           if(flds[[i]] == 1184) {  ## 1184 corresponds to Timestamp with TimeZone
+               ## This code assumes pg is using ISO format (eg: 2004-10-19 13:53:54+05:30)
 
-t1 <- as.POSIXct(rel[,i],"%Y-%m-%d %H:%M:%S")
-ct<-nchar(rel[,i])
-t2 <-substr(rel[,i],ct-5,ct)
-## t3 should have "+" or "-"
-t3 <- substr(t2,1,1)
-## t4 has hours
-t4 <- substr(t2,2,3)
-## converting hours in t4 to seconds
-t4 <- as.integer(t4) * 3600
-t5 <- substr(t2,5,6)
-## converting minutes in t5 to seconds
-t5 <- as.integer(t5) * 60
-## Adding / Subtracting the offset in seconds to time t1 to make to GMT
-if(t3 == "+") {
-t1 <- t1 - t4 - t5
-} else if(t3 == "-") {
-t1 <- t1 + t4 + t5
-}
-tf <- format(t1)
-rel[,i] <- as.POSIXct(tf,"%Y-%m-%d %H:%M:%S",tz="GMT")
-}
-}
+               t1 <- as.POSIXct(rel[,i],"%Y-%m-%d %H:%M:%S")
+               ct<-nchar(rel[,i])
+               t2 <-substr(rel[,i],ct-5,ct)
+               ## t3 should have "+" or "-"
+               t3 <- substr(t2,1,1)
+               ## t4 has hours
+               t4 <- substr(t2,2,3)
+               ## converting hours in t4 to seconds
+               t4 <- as.integer(t4) * 3600
+               t5 <- substr(t2,5,6)
+               ## converting minutes in t5 to seconds
+               t5 <- as.integer(t5) * 60
+               ## Adding / Subtracting the offset in seconds to time t1 to make to GMT
+               if(t3 == "+") {
+                   t1 <- t1 - t4 - t5
+               } else if(t3 == "-") {
+                   t1 <- t1 + t4 + t5
+               }
+               tf <- format(t1)
+               rel[,i] <- as.POSIXct(tf,"%Y-%m-%d %H:%M:%S",tz="GMT")
+           }
+       }
 #############  ENDS (Remove if(0) after making the code work)
 
-}
- rel
+   }
+   rel
 }
 
 ## Note that originally we had only resultSet both for SELECTs
@@ -663,7 +663,7 @@ function(con, name, value, field.types, row.names = TRUE,
    ## So if you use SELinux, you may have to manually insert data or temporarily turn
    ## SELinux off to use this function
 
-   if(as.character(Sys.info()["sysname"])=="Linux")  
+   if(as.character(Sys.info()["sysname"])=="Linux")
    fn <- tempfile("rsdbi","/tmp")
    else
    fn <- tempfile("rsdbi")
@@ -771,8 +771,21 @@ function(obj, ...)
    sql.type
 }
 
-## the following keywords are taken from ["RESERVED" of postgres colomn in ] Table C.1 in    ## Appendix C of the PostgreSQL Manual 8.3.1.
+## the following keywords are taken from ["RESERVED" of postgres colomn in ] Table C.1 in
+## Appendix C of the PostgreSQL Manual 8.3.1.
 
-".PostgreSQLKeywords" <-
-c( "ALL", "ANALYSE", "ANALYZE", "AND", "ANY", "ARRAY", "AS", "ASC", "ASYMMETRIC", "AUTHORIZATION", "BETWEEN", "BINARY", "BOTH", "CASE", "CAST", "CHECK", "COLLATE", "COLUMN", "CONSTRAINT", "CREATE", "CROSS", "CURRENT_DATE", "CURRENT_ROLE", "CURRENT_TIME", "CURRENT_TIMESTAMP", "CURRENT_USER", "DEFAULT", "DEFERRABLE", "DESC", "DISTINCT", "DO", "ELSE", "END", "EXCEPT", "FALSE", "FOR", "FOREIGN", "FREEZE", "FROM", "FULL", "GRANT", "GROUP", "HAVING", "ILIKE", "IN", "INITIALLY", "INNER","INTERSECT", "INTO", "IS", "ISNULL", "JOIN", "LEADING", "LEFT", "LIKE", "LIMIT", "LOCALTIME", "LOCALTIMESTAMP", "NATURAL", "NEW", "NOT", "NULL", "OFF", "OFFSET", "OLD", "ON", "ONLY", "OR", "ORDER", "OUTER", "OVERLAPS", "PLACING", "PRIMARY", "REFERENCES", "RESERVED", "SELECT", "SESSION_USER", "SIMILAR", "SOME", "SYMMETRIC", "TABLE", "THEN", "TO", "TRAILING", "TRUE", "UNION", "UNIQUE", "USER", "USING", "VERBOSE", "WHEN", "WHERE", "WITH"
-  )
+".PostgreSQLKeywords" <- c( "ALL", "ANALYSE", "ANALYZE", "AND", "ANY",
+                           "ARRAY", "AS", "ASC", "ASYMMETRIC", "AUTHORIZATION", "BETWEEN",
+                           "BINARY", "BOTH", "CASE", "CAST", "CHECK", "COLLATE", "COLUMN",
+                           "CONSTRAINT", "CREATE", "CROSS", "CURRENT_DATE", "CURRENT_ROLE",
+                           "CURRENT_TIME", "CURRENT_TIMESTAMP", "CURRENT_USER", "DEFAULT",
+                           "DEFERRABLE", "DESC", "DISTINCT", "DO", "ELSE", "END", "EXCEPT",
+                           "FALSE", "FOR", "FOREIGN", "FREEZE", "FROM", "FULL", "GRANT", "GROUP",
+                           "HAVING", "ILIKE", "IN", "INITIALLY", "INNER","INTERSECT", "INTO",
+                           "IS", "ISNULL", "JOIN", "LEADING", "LEFT", "LIKE", "LIMIT",
+                           "LOCALTIME", "LOCALTIMESTAMP", "NATURAL", "NEW", "NOT", "NULL", "OFF",
+                           "OFFSET", "OLD", "ON", "ONLY", "OR", "ORDER", "OUTER", "OVERLAPS",
+                           "PLACING", "PRIMARY", "REFERENCES", "RESERVED", "SELECT",
+                           "SESSION_USER", "SIMILAR", "SOME", "SYMMETRIC", "TABLE", "THEN", "TO",
+                           "TRAILING", "TRUE", "UNION", "UNIQUE", "USER", "USING", "VERBOSE",
+                           "WHEN", "WHERE", "WITH" )
