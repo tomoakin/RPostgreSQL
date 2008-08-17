@@ -41,34 +41,34 @@ RS_PostgreSQL_init(s_object *config_params, s_object *reload)
   const char *drvName = "PostgreSQL";
 
 
-max_con = INT_EL(config_params,0);
-fetch_default_rec=INT_EL(config_params,1);
-force_reload=LGL_EL(reload,0);
+  max_con = INT_EL(config_params,0);
+  fetch_default_rec=INT_EL(config_params,1);
+  force_reload=LGL_EL(reload,0);
 
-mgrHandle=RS_DBI_allocManager(drvName, max_con, fetch_default_rec,force_reload);
+  mgrHandle=RS_DBI_allocManager(drvName, max_con, fetch_default_rec,force_reload);
 
-return mgrHandle;
+  return mgrHandle;
 }
 
 
 s_object *
 RS_PostgreSQL_closeManager (Mgr_Handle *mgrHandle)
 {
- S_EVALUATOR
+  S_EVALUATOR
 
-RS_DBI_manager *mgr;
-s_object *status;
+  RS_DBI_manager *mgr;
+  s_object *status;
 
-mgr=RS_DBI_getManager(mgrHandle);
-if(mgr->num_con)
-   RS_DBI_errorMessage("There are opened connections -- close them first", RS_DBI_ERROR);
+  mgr=RS_DBI_getManager(mgrHandle);
+  if(mgr->num_con)
+    RS_DBI_errorMessage("There are opened connections -- close them first", RS_DBI_ERROR);
 
-RS_DBI_freeManager(mgrHandle);
+  RS_DBI_freeManager(mgrHandle);
 
-MEM_PROTECT(status = NEW_LOGICAL((Sint) 1));
-LGL_EL(status,0)=TRUE;
-MEM_UNPROTECT(1);
-return status;
+  MEM_PROTECT(status = NEW_LOGICAL((Sint) 1));
+  LGL_EL(status,0)=TRUE;
+  MEM_UNPROTECT(1);
+  return status;
 }
 
 
@@ -84,14 +84,14 @@ RS_PostgreSQL_cloneConnection(Con_Handle *conHandle)
   RS_DBI_connection *con;
   RS_PostgreSQL_conParams *conParams;
   s_object *con_params;
-   char buf1[256],buf2[256];
+  char buf1[256],buf2[256];
 
 /* get connection params used to open existing connection
 */
- con = RS_DBI_getConnection(conHandle);
-conParams = con->conParams;
+  con = RS_DBI_getConnection(conHandle);
+  conParams = con->conParams;
 
-mgrHandle = RS_DBI_asMgrHandle(MGR_ID(conHandle));
+  mgrHandle = RS_DBI_asMgrHandle(MGR_ID(conHandle));
 
   /* Connection parameters need to be put into a 7-element character
    * vector to be passed to the RS_PostgreSQL_newConnection() function.
@@ -118,10 +118,10 @@ RS_postgresql_allocConParams(void)
   RS_PostgreSQL_conParams *conParams;
 
   conParams = (RS_PostgreSQL_conParams *)
-     malloc(sizeof(RS_PostgreSQL_conParams));
+    malloc(sizeof(RS_PostgreSQL_conParams));
   if(!conParams){
     RS_DBI_errorMessage("could not malloc space for connection params",
-                       RS_DBI_ERROR);
+			RS_DBI_ERROR);
   }
   return conParams;
 }
@@ -176,15 +176,15 @@ RS_PostgreSQL_newConnection(Mgr_Handle *mgrHandle, s_object *con_params)
     options = (char *) CHR_EL(con_params,6);
 
 
-if(user==NULL) user="";
-if(password==NULL) password="";
-if(host==NULL) host="localhost";
-if(port==NULL) port="";
-if(options==NULL) options="";
-if(tty==NULL) tty="";
-if(dbname==NULL) dbname="template1";
+  if(user==NULL) user="";
+  if(password==NULL) password="";
+  if(host==NULL) host="localhost";
+  if(port==NULL) port="";
+  if(options==NULL) options="";
+  if(tty==NULL) tty="";
+  if(dbname==NULL) dbname="template1";
 
- my_connection = PQsetdbLogin(host,port,options,tty,dbname,user,password);
+  my_connection = PQsetdbLogin(host,port,options,tty,dbname,user,password);
 
   if(PQstatus(my_connection) != CONNECTION_OK){
     char buf[1000];
@@ -317,36 +317,36 @@ RS_PostgreSQL_exec(Con_Handle *conHandle, s_object *statement)
   }
 
 
-/* Syntax: ExecStatusType PQresultStatus(const PGresult *res);
- * PQresultStatus returns the result status of the command.
- */
+  /* Syntax: ExecStatusType PQresultStatus(const PGresult *res);
+   * PQresultStatus returns the result status of the command.
+   */
 
-if( PQresultStatus( my_result ) == PGRES_TUPLES_OK )
-is_select = (Sint)TRUE;
+  if( PQresultStatus( my_result ) == PGRES_TUPLES_OK )
+    is_select = (Sint)TRUE;
 
-if( PQresultStatus( my_result ) == PGRES_COMMAND_OK )
-is_select = (Sint)FALSE;
+  if( PQresultStatus( my_result ) == PGRES_COMMAND_OK )
+    is_select = (Sint)FALSE;
 
 
-/* Syntax: char *PQresultErrorMessage(const PGresult *res);
- * PQresultErrorMessage returns the error message associated with the command, or an empty string if there was no error.
-*/
+  /* Syntax: char *PQresultErrorMessage(const PGresult *res);
+   * PQresultErrorMessage returns the error message associated with the command, or an empty string if there was no error.
+   */
 
-if(strcmp(PQresultErrorMessage(my_result),"") != 0 )   {
+  if(strcmp(PQresultErrorMessage(my_result),"") != 0 )   {
 
-free(dyn_statement);
- char errResultMsg[256];
-        (void) sprintf(errResultMsg, "could not Retrieve the result : %s",
-		PQresultErrorMessage(my_result));
+    free(dyn_statement);
+    char errResultMsg[256];
+    (void) sprintf(errResultMsg, "could not Retrieve the result : %s",
+		   PQresultErrorMessage(my_result));
     RS_DBI_errorMessage(errResultMsg, RS_DBI_ERROR);
 
-/*  Frees the storage associated with a PGresult.
- *  void PQclear(PGresult *res);
- */
+   /*  Frees the storage associated with a PGresult.
+    *  void PQclear(PGresult *res);
+    */
 
-  PQclear(my_result);   
+    PQclear(my_result);   
 
-}
+  }
 
   /* we now create the wrapper and copy values */
   rsHandle = RS_DBI_allocResultSet(conHandle);
@@ -356,14 +356,14 @@ free(dyn_statement);
   result->rowCount = (Sint) 0;
   result->isSelect = is_select;
 
-/*  Returns the number of rows affected by the SQL command.
- *  char *PQcmdTuples(PGresult *res);
- */
+  /*  Returns the number of rows affected by the SQL command.
+   *  char *PQcmdTuples(PGresult *res);
+   */
 
   if(!is_select){
     result->rowsAffected = (Sint) atoi(PQcmdTuples(my_result));
     result->completed = 1;
-} else {
+  } else {
     result->rowsAffected = (Sint) -1;
     result->completed = 0;
   }
@@ -416,29 +416,35 @@ conn = (PGconn *) con->drvConnection;
 
     flds->scale[j] = (Sint)-1;
 
- /* PQftablecol returns the column number (within its table) of the column making up the      specified query result column.Zero is returned if the column number is out of range, or if   the specified column is not a simple reference to a table column, or when using pre-3.0   protocol. So "if(PQftablecol(my_result,j) !=0)" checks whether the particular colomn in the  result set is column of table or not. Or else there is no meaning in checking whether a   column is nullable or not if it does not belong to the table.
-  */
+    /* PQftablecol returns the column number (within its table) of the column making up the
+     * specified query result column.Zero is returned if the column number is out of range, or if
+     * the specified column is not a simple reference to a table column, or when using pre-3.0   
+     * protocol. So "if(PQftablecol(my_result,j) !=0)" checks whether the particular colomn in the  
+     * result set is column of table or not. Or else there is no meaning in checking whether a   
+     * column is nullable or not if it does not belong to the table. 
+     */
 
-if(PQftablecol(my_result,j) !=0) {
+    if(PQftablecol(my_result,j) !=0) {
 
-  /* Code to find whether a row can be nullable or not */
-sprintf(buff,"select attnotnull from pg_attribute where attrelid=%d and attname='%s'",
-                                           PQftable(my_result,j),(char*)PQfname(my_result,j));
-res = PQexec (conn, buff );
+      /* Code to find whether a row can be nullable or not */
+      sprintf(buff,"select attnotnull from pg_attribute where attrelid=%d and attname='%s'",
+	     PQftable(my_result,j),(char*)PQfname(my_result,j));
+      res = PQexec (conn, buff );
 
-if(strcmp(PQgetvalue(res,0,0),"f")==0) {
-flds->nullOk[j]=(Sint)1;
-}else {
-flds->nullOk[j]=(Sint)0;
-}
+      if(strcmp(PQgetvalue(res,0,0),"f")==0) {
+        flds->nullOk[j]=(Sint)1;
+      }else {
+	flds->nullOk[j]=(Sint)0;
+      }
 
-PQclear(res);
+      PQclear(res);
 
-} else {
-/* 'else' gets executed when the column in result does not belong to the table.for eg. in the  * query "SELECT COUNT(*) FROM TABLE_NAME" or "SHOW DateStyle", nullOK is always false
- */
-flds->nullOk[j]=(Sint)0;
-}
+    } else {
+      /* 'else' gets executed when the column in result does not belong to the table.for eg. in the  
+       * query "SELECT COUNT(*) FROM TABLE_NAME" or "SHOW DateStyle", nullOK is always false
+       */
+      flds->nullOk[j]=(Sint)0;
+    }
 
     internal_type = (int) PQftype(my_result,j);
 
@@ -520,8 +526,8 @@ RS_PostgreSQL_fetch(s_object *rsHandle, s_object *max_rec)
   result = RS_DBI_getResultSet(rsHandle);
   flds = result->fields;
 
-    if (result->isSelect != 1)
-        RS_DBI_errorMessage("resultSet does not correspond to a SELECT statement", RS_DBI_ERROR);
+  if (result->isSelect != 1)
+    RS_DBI_errorMessage("resultSet does not correspond to a SELECT statement", RS_DBI_ERROR);
 
   if(!flds)
     RS_DBI_errorMessage("corrupt resultSet, missing fieldDescription",
@@ -551,32 +557,32 @@ RS_PostgreSQL_fetch(s_object *rsHandle, s_object *max_rec)
   /* actual fetching....*/
   my_result = (PGresult *) result->drvResultSet;
 
- num_rows = PQntuples(my_result);
+  num_rows = PQntuples(my_result);
 
-   k=result->rowCount;       /* ADDED */
+  k=result->rowCount;       /* ADDED */
 
   completed = (Sint) 0;
   for(i = 0;; i++,k++) {
 
- if(k>=num_rows) {
- completed=1;
- break;
-}
+  if(k>=num_rows) {
+    completed=1;
+    break;
+  }
 
-    if(i==num_rec){  /* exhausted the allocated space */
-      if(expand){    /* do we extend or return the records fetched so far*/
-	num_rec = 2 * num_rec;
-	RS_DBI_allocOutput(output, flds, num_rec, expand);
+  if(i==num_rec){  /* exhausted the allocated space */
+    if(expand){    /* do we extend or return the records fetched so far*/
+      num_rec = 2 * num_rec;
+      RS_DBI_allocOutput(output, flds, num_rec, expand);
 #ifndef USING_R
-	if(IS_LIST(output))
-	  output = AS_LIST(output);
-	else
-	  RS_DBI_errorMessage("internal error: could not alloc output list",
-			      RS_DBI_ERROR);
+      if(IS_LIST(output))
+	output = AS_LIST(output);
+      else
+	RS_DBI_errorMessage("internal error: could not alloc output list",
+			    RS_DBI_ERROR);
 #endif
       }
-      else
-	break;       /* okay, no more fetching for now */
+    else
+      break;       /* okay, no more fetching for now */
     }
 
 /* PQgetlength (Returns the actual length of a field value in bytes)  is used instead of lens
@@ -606,53 +612,53 @@ RS_PostgreSQL_fetch(s_object *rsHandle, s_object *max_rec)
 
      null_item = PQgetisnull(my_result,k,j);
 
-      switch((int)fld_Sclass[j]){
+     switch((int)fld_Sclass[j]){
 
-      case LOGICAL_TYPE:
-      if(null_item) {
-      NA_SET(&(LST_INT_EL(output,j,i)), LOGICAL_TYPE);
-      } else if(strcmp(PQgetvalue(my_result,k,j),"f") == 0) {
-      LST_LGL_EL(output,j,i) = (Sint) 0; /* FALSE */
-      } else if(strcmp(PQgetvalue(my_result,k,j),"t") == 0) {
-      LST_LGL_EL(output,j,i) = (Sint) 1;   /* TRUE */
-      }
-      break;
+     case LOGICAL_TYPE:
+       if(null_item) {
+	 NA_SET(&(LST_INT_EL(output,j,i)), LOGICAL_TYPE);
+       } else if(strcmp(PQgetvalue(my_result,k,j),"f") == 0) {
+	 LST_LGL_EL(output,j,i) = (Sint) 0; /* FALSE */
+       } else if(strcmp(PQgetvalue(my_result,k,j),"t") == 0) {
+	 LST_LGL_EL(output,j,i) = (Sint) 1;   /* TRUE */
+       }
+       break;
 
-      case INTEGER_TYPE:
-	if(null_item)
-	  NA_SET(&(LST_INT_EL(output,j,i)), INTEGER_TYPE);
-	else
-	  LST_INT_EL(output,j,i) = (Sint) atol(PQgetvalue(my_result,k,j));  /* NOTE: changed */
-	break;
+     case INTEGER_TYPE:
+       if(null_item)
+	 NA_SET(&(LST_INT_EL(output,j,i)), INTEGER_TYPE);
+       else
+	 LST_INT_EL(output,j,i) = (Sint) atol(PQgetvalue(my_result,k,j));  /* NOTE: changed */
+       break;
 
-      case CHARACTER_TYPE:
-	if(null_item)
+     case CHARACTER_TYPE:
+       if(null_item)
 #ifdef USING_R
 	  SET_LST_CHR_EL(output,j,i,NA_STRING);
 #else
 	  NA_CHR_SET(LST_CHR_EL(output,j,i));
 #endif
-	else {
+       else {
 	  SET_LST_CHR_EL(output,j,i,C_S_CPY(PQgetvalue(my_result,k,j)));     
-	}
-	break;
+       }
+       break;
 
-      case NUMERIC_TYPE:
-	if(null_item)
-	  NA_SET(&(LST_NUM_EL(output,j,i)), NUMERIC_TYPE);
-	else
-	  LST_NUM_EL(output,j,i) = (double) atof(PQgetvalue(my_result,k,j));     
-	break;
+     case NUMERIC_TYPE:
+       if(null_item)
+	 NA_SET(&(LST_NUM_EL(output,j,i)), NUMERIC_TYPE);
+       else
+	 LST_NUM_EL(output,j,i) = (double) atof(PQgetvalue(my_result,k,j));     
+       break;
 
 #ifndef USING_R
-      case SINGLE_TYPE:
-	if(null_item)
-	  NA_SET(&(LST_FLT_EL(output,j,i)), SINGLE_TYPE);
-	else
-	  LST_FLT_EL(output,j,i) = (float) atof(PQgetvalue(my_result,k,j));     
-	break;
+     case SINGLE_TYPE:
+       if(null_item)
+	 NA_SET(&(LST_FLT_EL(output,j,i)), SINGLE_TYPE);
+       else
+	 LST_FLT_EL(output,j,i) = (float) atof(PQgetvalue(my_result,k,j));     
+       break;
 
-      case RAW_TYPE:           /* these are blob's */
+     case RAW_TYPE:           /* these are blob's */
 	raw_obj = NEW_RAW((Sint) PQgetlength(my_result,k,j));                       
 	memcpy(RAW_DATA(raw_obj), PQgetvalue(my_result,k,j), PQgetlength(my_result,k,j));          
 	raw_container = LST_EL(output,j);    
@@ -660,23 +666,23 @@ RS_PostgreSQL_fetch(s_object *rsHandle, s_object *max_rec)
 	SET_ELEMENT(output, (Sint) j, raw_container);
   	break;
 #endif
-      default:  
-	if(null_item)
+     default:  
+       if(null_item)
 #ifdef USING_R
-	  SET_LST_CHR_EL(output,j,i, NA_STRING);
+	 SET_LST_CHR_EL(output,j,i, NA_STRING);
 #else
-	  NA_CHR_SET(LST_CHR_EL(output,j,i));
+	 NA_CHR_SET(LST_CHR_EL(output,j,i));
 #endif
-	else {
-	    char warn[64];
-	    (void) sprintf(warn,
-			   "unrecognized field type %d in column %d",
-			   (int) fld_Sclass[j], (int) j);
-	    RS_DBI_errorMessage(warn, RS_DBI_WARNING);
-	    SET_LST_CHR_EL(output,j,i,C_S_CPY(PQgetvalue(my_result,k,j)));    /* NOTE: changed */
-	  }
-	  break;
-      }
+       else {
+	 char warn[64];
+	 (void) sprintf(warn,
+			"unrecognized field type %d in column %d",
+			(int) fld_Sclass[j], (int) j);
+	 RS_DBI_errorMessage(warn, RS_DBI_WARNING);
+	 SET_LST_CHR_EL(output,j,i,C_S_CPY(PQgetvalue(my_result,k,j)));    /* NOTE: changed */
+       }
+       break;
+     }
     }
   }
   
@@ -736,16 +742,16 @@ RS_PostgreSQL_getException(s_object *conHandle)
 
 /* NOTE: Error number is shown as zero in all cases because there is no way of mapping error  *  numbers to their corresponding error messages in PostgreSQL.
  */
-LST_INT_EL(output,0,0) = 0;
+  LST_INT_EL(output,0,0) = 0;
 
 /* PQerrorMessage: Returns the error message most recently generated by an  * operation on the connection.
  * char *PQerrorMessage(const PGconn *conn);
  */
 
   if(strcmp(PQerrorMessage(my_connection),"")==0)
-SET_LST_CHR_EL(output,1,0,C_S_CPY("OK"));
+      SET_LST_CHR_EL(output,1,0,C_S_CPY("OK"));
   else
-  SET_LST_CHR_EL(output,1,0,C_S_CPY(PQerrorMessage(my_connection)));
+      SET_LST_CHR_EL(output,1,0,C_S_CPY(PQerrorMessage(my_connection)));
 
   return output;
 }
@@ -877,17 +883,17 @@ RS_PostgreSQL_connectionInfo(Con_Handle *conHandle)
  */
 /*Long int is taken because in some Operating sys int is 2 bytes which will not be enough for     * server version number
  */
-long int sv= PQserverVersion(my_con);
+  long int sv= PQserverVersion(my_con);
 
- int major=(int)sv/10000;
- int minor=(int)(sv%10000)/100;
- int revision_num=(int)(sv%10000)%100;
+  int major=(int)sv/10000;
+  int minor=(int)(sv%10000)/100;
+  int revision_num=(int)(sv%10000)%100;
 
-char buf1[50];
+  char buf1[50];
 
-sprintf(buf1,"%d.%d.%d",major,minor,revision_num);
+  sprintf(buf1,"%d.%d.%d",major,minor,revision_num);
 
-SET_LST_CHR_EL(output,3,0,C_S_CPY(buf1));
+  SET_LST_CHR_EL(output,3,0,C_S_CPY(buf1));
 
 
 /* PQprotocolVersion: Interrogates the frontend/backend protocol being used.
