@@ -27,14 +27,14 @@ extern  "C" {
  */
 
 typedef struct st_sdbi_conParams {
-char *user;
-char *password;
-char *host;
-char *dbname;
-char *port;
-char *tty;
-char *options;
-}RS_PostgreSQL_conParams;
+  char *user;
+  char *password;
+  char *host;
+  char *dbname;
+  char *port;
+  char *tty;
+  char *options;
+} RS_PostgreSQL_conParams;
 
 RS_PostgreSQL_conParams *RS_PostgreSQL_allocConParams(void);
 
