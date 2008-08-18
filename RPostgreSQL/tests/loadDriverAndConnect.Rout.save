@@ -1,5 +1,5 @@
 
-R version 2.7.1 RC (2008-06-20 r45965)
+R version 2.7.1 (2008-06-23)
 Copyright (C) 2008 The R Foundation for Statistical Computing
 ISBN 3-900051-07-0
 
@@ -26,6 +26,7 @@ Type 'q()' to quit R.
 > ##
 > ## Dirk Eddelbuettel, 02 July 2008
 > 
+> 
 > ## try to load our module and abort if this fails
 > stopifnot(require(RPostgreSQL))
 Loading required package: RPostgreSQL
@@ -37,16 +38,16 @@ Loading required package: DBI
 > 
 > ## connect to the default db
 > con <- dbConnect(drv, dbname="template1")
-> # -- idem  print(con)
 > 
 > ## run a simple query and show the query result
 > res <- dbGetQuery(con, "select datname,encoding,datallowconn from pg_database where datname like 'template%' order by datname")
 > print(res)
     datname encoding datallowconn
-1 template0        6            f
-2 template1        6            t
+1 template0        6        FALSE
+2 template1        6         TRUE
 > 
 > ## and disconnect
 > dbDisconnect(con)
 [1] TRUE
+> 
 > 
