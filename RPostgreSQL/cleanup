@@ -1,3 +1,4 @@
 rm -f config.log config.status
 rm -rf autom4te.cache
 rm -rf src/*.o src/*.so src/Makevars
+rm -rf .RData typeTest.r.Rout
