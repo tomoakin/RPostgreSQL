@@ -5,16 +5,7 @@
 ## Code from RMySQL package was reused with the permission from the authors.
 ## Also Thanks to my GSoC mentor Dirk Eddelbuettel for helping me in the development.
 
-
-# DE: is this needed:   ".conflicts.OK" <- TRUE
-
-# DE: commenting out library() calls as DESCRIPTION takes care of it
-#library(methods)
-#library(DBI, warn.conflicts = FALSE)
-
-.First.lib <- function(lib, pkg) {
-    ##   library(methods)
-    ##   library(DBI, warn.conflicts = FALSE)
+.onLoad <- function(lib, pkg) {
     library.dynam("RPostgreSQL", pkg, lib)
 }
 
