@@ -2,18 +2,19 @@
 #define _RS_POSTGRESQL_H 1
 
 /* 
- *    RS-PostgreSQL.h                              Last Modified: 10-08-2008 13:28:00 
+ *    RS-PostgreSQL.h     Last Modified:
  *
  * This package was developed as a part of Summer of Code program organized by Google.
  * Thanks to David A. James & Saikat DebRoy, the authors of RMySQL package.
  * Code from RMySQL package was reused with the permission from the authors.
  * Also Thanks to my GSoC mentor Dirk Eddelbuettel for helping me in the development.
- *
  */
+
 
 #ifdef _cplusplus
 extern  "C" {
 #endif
+
 
 
 #include "libpq-fe.h"
@@ -26,15 +27,16 @@ extern  "C" {
 * Refer to: http://www.postgresql.org/docs/8.2/interactive/runtime-config-resource.html for details
  */
 
+
 typedef struct st_sdbi_conParams {
-  char *user;
-  char *password;
-  char *host;
-  char *dbname;
-  char *port;
-  char *tty;
-  char *options;
-} RS_PostgreSQL_conParams;
+char *user;
+char *password;
+char *host;
+char *dbname;
+char *port;
+char *tty;
+char *options;
+}RS_PostgreSQL_conParams;
 
 RS_PostgreSQL_conParams *RS_PostgreSQL_allocConParams(void);
 
@@ -78,7 +80,10 @@ s_object *RS_PostgreSQL_connectionInfo(Con_Handle *conHandle);
 s_object *RS_PostgreSQL_resultSetInfo(Res_Handle *rsHandle);
 
 
-/*  OID"S mapping taken from postgresql-8.3.0/src/include/catalog/pg_type.h  */
+
+
+
+/*  OID"S mapping taken from pg_type.h */
 #define BOOLOID			16
 #define BYTEAOID		17
 #define CHAROID			18
@@ -160,6 +165,9 @@ s_object *RS_PostgreSQL_resultSetInfo(Res_Handle *rsHandle);
 
 static struct data_types RS_PostgreSQL_dataTypes[] = {
 
+
+
+
      {"BIGINT",      20				}, /* ALSO KNOWN AS INT8 */
      {"DECIMAL",     1700			}, /* ALSO KNOWN  AS NUMERIC */
      {"FLOAT8",      701			},  /* DOUBLE PRECISION */
@@ -173,7 +181,7 @@ static struct data_types RS_PostgreSQL_dataTypes[] = {
      {"TEXT",	     25				}, /* VARIABLE LENGTH STRING */
 
      {"DATE",	             1082		},
-     {"TIME",                1083	        }, 
+     {"TIME",                1083	        },
      {"TIMESTAMP",           1114		},
      {"TIMESTAMPTZOID",      1184               },
      {"INTERVAL",            1186		},
@@ -189,6 +197,7 @@ static struct data_types RS_PostgreSQL_dataTypes[] = {
 
      { (char *) 0,              -1              }
 };
+ 
 
 s_object *RS_PostgreSQL_typeNames(s_object *typeIds);
 extern const struct data_types RS_dataTypeTable[];
@@ -198,3 +207,4 @@ extern const struct data_types RS_dataTypeTable[];
 #endif
 
 #endif   /* _RS_PostgreSQL_H */
+

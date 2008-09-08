@@ -1,4 +1,4 @@
-% $Id: PostgreSQLConnection-class.Rd,v 0.1 2008/07/23 03:14:11 psk Exp $
+% $Id: PostgreSQLConnection-class.Rd,v 1.1 2003/12/02 14:53:01 dj Exp dj $
 \name{PostgreSQLConnection-class}
 \docType{class}
 \alias{PostgreSQLConnection-class}
@@ -60,7 +60,7 @@ Class \code{"dbObjectId"}, by class "PostgreSQLObject".
 
 \examples{\dontrun{
 drv <- dbDriver("PostgreSQL)
-con <- dbConnect(drv, dbname = "template1")
+con <- dbConnect(drv, dbname = "rsdbi.db")
 }
 }
 \keyword{database}

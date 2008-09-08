@@ -1,4 +1,4 @@
-% $Id: postgresqlSupport.Rd,v 0.1 2008/07/23 02:23:01 psk Exp $
+% $Id: postgresqlSupport.Rd,v 1.2 2003/12/02 18:28:56 dj Exp dj $
 \name{postgresqlSupport}
 \alias{postgresqlInitDriver}            % driver-related function
 \alias{postgresqlDriverInfo}
@@ -20,7 +20,6 @@
 \alias{postgresqlWriteTable}            % convenience functions
 \alias{postgresqlImportFile}
 \alias{postgresqlDataType}
-\alias{postgresqlTransactionStatement}   % transaction management 
 \alias{.PostgreSQLPkgName}              % constants
 \alias{.PostgreSQLPkgVersion}
 \alias{.PostgreSQLPkgRCS}
@@ -64,9 +63,6 @@
    postgresqlImportFile(con, name, value, field.types, overwrite=FALSE,
       append=FALSE, header, row.names, nrows=50, sep=",", eol="\n", 
       skip = 0, quote='"', ...)
-
-   ## Transaction Management
-   postgresqlTransactionStatement(con, statement)
 }
 \arguments{
 \item{max.con}{
@@ -112,8 +108,7 @@
 \item{password}{
    character string with the PostgreSQL's password.
 }
-\item{dbname}{ character string with the PostgreSQL database name.
-}
+\item{dbname}{ character string with the PostgreSQL database name.}
 \item{host}{
    character string with the name (or IP address) of the machine
    hosting the database. Default is \code{""}, which is
@@ -246,9 +241,6 @@ Command-line options to be sent to the server
    \code{postgresqlDataType} retuns a character string with the closest
    
    \code{postgresqlResultInfo} returns a list of name-value metadata pairs.
-
-   \code{postgresqlTransactionStatement} returns a logical indicating whether the
-   operation succeeded or not.
 }
 \section{Constants}{
 \code{.PostgreSQLPkgName} (currently \code{"RPostgreSQL"}),
