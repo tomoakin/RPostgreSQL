@@ -1,4 +1,4 @@
-% $Id: dbApply-methods.Rd,v 0.1 2008/08/10 18:04:01 psk Exp $
+% $Id: dbApply-methods.Rd,v 1.1 2003/12/02 14:53:01 dj Exp dj $
 \name{dbApply-methods}
 \docType{methods}
 \alias{dbApply-methods}
@@ -28,8 +28,8 @@
 }
 
 \examples{\dontrun{
-## compute quanitiles for each network agent
-con <- dbConnect(PostgreSQL(), user="user", password="passwd")
+## compute quantiles for each network agent
+con <- dbConnect(PostgreSQL(), user="user", password="passwd", dbname="dbname")
 rs <- dbSendQuery(con, 
              "select Agent, ip_addr, DATA from pseudo_data order by Agent")
 out <- dbApply(rs, INDEX = "Agent", 

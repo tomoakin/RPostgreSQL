@@ -1,4 +1,4 @@
-% $Id: dbDriver-methods.Rd,v 0.1 2008/07/28 01:09:05 psk Exp $
+% $Id: dbDriver-methods.Rd,v 1.1 2003/12/02 14:53:01 dj Exp dj $
 \name{dbDriver-methods}
 \docType{methods}
 \alias{dbDriver-methods}
@@ -48,29 +48,19 @@ the size of the connection table. Default is \code{FALSE}.}
   \code{\link[DBI]{dbReadTable}}.
 }
 \examples{\dontrun{
-
 # create an PostgreSQL instance and set 10000 of rows per fetch.
-library(RPostgreSQL)
-drv <- dbDriver("PostgreSQL", fetch.default.records=10000)
+m <- dbDriver("PostgreSQL", fetch.default.records=10000)
 
-# Connecting to PostgreSQL with the specified parameters
-con <- dbConnect(drv,user="usrname",password="passwd",dbname="postgres")
-
-# Running the query to obtain the resultset
-rs <- dbSendQuery(con, "select * from cities where population > 5000")
-
-# fetch records into a dataframe.
-# n = 50 fetched fifty records
+con <- dbConnect(m, username="usr", password = "pwd",
+           dbname = "iptraffic")
+rs <- dbSubmitQuery(con, 
+         "select * from HTTP_ACCESS where IP_ADDRESS = '127.0.0.1'")
 df <- fetch(rs, n = 50)
-# n = -1 fetches all the remaining records available
 df2 <- fetch(rs, n = -1)
-
-# Clearing the result set
 dbClearResult(rs)
 
-#This returns a character vector (possibly of zero-length)
-# table names available on the con connection.
-dbListTables(con)
+pcon <- dbConnect(p, group = "wireless")
+dbListTables(pcon)
 }
 }
 \keyword{methods}

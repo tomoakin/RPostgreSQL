@@ -1,4 +1,4 @@
-% $Id: dbGetInfo-methods.Rd,v 0.1 2008/08/10 18:04:01 psk Exp $
+% $Id: dbGetInfo-methods.Rd,v 1.1 2003/12/02 14:53:01 dj Exp dj $
 \name{dbGetInfo-methods}
 \docType{methods}
 \alias{dbGetInfo}
@@ -61,7 +61,7 @@ dbGetStatement(rs)
 dbHasCompleted(rs)
 
 info <- dbGetInfo(rs)
-names(dbGetInfo(drv))
+names(dbGetInfo(drv))  
 
 # DBIConnection info
 names(dbGetInfo(con))

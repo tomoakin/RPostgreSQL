@@ -2,7 +2,7 @@
 #define _RS_DBI_H 1
 
 /*
- *    RS-DBI.h
+ *    RS-DBI.h     Last Modified:
  *
  * This package was developed as a part of Summer of Code program organized by Google.
  * Thanks to David A. James & Saikat DebRoy, the authors of RMySQL package.

@@ -1,4 +1,4 @@
-% $Id: dbSendQuery-methods.Rd,v 0.1 2008/07/23 02:38:31 psk Exp $
+% $Id: dbSendQuery-methods.Rd,v 1.1 2003/12/02 14:53:01 dj Exp dj $
 \name{dbSendQuery-methods}
 \docType{methods}
 \alias{dbSendQuery-methods}
@@ -43,7 +43,7 @@
 \examples{\dontrun{
 drv <- dbDriver("PostgreSQL")
 con <- dbConnect(drv, "usr", "password", "dbname")
-res <- dbSendQuery(con, "SELECT * from sales")
+res <- dbSendQuery(con, "SELECT * from liv25")
 data <- fetch(res, n = -1)
 }
 }
