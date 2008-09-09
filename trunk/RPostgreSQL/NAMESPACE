@@ -17,6 +17,7 @@ exportClasses(
 exportMethods(
    coerce,
    dbApply,
+   dbBeginTransaction,
    dbCallProc,
    dbClearResult,
    dbColumnInfo,
