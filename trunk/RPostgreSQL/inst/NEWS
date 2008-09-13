@@ -1,4 +1,10 @@
-	Version  0.1-0
-=-> First Release
-=-> This 'RMySQL' package was developed as a part of Google Summer of Code 2008 program.
-=-> This implements all the features in the DBI (and a few extra like those related to transaction management)
+
+Version  0.1-0
+
+    o	First Release
+
+    o   This 'RPostgreSQL' package was developed as a part of Google Summer of
+     	Code 2008 program.
+
+    o   Its implements all the features in the DBI (and a few extra like those
+        related to transaction management)

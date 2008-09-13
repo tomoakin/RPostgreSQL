@@ -2,8 +2,9 @@ About the RPostgreSQL package:
 
     Database Interface between R and PostgreSQL
 
-For details, see the Adobe PDF file "DBI.pdf" in the doc folder or see the documentation using help(PostgreSQL).
-Demos are provided in the devTests folder for illustrating the working.
+For details, see the Adobe PDF file "DBI.pdf" in the doc folder or see the
+documentation using help(PostgreSQL).  Demos are provided in the devTests
+folder for illustrating the working.
 
 Basic usage:
 ------------
@@ -34,28 +35,39 @@ Basic usage:
 Frequently Asked Questions (FAQ):
 
 1Q. What is Database Interface(DBI) ?
-A.  The Data Base Interface (DBI) provides a layer of abstraction between R and relational databases.
-    All the classes in the DBI package are virtual and need to be implemented using the various DBMS
-    libraries. The vendor has written some functions for communicating with the database in some language
-    like C, compiled the functions and the compiled code is the library. We write a C program that calls
-    the functions in the library, when it wants to access the database. Every database library is different.            The names of the functions vary, and the order in which you call them varies, and the details of passing
-    queries to the functions and getting the data back out will vary. To manage this, DBI was extended for individual database back-ends MySQL, SQLite, Oracle, PostgreSQL via R packages ROracle, RMySQL, RSQLite and RPostgreSQL.
+A.  The Data Base Interface (DBI) provides a layer of abstraction between R
+    and relational databases. All the classes in the DBI package are virtual
+    and need to be implemented using the various DBMS libraries. The vendor
+    has written some functions for communicating with the database in some
+    language like C, compiled the functions and the compiled code is the
+    library. We write a C program that calls the functions in the library,
+    when it wants to access the database. Every database library is
+    different. The names of the functions vary, and the order in
+    which you call them varies, and the details of passing queries to the
+    functions and getting the data back out will vary. To manage this, DBI
+    was extended for individual database back-ends MySQL, SQLite, Oracle,
+    PostgreSQL via R packages ROracle, RMySQL, RSQLite and RPostgreSQL. 
     DBI for R-language was initially developed at Bell Labs by David James.
 
 2Q. What is RPostgreSQL ?
-A.  The RPostgreSQL package provides a glue between the PostgreSQL database and the DBI of R.
-    The C programming interface called libpq was used for communicating with PostgreSQL.
+A.  The RPostgreSQL package provides a glue between the PostgreSQL database
+    and the DBI of R. The C programming interface called libpq was used for
+    communicating with PostgreSQL. 
 
 3Q. What is libpq ?
-A.  libpq is the C application programmer’s interface to PostgreSQL. libpq is a cross platform library providing               set of library functions that allow client programs to pass queries to the PostgreSQL backend server and to                receive the results of these queries.
+A.  libpq is the C application programmer’s interface to PostgreSQL. libpq is
+    a cross platform library providing set of library functions
+    that allow client programs to pass queries to the PostgreSQL backend server
+    and to receive the results of these queries. 
 =============================================================================================
 
 Important Information:
 
-1. dbWriteTable method is found to fail in some flavours of Linux like RedHat distributions because of SELinux.
-   SELinux is preventing PostgreSQL to access data from locations other than it's data folder.
-   So one of the possible quick solutions is to turn off SELinux temporarily while using this method and
-   turn on later.
+1. dbWriteTable method is found to fail in some flavours of Linux like RedHat
+   distributions because of SELinux. SELinux is preventing PostgreSQL to
+   access data from locations other than it's data folder. So one of the
+   possible quick solutions is to turn off SELinux temporarily while using
+   this method and turn on later.
 
 ## To turn off the SELinux, type the following at the command prompt
 $ echo 0 > /selinux/enforce/
@@ -64,8 +76,10 @@ $ echo 1 > /selinux/enforce/
 
 2. The present version of RPostgreSQL can handle only one resultset per connection.
 
-3. PostgreSQL treats table and column names as case insensitive. So always lowercase names are returned
-   in PostgreSQL and hence in RPostgreSQL.
+3. PostgreSQL treats table and column names as case insensitive. So always
+   lowercase names are returned in PostgreSQL and hence in RPostgreSQL.
 
-for any queries,suggestions and comments, mail: Dr.Dirk Eddelbuettel <edd@debian.org>
-                                                Sameer Kumar Prayaga <sameer.bits@gmail.com>
+for any queries,suggestions and comments, mail: 
+    Sameer Kumar Prayaga <sameer.bits@gmail.com>    GSoC student for this project
+    Dirk Eddelbuettel <edd@debian.org>		    GSoC mentor
+                                                
