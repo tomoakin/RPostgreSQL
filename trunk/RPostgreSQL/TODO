@@ -21,17 +21,18 @@ Things yet to be Completed:
 8. Improve the documentation & remove the examples from don't run
    mode.
 9. Just verify whether all the key words are included in the reserved
-   keywords section.
-10.Add the mappings for all the datatypes in RS-PostgreSQL.h
+   keywords section. [DONE]
+10.Add the mappings for all the datatypes in RS-PostgreSQL.h 
 11.Check whether it works in windows or not & make corresponding changes.
 12.Check whether all the data mappings are working perfectly fine &
    finetune some datatypes like date,blobs etc..For checking, perform    
    this test. Try to convert a data to & fo via R & pg and see whether   
-   datatype is being preserved.
+   datatype is being preserved. [Partially Done]
 13.In RS_PostgreSQL_connectionInfo, you are assigning threadid to
    processid. So Check that.
    [DONE: changed the name from thread to backendPId]
 14.Add comments to the code & some extra files for information sake as   
-   in RMySQL & RSQLite.
-15.Replace all occurrences of the old 'T' and 'F' with 'TRUE' and 'FALSE' 
+   in RMySQL & RSQLite. 
+15.Replace all occurrences of the old 'T' and 'F' with 'TRUE' and 'FALSE' [DONE]
 16.Add commands for prepared statements.
+17.Check the working of DBI extension "dbApply".
