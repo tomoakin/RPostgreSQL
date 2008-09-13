@@ -247,6 +247,20 @@ function(res, ...)
    if(!is.null(flds)){
       flds$Sclass <- .Call("RS_DBI_SclassNames", flds$Sclass,
                         PACKAGE = .PostgreSQLPkgName)
+
+      ## -------
+      ## This is actually a bug introduced deliberately. In dbGetInfo, it displays the Sclass for Date/Time datatypes in Pg
+      ## as character. But in dbColumnInfo, it displays it as 'POSIXct'. This is because there is no
+      ## datatype corresponding to Date/Time defined in R-defines.h & R-internals.h
+      for(i in 1:length(flds$type)) {
+          if(flds$type[[i]] == 1114) {
+              flds$Sclass[[i]] = "POSIXct";
+          } else if(flds$type[[i]] == 1082) {
+              flds$Sclass[[i]] = "Date";
+          }
+      }
+      ## -------
+
       flds$type <- .Call("RS_PostgreSQL_typeNames", as.integer(flds$type),
                         PACKAGE = .PostgreSQLPkgName)
       ## no factors
@@ -377,6 +391,49 @@ function(res, n=0, ...)
       class(rel) <- "data.frame"
    else
       oldClass(rel) <- "data.frame"
+
+   flds <- dbGetInfo(res)$fieldDescription[[1]]$type
+   for(i in 1:length(flds)) {
+
+       ## Note: All the Date-Time datatypes in pg except date and TimeStamp were mapped to character
+
+       if(flds[[i]] == 1114) {  ## 1114 corresponds to Timestamp without TZ (mapped to POSIXct class)
+           rel[,i] <- as.POSIXct(rel[,i])
+       } else if(flds[[i]] == 1082) {  ## 1082 corresponds to Date (mapped to Date class)
+           rel[,i] <- as.Date(rel[,i])
+       }
+
+       ## HAVE TO CHANGE THIS (IMP)  STARTS.........
+       if(0) {
+           if(flds[[i]] == 1184) {  ## 1184 corresponds to Timestamp with TimeZone
+               ## This code assumes pg is using ISO format (eg: 2004-10-19 13:53:54+05:30)
+
+               t1 <- as.POSIXct(rel[,i],"%Y-%m-%d %H:%M:%S")
+               ct<-nchar(rel[,i])
+               t2 <-substr(rel[,i],ct-5,ct)
+               ## t3 should have "+" or "-"
+               t3 <- substr(t2,1,1)
+               ## t4 has hours
+               t4 <- substr(t2,2,3)
+               ## converting hours in t4 to seconds
+               t4 <- as.integer(t4) * 3600
+               t5 <- substr(t2,5,6)
+               ## converting minutes in t5 to seconds
+               t5 <- as.integer(t5) * 60
+               ## Adding / Subtracting the offset in seconds to time t1 to make to GMT
+               if(t3 == "+") {
+                   t1 <- t1 - t4 - t5
+               } else if(t3 == "-") {
+                   t1 <- t1 + t4 + t5
+               }
+               tf <- format(t1)
+               rel[,i] <- as.POSIXct(tf,"%Y-%m-%d %H:%M:%S",tz="GMT")
+           }
+       }
+#############  ENDS (Remove if(0) after making the code work)
+
+   }
+
    rel
 }
 
@@ -492,7 +549,9 @@ function(con, name, value, field.types = NULL, overwrite = FALSE,
     f <- file(fn, open="r")
     if(skip>0)
       readLines(f, n=skip)
-    flds <- count.fields(textConnection(readLines(f, n=2)), sep)
+    txtcon <- textConnection(readLines(f, n=2))
+    flds <- count.fields(txtcon, sep)
+    close(txtcon)
     close(f)
     nf <- length(unique(flds))
   }
@@ -515,7 +574,7 @@ function(con, name, value, field.types = NULL, overwrite = FALSE,
         row.names = row.names)
     rs <- try(dbSendQuery(new.con, sql))
     if(inherits(rs, ErrorClass)){
-      warning("could not create table: aborting sqliteImportFile")
+      warning("could not create table: aborting postgresqlImportFile")
       return(FALSE)
     }
     else
@@ -525,16 +584,13 @@ function(con, name, value, field.types = NULL, overwrite = FALSE,
     warning(sprintf("table %s already exists -- use append=TRUE?", name))
   }
 
-  fmt <-
-     paste("LOAD DATA LOCAL INFILE '%s' INTO TABLE  %s ",
-           "FIELDS TERMINATED BY '%s' ",
-           if(!is.null(quote)) "OPTIONALLY ENCLOSED BY '%s' " else "",
-           "LINES TERMINATED BY '%s' ",
-           "IGNORE %d LINES ", sep="")
+  fmt <- paste("COPY %s FROM '%s' ","WITH DELIMITER AS '%s' ",
+               if(!is.null(quote)) "CSV  QUOTE AS  '%s'", sep="")
+
   if(is.null(quote))
-     sql <- sprintf(fmt, fn, name, sep, eol, skip + as.integer(header))
+      sql <- sprintf(fmt, name,fn, sep)
   else
-     sql <- sprintf(fmt, fn, name, sep, quote, eol, skip + as.integer(header))
+      sql <- sprintf(fmt, name,fn, sep, quote)
 
   rs <- try(dbSendQuery(new.con, sql))
   if(inherits(rs, ErrorClass)){
@@ -729,7 +785,7 @@ function(obj, ...)
    else {
       sql.type <- switch(rs.class,
                      character = "text",
-                     logical = "boolean",
+                     logical = "bool",
                      factor = "text",
                      ordered = "text",
                      "text")
@@ -740,8 +796,18 @@ function(obj, ...)
 ## the following reserved words were taken from ["RESERVED" of postgres colomn in ] Table C.1 in Appendix C
 ## of the PostgreSQL Manual 8.3.1.
 
-".PostgreSQLKeywords" <-
-c( "ALL", "ANALYSE", "ANALYZE", "AND", "ANY", "ARRAY", "AS", "ASC", "ASYMMETRIC", "AUTHORIZATION", "BETWEEN", "BINARY", "BOTH", "CASE", "CAST", "CHECK", "COLLATE", "COLUMN", "CONSTRAINT", "CREATE", "CROSS", "CURRENT_DATE", "CURRENT_ROLE", "CURRENT_TIME", "CURRENT_TIMESTAMP", "CURRENT_USER", "DEFAULT", "DEFERRABLE", "DESC", "DISTINCT", "DO", "ELSE", "END", "EXCEPT", "FALSE", "FOR", "FOREIGN", "FREEZE", "FROM", "FULL", "GRANT", "GROUP", "HAVING", "ILIKE", "IN", "INITIALLY", "INNER","INTERSECT", "INTO", "IS", "ISNULL", "JOIN", "LEADING", "LEFT", "LIKE", "LIMIT", "LOCALTIME", "LOCALTIMESTAMP", "NATURAL", "NEW", "NOT", "NULL", "OFF", "OFFSET", "OLD", "ON", "ONLY", "OR", "ORDER", "OUTER", "OVERLAPS", "PLACING", "PRIMARY", "REFERENCES", "RESERVED", "SELECT", "SESSION_USER", "SIMILAR", "SOME", "SYMMETRIC", "TABLE", "THEN", "TO", "TRAILING", "TRUE", "UNION", "UNIQUE", "USER", "USING", "VERBOSE", "WHEN", "WHERE", "WITH"
-  )
-
-
+".PostgreSQLKeywords" <- c( "ALL", "ANALYSE", "ANALYZE", "AND", "ANY",
+                           "ARRAY", "AS", "ASC", "ASYMMETRIC", "AUTHORIZATION", "BETWEEN",
+                           "BINARY", "BOTH", "CASE", "CAST", "CHECK", "COLLATE", "COLUMN",
+                           "CONSTRAINT", "CREATE", "CROSS", "CURRENT_DATE", "CURRENT_ROLE",
+                           "CURRENT_TIME", "CURRENT_TIMESTAMP", "CURRENT_USER", "DEFAULT",
+                           "DEFERRABLE", "DESC", "DISTINCT", "DO", "ELSE", "END", "EXCEPT",
+                           "FALSE", "FOR", "FOREIGN", "FREEZE", "FROM", "FULL", "GRANT", "GROUP",
+                           "HAVING", "ILIKE", "IN", "INITIALLY", "INNER","INTERSECT", "INTO",
+                           "IS", "ISNULL", "JOIN", "LEADING", "LEFT", "LIKE", "LIMIT",
+                           "LOCALTIME", "LOCALTIMESTAMP", "NATURAL", "NEW", "NOT", "NULL", "OFF",
+                           "OFFSET", "OLD", "ON", "ONLY", "OR", "ORDER", "OUTER", "OVERLAPS",
+                           "PLACING", "PRIMARY", "REFERENCES", "RESERVED", "SELECT",
+                           "SESSION_USER", "SIMILAR", "SOME", "SYMMETRIC", "TABLE", "THEN", "TO",
+                           "TRAILING", "TRUE", "UNION", "UNIQUE", "USER", "USING", "VERBOSE",
+                           "WHEN", "WHERE", "WITH" )

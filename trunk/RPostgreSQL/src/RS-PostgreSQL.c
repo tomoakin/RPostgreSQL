@@ -491,7 +491,7 @@ flds->nullOk[j]=(Sint)0;
     case TIMESTAMPTZOID:
     case INTERVALOID:
       flds->Sclass[j] = CHARACTER_TYPE;
-      flds->isVarLength[j] = (Sint) 1;
+      /*flds->isVarLength[j] = (Sint) 1;*/
       break;
     default:
       flds->Sclass[j] = CHARACTER_TYPE;
