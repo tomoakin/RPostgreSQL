@@ -1,13 +1,14 @@
 Things yet to be Completed:
 
-1. Try to implement dbWrite (currently using temp files) using network connections.
+1. Try to implement dbWrite (currently using temp files) using network
+   connections. 
 
 2. 'Scale' is not calculated in dbGetInfo(result_set)
    Try to write an SQL query to get the value or hardcode
    the appropriate details in the code.For more details
    refer to : "RS_PostgreSQL_createDataMappings".
 
-3. Check whether it works in windows or not & make corresponding changes.
+3. Check whether it works in windows or not & make corresponding changes. 
 
 4. Check whether all the data mappings are working perfectly fine.
    [Partially Done]
