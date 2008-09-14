@@ -1,4 +1,4 @@
-% $Id: dbReadTable-methods.Rd,v 1.2 2003/12/02 15:58:29 dj Exp dj $
+% $Id: dbReadTable-methods.Rd,v 0.1 2008/07/23 02:38:31 psk Exp $
 \name{dbReadTable-methods}
 \docType{methods}
 \alias{dbReadTable-methods}
@@ -101,7 +101,11 @@
    indicating whether the operation was successful.  
 }
 \note{
-TO BE FILLED LATER..............
+dbWriteTable will fail if SElinux is ON. So if dbWriteTable is not working then please turn off
+the SElinux using the following command at the command prompt
+echo 0 > /selinux/enforce/
+To turn SElinux ON use:
+echo 1 > /selinux/enforce/
 }
 \references{
    See the Database Interface definition document
@@ -122,10 +126,10 @@ TO BE FILLED LATER..............
   \code{\link[DBI]{dbReadTable}}.
 }
 \examples{\dontrun{
-conn <- dbConnect("PostgreSQL", group = "wireless")
-if(dbExistsTable(con, "fuel_frame")){
-   dbRemoveTable(conn, "fuel_frame")
-   dbWriteTable(conn, "fuel_frame", fuel.frame)
+conn <- dbConnect("PostgreSQL", dbname = "wireless")
+if(dbExistsTable(con, "frame_fuel")){
+   dbRemoveTable(conn, "frame_fuel")
+   dbWriteTable(conn, "frame", fuel.frame)
 }
 if(dbExistsTable(conn, "RESULTS")){
    dbWriteTable(conn, "RESULTS", results2000, append = T)
