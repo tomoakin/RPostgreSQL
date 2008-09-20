@@ -257,6 +257,8 @@ function(res, ...)
               flds$Sclass[[i]] = "POSIXct";
           } else if(flds$type[[i]] == 1082) {
               flds$Sclass[[i]] = "Date";
+          } else if(flds$type[[i]] == 1184) {
+   		flds$Sclass[[i]] = "POSIXct";
           }
       }
       ## -------
@@ -401,37 +403,11 @@ function(res, n=0, ...)
            rel[,i] <- as.POSIXct(rel[,i])
        } else if(flds[[i]] == 1082) {  ## 1082 corresponds to Date (mapped to Date class)
            rel[,i] <- as.Date(rel[,i])
+       } else if(flds[[i]] == 1184)  {  ## 1184 corresponds to Timestamp with TimeZone
+         ## TODO: Details about time zone has been dropped.
+         ## Will try do improve it in the future
+	   rel[,i] <- as.POSIXct(rel[,i],"%Y-%m-%d %H:%M:%S")
        }
-
-       ## HAVE TO CHANGE THIS (IMP)  STARTS.........
-       if(0) {
-           if(flds[[i]] == 1184) {  ## 1184 corresponds to Timestamp with TimeZone
-               ## This code assumes pg is using ISO format (eg: 2004-10-19 13:53:54+05:30)
-
-               t1 <- as.POSIXct(rel[,i],"%Y-%m-%d %H:%M:%S")
-               ct<-nchar(rel[,i])
-               t2 <-substr(rel[,i],ct-5,ct)
-               ## t3 should have "+" or "-"
-               t3 <- substr(t2,1,1)
-               ## t4 has hours
-               t4 <- substr(t2,2,3)
-               ## converting hours in t4 to seconds
-               t4 <- as.integer(t4) * 3600
-               t5 <- substr(t2,5,6)
-               ## converting minutes in t5 to seconds
-               t5 <- as.integer(t5) * 60
-               ## Adding / Subtracting the offset in seconds to time t1 to make to GMT
-               if(t3 == "+") {
-                   t1 <- t1 - t4 - t5
-               } else if(t3 == "-") {
-                   t1 <- t1 + t4 + t5
-               }
-               tf <- format(t1)
-               rel[,i] <- as.POSIXct(tf,"%Y-%m-%d %H:%M:%S",tz="GMT")
-           }
-       }
-#############  ENDS (Remove if(0) after making the code work)
-
    }
 
    rel
