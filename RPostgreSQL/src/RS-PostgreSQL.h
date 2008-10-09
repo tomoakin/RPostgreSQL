@@ -2,7 +2,9 @@
 #define _RS_POSTGRESQL_H 1
 
 /* 
- *    RS-PostgreSQL.h     Last Modified:
+ *    RS-PostgreSQL.h     
+ *
+ * Last Modified: $Date$
  *
  * This package was developed as a part of Summer of Code program organized by Google.
  * Thanks to David A. James & Saikat DebRoy, the authors of RMySQL package.
@@ -10,80 +12,72 @@
  * Also Thanks to my GSoC mentor Dirk Eddelbuettel for helping me in the development.
  */
 
-
 #ifdef _cplusplus
 extern  "C" {
 #endif
-
-
 
 #include "libpq-fe.h"
 #include <string.h>
 #include "RS-DBI.h"
 
-
 /* Note that the default number of maximum connections to the PostgreSQL server is typically 100
  *  connections, but may be less if your kernel settings will not support it (as determined during initdb)
-* Refer to: http://www.postgresql.org/docs/8.2/interactive/runtime-config-resource.html for details
+ * Refer to: http://www.postgresql.org/docs/8.2/interactive/runtime-config-resource.html for details
  */
 
 
-typedef struct st_sdbi_conParams {
-char *user;
-char *password;
-char *host;
-char *dbname;
-char *port;
-char *tty;
-char *options;
-}RS_PostgreSQL_conParams;
+  typedef struct st_sdbi_conParams {
+    char *user;
+    char *password;
+    char *host;
+    char *dbname;
+    char *port;
+    char *tty;
+    char *options;
+  } RS_PostgreSQL_conParams;
 
-RS_PostgreSQL_conParams *RS_PostgreSQL_allocConParams(void);
+  RS_PostgreSQL_conParams *RS_PostgreSQL_allocConParams(void);
 
-void RS_PostgreSQL_freeConParams(RS_PostgreSQL_conParams *conParams);
+  void RS_PostgreSQL_freeConParams(RS_PostgreSQL_conParams *conParams);
+  
+  /* The following functions are the S/R entry points into the C implementation
+   * (i.e., these are the only ones visible from R/S) we use the prefix
+   * "RS_PostgreSQL" in function names to denote this.
+   * These functions are  built on top of the underlying RS_DBI manager, 
+   * connection, and resultsets structures and functions (see RS-DBI.h).
+   * 
+   * Note: A handle is just an R/S object (see RS-DBI.h for details), i.e.,
+   *       Mgr_Handle, Con_Handle, Res_Handle, Db_Handle are s_object 
+   *       (integer vectors, to be precise).
+   */
 
-/* The following functions are the S/R entry points into the C implementation
- * (i.e., these are the only ones visible from R/S) we use the prefix
- * "RS_PostgreSQL" in function names to denote this.
- * These functions are  built on top of the underlying RS_DBI manager, 
- * connection, and resultsets structures and functions (see RS-DBI.h).
- * 
- * Note: A handle is just an R/S object (see RS-DBI.h for details), i.e.,
- *       Mgr_Handle, Con_Handle, Res_Handle, Db_Handle are s_object 
- *       (integer vectors, to be precise).
- */
+  /* dbManager */
+  Mgr_Handle *RS_PostgreSQL_init(s_object *config_params, s_object *reload);
+  s_object   *RS_PostgreSQL_close(Mgr_Handle *mgrHandle);
+  
+  /* dbConnection */
+  Con_Handle *RS_PostgreSQL_newConnection(Mgr_Handle *mgrHandle,
+					  s_object *con_params);  
+  Con_Handle *RS_PostgreSQL_cloneConnection(Con_Handle *conHandle);
+  s_object   *RS_PostgreSQL_closeConnection(Con_Handle *conHandle);
+  s_object   *RS_PostgreSQL_getException(Con_Handle *conHandle);    /* err No, Msg */
 
-/* dbManager */
-Mgr_Handle *RS_PostgreSQL_init(s_object *config_params, s_object *reload);
-s_object   *RS_PostgreSQL_close(Mgr_Handle *mgrHandle);
+  /* dbResultSet */
+  Res_Handle *RS_PostgreSQL_exec(Con_Handle *conHandle, s_object *statement);
+  s_object   *RS_PostgreSQL_fetch(Res_Handle *rsHandle, s_object *max_rec);
+  s_object   *RS_PostgreSQL_closeResultSet(Res_Handle *rsHandle);
+  
+  s_object   *RS_PostgreSQL_validHandle(Db_Handle *handle);      /* boolean */
 
-/* dbConnection */
-Con_Handle *RS_PostgreSQL_newConnection(Mgr_Handle *mgrHandle,
-				   s_object *con_params);  
-Con_Handle *RS_PostgreSQL_cloneConnection(Con_Handle *conHandle);
-s_object   *RS_PostgreSQL_closeConnection(Con_Handle *conHandle);
-s_object   *RS_PostgreSQL_getException(Con_Handle *conHandle);    /* err No, Msg */
-
-/* dbResultSet */
-Res_Handle *RS_PostgreSQL_exec(Con_Handle *conHandle, s_object *statement);
-s_object   *RS_PostgreSQL_fetch(Res_Handle *rsHandle, s_object *max_rec);
-s_object   *RS_PostgreSQL_closeResultSet(Res_Handle *rsHandle);
-
-s_object   *RS_PostgreSQL_validHandle(Db_Handle *handle);      /* boolean */
-
-RS_DBI_fields *RS_PostgreSQL_createDataMappings(Res_Handle *resHandle);
-/* the following funs return named lists with meta-data for 
- * the manager, connections, and  result sets, respectively.
- */
-s_object *RS_PostgreSQL_managerInfo(Mgr_Handle *mgrHandle);
-s_object *RS_PostgreSQL_connectionInfo(Con_Handle *conHandle);
-s_object *RS_PostgreSQL_resultSetInfo(Res_Handle *rsHandle);
-
-
-
-
-
-/*  OID"S mapping taken from pg_type.h */
+  RS_DBI_fields *RS_PostgreSQL_createDataMappings(Res_Handle *resHandle);
+  /* the following funs return named lists with meta-data for 
+   * the manager, connections, and  result sets, respectively.
+   */
+  s_object *RS_PostgreSQL_managerInfo(Mgr_Handle *mgrHandle);
+  s_object *RS_PostgreSQL_connectionInfo(Con_Handle *conHandle);
+  s_object *RS_PostgreSQL_resultSetInfo(Res_Handle *rsHandle);
+  
+  /*  OID"S mapping taken from pg_type.h */
 #define BOOLOID			16
 #define BYTEAOID		17
 #define CHAROID			18
@@ -162,45 +156,40 @@ s_object *RS_PostgreSQL_resultSetInfo(Res_Handle *rsHandle);
 #define ANYENUMOID		3500
 
 
+  static struct data_types RS_PostgreSQL_dataTypes[] = {
 
-static struct data_types RS_PostgreSQL_dataTypes[] = {
+    {"BIGINT",      20				}, /* ALSO KNOWN AS INT8 */
+    {"DECIMAL",     1700			}, /* ALSO KNOWN  AS NUMERIC */
+    {"FLOAT8",      701			},  /* DOUBLE PRECISION */
+    {"FLOAT" ,      700			}, /* ALSO CALLED FLOAT4 (SINGLE PRECISION) */
+    {"INTEGER",     23				}, /*ALSO KNOWN AS INT 4 */
+    {"SMALLINT",    21				}, /* ALSO KNOWN AS INT2 */
+    {"MONEY"   ,    790                        }, /* MONEY (8 bytes) */
 
+    {"CHAR",        1042	                }, /* FIXED LENGTH STRING-BLANK PADDED */
+    {"VARCHAR",     1043		        }, /* VARIABLE LENGTH STRING WITH SPECIFIED LIMIT*/
+    {"TEXT",	     25				}, /* VARIABLE LENGTH STRING */
 
+    {"DATE",	             1082		},
+    {"TIME",                1083	        },
+    {"TIMESTAMP",           1114		},
+    {"TIMESTAMPTZOID",      1184               },
+    {"INTERVAL",            1186		},
+    {"TIMETZOID",           1266               },
 
+    {"BOOL", 	     16				}, /* BOOLEAN */
 
-     {"BIGINT",      20				}, /* ALSO KNOWN AS INT8 */
-     {"DECIMAL",     1700			}, /* ALSO KNOWN  AS NUMERIC */
-     {"FLOAT8",      701			},  /* DOUBLE PRECISION */
-     {"FLOAT" ,      700			}, /* ALSO CALLED FLOAT4 (SINGLE PRECISION) */
-     {"INTEGER",     23				}, /*ALSO KNOWN AS INT 4 */
-     {"SMALLINT",    21				}, /* ALSO KNOWN AS INT2 */
-     {"MONEY"   ,    790                        }, /* MONEY (8 bytes) */
+    {"BYTEA",	     17				},  /* USED FOR STORING RAW DATA */
 
-     {"CHAR",        1042	                }, /* FIXED LENGTH STRING-BLANK PADDED */
-     {"VARCHAR",     1043		        }, /* VARIABLE LENGTH STRING WITH SPECIFIED LIMIT*/
-     {"TEXT",	     25				}, /* VARIABLE LENGTH STRING */
+    {"OID",	     26				},
 
-     {"DATE",	             1082		},
-     {"TIME",                1083	        },
-     {"TIMESTAMP",           1114		},
-     {"TIMESTAMPTZOID",      1184               },
-     {"INTERVAL",            1186		},
-     {"TIMETZOID",           1266               },
+    {"NULL",	     2278			},
 
-     {"BOOL", 	     16				}, /* BOOLEAN */
-
-     {"BYTEA",	     17				},  /* USED FOR STORING RAW DATA */
-
-     {"OID",	     26				},
-
-     {"NULL",	     2278			},
-
-     { (char *) 0,              -1              }
-};
+    { (char *) 0,              -1              }
+  };
  
-
-s_object *RS_PostgreSQL_typeNames(s_object *typeIds);
-extern const struct data_types RS_dataTypeTable[];
+  s_object *RS_PostgreSQL_typeNames(s_object *typeIds);
+  extern const struct data_types RS_dataTypeTable[];
 
 #ifdef _cplusplus
 }
