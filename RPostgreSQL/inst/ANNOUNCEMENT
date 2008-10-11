@@ -1,0 +1,30 @@
+
+       RPostgreSQL version 0.1.0
+
+We are pround to announce the availability of the RPostgreSQL package on CRAN
+and its mirrors.  This package provides an a DBI-compliant interface between
+PostgreSQL and R.
+
+RPostgreSQL was developed as part of the Google Summer of Code 2008 program
+by Sameer Kumar Prayaga.
+
+Some highlights:
+
+  o  Implemented all the DBI features 
+
+  o  Added support for transaction management 
+
+  o  Added type mapping for dates & timestamps
+
+Known bugs/deficiencies:
+
+  o  Building on Windows unknown/untested. Feedback welcome
+
+RPostgreSQL is hosted on Google Code, for more information see
+
+   http://rpostgresql.googlecode.com/
+
+For any suggestions  and  queries, please contact:
+
+   Sameer Kumar Prayaga <sameer.bits@gmail.com>
+   Dirk Eddelbuettel <edd@debian.org>
