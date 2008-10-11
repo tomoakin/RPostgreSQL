@@ -6,8 +6,10 @@ For details, see the Adobe PDF file "DBI.pdf" in the doc folder or see the
 documentation using help(PostgreSQL).  Examples provided in the devTests
 folder illustrate some of the functionality.
 
+=============================================================================
+
 Basic usage:
-------------
+
   ## initialize the driver to PostgreSQL
   drv <- dbDriver("PostgreSQL")
 
@@ -31,6 +33,48 @@ Basic usage:
   dbUnloadDriver(drv)
 
 For a more complete example, refer to the file demo.r in the devTests folder.
+
+=============================================================================
+
+Important Information:
+
+1. Postgresql _must_ be configured for network access rather than just
+   unix domain sockets as is the default on most installations.
+  
+   To activate network access you need at least to 
+
+   a) in postgresql.conf uncomment the entry for
+        listen_address = '*'
+      where '*' listen to all network traffic, otherwise a comma-separated
+      list of IP address can be given.
+
+   b) in pg_hba.conf add something like
+        host   all   all   127.0.0.1/32	        ident sameuser
+        host   all   all   192.168.1.0/24	ident passwd
+      which would provide network access from the same machine (per the
+      127.0.0.1 localhost address) to the same user, and from any machine
+      on the same network (assuming 192.168.1.0 is your local network) when
+      authenticated by a passwd.
+
+      See the Postgresql documentation for much, much more on this.
+
+   c) run an identd server like gidentd, oidentd, slidentd, ... 
+
+2. dbWriteTable method is found to fail in some flavours of Linux like RedHat
+   distributions because of SELinux. SELinux is preventing PostgreSQL to
+   access data from locations other than it's data folder. So one of the
+   possible quick solutions is to turn off SELinux temporarily while using
+   this method and turn on later.
+
+   ## To turn off the SELinux, type the following at the command prompt
+   $ echo 0 > /selinux/enforce/
+   ## To turn on the SElinux, type the following at the command prompt
+   $ echo 1 > /selinux/enforce/
+
+3. The present version of RPostgreSQL can handle only one resultset per connection.
+
+4. PostgreSQL treats table and column names as case insensitive. So always
+   lowercase names are returned in PostgreSQL and hence in RPostgreSQL.
 
 =============================================================================
 
@@ -64,26 +108,6 @@ A.  libpq is the C application programmer’s interface to PostgreSQL. libpq is
     a cross platform library providing set of library functions that allow
     client programs to pass queries to the PostgreSQL backend server and to
     receive the results of these queries.
-
-=============================================================================
-
-Important Information:
-
-1. dbWriteTable method is found to fail in some flavours of Linux like RedHat
-   distributions because of SELinux. SELinux is preventing PostgreSQL to
-   access data from locations other than it's data folder. So one of the
-   possible quick solutions is to turn off SELinux temporarily while using
-   this method and turn on later.
-
-## To turn off the SELinux, type the following at the command prompt
-$ echo 0 > /selinux/enforce/
-## To turn on the SElinux, type the following at the command prompt
-$ echo 1 > /selinux/enforce/
-
-2. The present version of RPostgreSQL can handle only one resultset per connection.
-
-3. PostgreSQL treats table and column names as case insensitive. So always
-   lowercase names are returned in PostgreSQL and hence in RPostgreSQL.
 
 
 For any queries,suggestions and comments, mail: 
