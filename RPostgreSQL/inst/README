@@ -3,8 +3,8 @@ About the RPostgreSQL package:
     Database Interface between R and PostgreSQL
 
 For details, see the Adobe PDF file "DBI.pdf" in the doc folder or see the
-documentation using help(PostgreSQL).  Demos are provided in the devTests
-folder for illustrating the working.
+documentation using help(PostgreSQL).  Examples provided in the devTests
+folder illustrate some of the functionality.
 
 Basic usage:
 ------------
@@ -12,8 +12,8 @@ Basic usage:
   drv <- dbDriver("PostgreSQL")
 
   ## create a connection to a PostgreSQL server
-  con <- dbConnect(drv,user="userName", password="123456",
-                        dbname="gsoc", host="10.23.34.23")
+  con <- dbConnect(drv, user="userName", password="123456",
+                   dbname="gsoc", host="10.23.34.23")
 
   ## run a query, leave results on the server
   rs <- dbSendQuery(con, "select * from someTable")
@@ -30,12 +30,15 @@ Basic usage:
   ## Unload the driver drv
   dbUnloadDriver(drv)
 
-*** for better understanding of commands, refer to demo.r in the devTests folder.
-=============================================================================================
+For a more complete example, refer to the file demo.r in the devTests folder.
+
+=============================================================================
+
 Frequently Asked Questions (FAQ):
 
-1Q. What is Database Interface(DBI) ?
-A.  The Data Base Interface (DBI) provides a layer of abstraction between R
+1.  What is Database Interface(DBI) ?
+
+    The Data Base Interface (DBI) provides a layer of abstraction between R
     and relational databases. All the classes in the DBI package are virtual
     and need to be implemented using the various DBMS libraries. The vendor
     has written some functions for communicating with the database in some
@@ -49,17 +52,20 @@ A.  The Data Base Interface (DBI) provides a layer of abstraction between R
     PostgreSQL via R packages ROracle, RMySQL, RSQLite and RPostgreSQL. 
     DBI for R-language was initially developed at Bell Labs by David James.
 
-2Q. What is RPostgreSQL ?
-A.  The RPostgreSQL package provides a glue between the PostgreSQL database
+2.  What is RPostgreSQL ?
+ 
+    The RPostgreSQL package provides a glue between the PostgreSQL database
     and the DBI of R. The C programming interface called libpq was used for
     communicating with PostgreSQL. 
 
-3Q. What is libpq ?
+3   What is libpq ?
+
 A.  libpq is the C application programmer’s interface to PostgreSQL. libpq is
-    a cross platform library providing set of library functions
-    that allow client programs to pass queries to the PostgreSQL backend server
-    and to receive the results of these queries. 
-=============================================================================================
+    a cross platform library providing set of library functions that allow
+    client programs to pass queries to the PostgreSQL backend server and to
+    receive the results of these queries.
+
+=============================================================================
 
 Important Information:
 
@@ -79,7 +85,9 @@ $ echo 1 > /selinux/enforce/
 3. PostgreSQL treats table and column names as case insensitive. So always
    lowercase names are returned in PostgreSQL and hence in RPostgreSQL.
 
-for any queries,suggestions and comments, mail: 
+
+For any queries,suggestions and comments, mail: 
+ 
     Sameer Kumar Prayaga <sameer.bits@gmail.com>    GSoC student for this project
     Dirk Eddelbuettel <edd@debian.org>		    GSoC mentor
                                                 
