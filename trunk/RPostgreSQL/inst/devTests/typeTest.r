@@ -1,6 +1,6 @@
 #!/usr/bin/env r
 
-usePG <- FALSE
+usePG <- TRUE
 
 if (usePG) {
     cat("Using Pg\n")
