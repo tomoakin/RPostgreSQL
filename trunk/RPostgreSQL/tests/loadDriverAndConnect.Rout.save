@@ -1,5 +1,5 @@
 
-R version 2.7.2 (2008-08-25)
+R version 2.8.0 beta (2008-10-05 r46601)
 Copyright (C) 2008 The R Foundation for Statistical Computing
 ISBN 3-900051-07-0
 
@@ -26,27 +26,25 @@ Type 'q()' to quit R.
 > ##
 > ## Dirk Eddelbuettel, 02 July 2008
 > 
-> ## try to load our module and abort if this fails
-> stopifnot(require(RPostgreSQL))
-Loading required package: RPostgreSQL
-Loading required package: DBI
-> 
-> ## load the PostgresSQL driver
-> drv <- dbDriver("PostgreSQL")
-> # can't print result as it contains process id which changes  print(summary(drv))
-> 
-> ## connect to the default db
-> con <- dbConnect(drv, dbname="template1")
-> # -- idem  print(con)
-> 
-> ## run a simple query and show the query result
-> res <- dbGetQuery(con, "select datname,encoding,datallowconn from pg_database where datname like 'template%' order by datname")
-> print(res)
-    datname encoding datallowconn
-1 template0        6        FALSE
-2 template1        6         TRUE
-> 
-> ## and disconnect
-> dbDisconnect(con)
-[1] TRUE
+> ## only run this if this env.var is set correctly
+> if (Sys.getenv("HAVE_POSTGRES_RUNNING") == "yes") {
++ 
++     ## try to load our module and abort if this fails
++     stopifnot(require(RPostgreSQL))
++ 
++     ## load the PostgresSQL driver
++     drv <- dbDriver("PostgreSQL")
++     ## can't print result as it contains process id which changes  print(summary(drv))
++ 
++     ## connect to the default db
++     con <- dbConnect(drv, dbname="template1")
++     ## -- idem  print(con)
++ 
++     ## run a simple query and show the query result
++     res <- dbGetQuery(con, "select datname,encoding,datallowconn from pg_database where datname like 'template%' order by datname")
++     print(res)
++ 
++     ## and disconnect
++     dbDisconnect(con)
++ }
 > 
