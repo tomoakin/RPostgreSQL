@@ -1,4 +1,9 @@
 
+Version  0.1-1
+
+    o	DESCRIPTION: Correct Url: field by adding http:// parts. Thanks to
+        Gabor for the hint.
+
 Version  0.1-0
 
     o	First Release
