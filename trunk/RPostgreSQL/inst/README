@@ -104,10 +104,15 @@ Frequently Asked Questions (FAQ):
 
 3   What is libpq ?
 
-A.  libpq is the C application programmer’s interface to PostgreSQL. libpq is
+    libpq is the C application programmer’s interface to PostgreSQL. libpq is
     a cross platform library providing set of library functions that allow
     client programs to pass queries to the PostgreSQL backend server and to
     receive the results of these queries.
+
+4.  What about Rdbi/RdbiPgSQL ?
+
+    Rdbi and RdbiPgSQL are a 'fork' of the DBI interface for R. RPostgreSQL follows
+    the DBI as do ROracle, RMySQL and RSQLite.
 
 
 For any queries,suggestions and comments, mail: 
