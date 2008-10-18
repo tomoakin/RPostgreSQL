@@ -2631,7 +2631,7 @@ echo "$as_me: checking for PostgreSQL header files" >&6;}
 	/opt/include/pgsql \
 	/opt/include/postgresql
 	do
-           echo "Trying ${dir}/libpq-fe.h"
+
 	    if test -f ${dir}/libpq-fe.h
 	    then
 	    	PG_INCDIR=${dir}
@@ -2657,6 +2657,11 @@ echo "$as_me: checking for PostgreSQL header files" >&6;}
 	/opt/lib/postgresql
 	do
 	    if test -f ${dir}/libpq.so
+	    then
+	    	PG_LIBDIR=${dir}
+		break
+	    fi
+	    if test -f ${dir}/libpq.dylib
 	    then
 	    	PG_LIBDIR=${dir}
 		break

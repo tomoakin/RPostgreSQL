@@ -70,6 +70,11 @@ else
 	    	PG_LIBDIR=${dir}
 		break
 	    fi
+	    if test -f ${dir}/libpq.dylib
+	    then 
+	    	PG_LIBDIR=${dir}
+		break
+	    fi
 	done
     fi
 fi
