@@ -1,0 +1,9 @@
+2008-10-21  Dirk Eddelbuettel  <edd@debian.org>
+
+	* configure{,.in}: no longer test for libpq.so as a second
+	confirmation as OS X has it as libpq.dylib and would hence always
+	fail. Thanks to Jan de Leeuw for the pointer.
+
+2008-10-14  Dirk Eddelbuettel  <edd@debian.org>
+
+	* Initial CRAN release 0.1-0
