@@ -1,5 +1,14 @@
 2008-10-21  Dirk Eddelbuettel  <edd@debian.org>
 
+	* tests/*: Tests are now run if and only if the environment variables
+	POSTGRES_USER, POSTGRES_HOST and POSTGRES_DATABASE are set; the
+	variable POSTGRES_PASSWD is also used.  This allows tests to run if
+	the local admin wants them to run.
+	Thanks to Uwe Ligges for the idea, and to Brian Ripley for supporting
+	it. For now, CRAN won't run this though and it is effectively
+	disabled in the default test during 'R CMD check' as the vars will
+	presumably not be set.
+	
 	* configure{,.in}: no longer test for libpq.so as a second
 	confirmation as OS X has it as libpq.dylib and would hence always
 	fail. Thanks to Jan de Leeuw for the pointer.
