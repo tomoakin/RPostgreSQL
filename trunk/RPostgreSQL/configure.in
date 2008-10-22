@@ -88,11 +88,6 @@ AC_CHECK_FILE(["${PG_INCDIR}/libpq-fe.h"],
 	,
 	AC_MSG_ERROR([File libpq-fe.h not in ${PG_INCDIR}; installation may be broken.]))
 
-# Test for sanity by looking for libpq.so, no explicit action on found, error on failure
-AC_CHECK_FILE(["${PG_LIBDIR}/libpq.so"],
-	,
-	AC_MSG_ERROR([Library libpq.so not in ${PG_LIBDIR}; installation may be broken.]))
-
 # Now substitute these two variable in src/Makevars.in to create src/Makevars
 AC_SUBST(PKG_CPPFLAGS)
 AC_SUBST(PKG_LIBS)
