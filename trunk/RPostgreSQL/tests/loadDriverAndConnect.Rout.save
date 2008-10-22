@@ -1,5 +1,5 @@
 
-R version 2.8.0 beta (2008-10-05 r46601)
+R version 2.8.0 RC (2008-10-12 r46696)
 Copyright (C) 2008 The R Foundation for Statistical Computing
 ISBN 3-900051-07-0
 
@@ -16,7 +16,6 @@ Type 'demo()' for some demos, 'help()' for on-line help, or
 Type 'q()' to quit R.
 
 > 
-> 
 > ## First rough version of a test script
 > ##
 > ## Assumes that
@@ -24,10 +23,11 @@ Type 'q()' to quit R.
 > ##  b) the current user can connect
 > ## both of which are not viable for release but suitable while we test
 > ##
-> ## Dirk Eddelbuettel, 02 July 2008
+> ## Dirk Eddelbuettel, 02 Jul 2008
+> ##                    21 Oct 2008   make conditional on environment variables
 > 
 > ## only run this if this env.var is set correctly
-> if (Sys.getenv("HAVE_POSTGRES_RUNNING") == "yes") {
+> if (Sys.getenv("POSTGRES_USER") != "" & Sys.getenv("POSTGRES_HOST") != "" & Sys.getenv("POSTGRES_DATABASE") != "") {
 + 
 +     ## try to load our module and abort if this fails
 +     stopifnot(require(RPostgreSQL))
@@ -37,11 +37,15 @@ Type 'q()' to quit R.
 +     ## can't print result as it contains process id which changes  print(summary(drv))
 + 
 +     ## connect to the default db
-+     con <- dbConnect(drv, dbname="template1")
-+     ## -- idem  print(con)
++     con <- dbConnect(drv,
++                      user=Sys.getenv("POSTGRES_USER"),
++                      password=Sys.getenv("POSTGRES_PASSWD"),
++                      host=Sys.getenv("POSTGRES_HOST"),
++                      dbname=Sys.getenv("POSTGRES_DATABSE"))
 + 
 +     ## run a simple query and show the query result
-+     res <- dbGetQuery(con, "select datname,encoding,datallowconn from pg_database where datname like 'template%' order by datname")
++     res <- dbGetQuery(con, paste("select datname,encoding,datallowconn from pg_database",
++                                  "where datname like 'template%' order by datname"))
 +     print(res)
 + 
 +     ## and disconnect
