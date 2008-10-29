@@ -12,7 +12,7 @@ dbTypeTests <- function(con, dateclass="timestamp without time zone") {
     dbSendQuery(con, paste("create table tempostgrestable (tt ", dateclass, ", zz integer);", sep=""))
     dbSendQuery(con, "insert into tempostgrestable values('2008-07-01 14:15:16.123', 1);")
 
-    now <- Sys.time()
+    now <- ISOdatetime(2000,1,2,3,4,5.678)
     dbSendQuery(con, paste("insert into tempostgrestable values('", format(now), "', 2);", sep=""))
 
     res <- dbReadTable(con, "tempostgrestable")
@@ -21,7 +21,7 @@ dbTypeTests <- function(con, dateclass="timestamp without time zone") {
     res <- dbSendQuery(con, "select tt from tempostgrestable;")
     data <- fetch(res, n=-1)
     print(dbColumnInfo(res))
-    ##times <- strptime(data[,1], "%Y-%m-%d %H:%M:%OS")
+
     times <- data[,1]
     print(times)
     print(class(times[1]))
