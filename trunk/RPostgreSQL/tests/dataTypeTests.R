@@ -48,6 +48,8 @@ if ((Sys.getenv("POSTGRES_USER") != "") &
     cat("GOOD -- all numeric values are as expected\n")
 
     ## Test the logical mapping
+    if (dbExistsTable(con, "testlogical"))
+        dbRemoveTable(con, "testlogical")
     dbSendQuery(con,"create table testlogical (col1 boolean, col2 boolean)")
 
     i <- as.logical(TRUE)
@@ -58,6 +60,7 @@ if ((Sys.getenv("POSTGRES_USER") != "") &
     res <- dbSendQuery(con, sql);
 
     dat <- dbReadTable(con, "testlogical")
+    dbRemoveTable(con, "tempostgrestable")
     cat("Read Logical values\n")
 
     ## now test the types of the colums we got
@@ -71,6 +74,8 @@ if ((Sys.getenv("POSTGRES_USER") != "") &
     cat("GOOD -- all logical values are as expected\n")
 
     ## Test the character mapping
+    if (dbExistsTable(con, "testchar"))
+        dbRemoveTable(con, "testchar")
     dbSendQuery(con,"create table testchar (code char(3),city varchar(20),country text);")
 
     i <- as.character("IN")
@@ -96,6 +101,7 @@ if ((Sys.getenv("POSTGRES_USER") != "") &
     stopifnot( identical( dat[1,3], k))
     cat("GOOD -- all character values are as expected\n")
 
+    dbRemoveTable(con, "testchar")
     dbRemoveTable(con, "tempostgrestable")
 
     dbDisconnect(con)

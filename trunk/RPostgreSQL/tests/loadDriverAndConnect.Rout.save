@@ -51,4 +51,10 @@ Type 'q()' to quit R.
 +     ## and disconnect
 +     dbDisconnect(con)
 + }
+Loading required package: RPostgreSQL
+Loading required package: DBI
+    datname encoding datallowconn
+1 template0        6        FALSE
+2 template1        6         TRUE
+[1] TRUE
 > 
