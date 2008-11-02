@@ -126,4 +126,16 @@ Type 'q()' to quit R.
 + 
 +     cat("DONE\n")
 + }
+Loading required package: RPostgreSQL
+Loading required package: DBI
+Read Numeric values
+GOOD -- all numeric types are as expected
+GOOD -- all numeric values are as expected
+Read Logical values
+GOOD -- all logical types are as expected
+GOOD -- all logical values are as expected
+Read Character values
+GOOD -- all character types are as expected
+GOOD -- all character values are as expected
+DONE
 > 

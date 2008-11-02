@@ -77,5 +77,41 @@ Type 'q()' to quit R.
 + 
 +     dbDisconnect(con)
 + }
+Loading required package: RPostgreSQL
+Loading required package: DBI
+
+
+**** Trying with  timestamp 
+                   tt zz
+1 2008-07-01 14:15:16  1
+2 2000-01-02 03:04:05  2
+  name  Sclass      type len precision scale nullOK
+1   tt POSIXct TIMESTAMP   8        -1    -1   TRUE
+[1] "2008-07-01 14:15:16 UTC" "2000-01-02 03:04:05 UTC"
+[1] "POSIXt"  "POSIXct"
+Time difference of -3103.466 days
+
+
+**** Trying with  timestamp with time zone 
+                   tt zz
+1 2008-07-01 14:15:16  1
+2 2000-01-02 03:04:05  2
+  name  Sclass           type len precision scale nullOK
+1   tt POSIXct TIMESTAMPTZOID   8        -1    -1   TRUE
+[1] "2008-07-01 14:15:16 UTC" "2000-01-02 03:04:05 UTC"
+[1] "POSIXt"  "POSIXct"
+Time difference of -3103.466 days
+
+
+**** Trying with  date 
+          tt zz
+1 2008-07-01  1
+2 2000-01-02  2
+  name Sclass type len precision scale nullOK
+1   tt   Date DATE   4        -1    -1   TRUE
+[1] "2008-07-01" "2000-01-02"
+[1] "Date"
+Time difference of -3103 days
+[1] TRUE
 > 
 > 
