@@ -1,5 +1,5 @@
 
-R version 2.8.0 RC (2008-10-12 r46696)
+R version 2.8.0 (2008-10-20)
 Copyright (C) 2008 The R Foundation for Statistical Computing
 ISBN 3-900051-07-0
 
@@ -126,16 +126,4 @@ Type 'q()' to quit R.
 + 
 +     cat("DONE\n")
 + }
-Loading required package: RPostgreSQL
-Loading required package: DBI
-Read Numeric values
-GOOD -- all numeric types are as expected
-GOOD -- all numeric values are as expected
-Read Logical values
-GOOD -- all logical types are as expected
-GOOD -- all logical values are as expected
-Read Character values
-GOOD -- all character types are as expected
-GOOD -- all character values are as expected
-DONE
 > 

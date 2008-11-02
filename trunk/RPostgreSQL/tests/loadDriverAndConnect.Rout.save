@@ -1,5 +1,5 @@
 
-R version 2.8.0 RC (2008-10-12 r46696)
+R version 2.8.0 (2008-10-20)
 Copyright (C) 2008 The R Foundation for Statistical Computing
 ISBN 3-900051-07-0
 
@@ -41,7 +41,7 @@ Type 'q()' to quit R.
 +                      user=Sys.getenv("POSTGRES_USER"),
 +                      password=Sys.getenv("POSTGRES_PASSWD"),
 +                      host=Sys.getenv("POSTGRES_HOST"),
-+                      dbname=Sys.getenv("POSTGRES_DATABSE"))
++                      dbname=Sys.getenv("POSTGRES_DATABASE"))
 + 
 +     ## run a simple query and show the query result
 +     res <- dbGetQuery(con, paste("select datname,encoding,datallowconn from pg_database",
@@ -51,10 +51,4 @@ Type 'q()' to quit R.
 +     ## and disconnect
 +     dbDisconnect(con)
 + }
-Loading required package: RPostgreSQL
-Loading required package: DBI
-    datname encoding datallowconn
-1 template0        6        FALSE
-2 template1        6         TRUE
-[1] TRUE
 > 
