@@ -40,6 +40,9 @@ if ((Sys.getenv("POSTGRES_USER") != "") &
     ## try to load our module and abort if this fails
     stopifnot(require(RPostgreSQL))
 
+    ## Force a timezone to make the tests comparable at different locations
+    Sys.setenv("TZ"="UTC")
+
     ## load the PostgresSQL driver
     drv <- dbDriver("PostgreSQL")
     ## can't print result as it contains process id which changes  print(summary(drv))

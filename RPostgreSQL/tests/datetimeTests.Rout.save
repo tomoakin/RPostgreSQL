@@ -1,5 +1,5 @@
 
-R version 2.8.0 RC (2008-10-12 r46696)
+R version 2.8.0 (2008-10-20)
 Copyright (C) 2008 The R Foundation for Statistical Computing
 ISBN 3-900051-07-0
 
@@ -57,6 +57,9 @@ Type 'q()' to quit R.
 +     ## try to load our module and abort if this fails
 +     stopifnot(require(RPostgreSQL))
 + 
++     ## Force a timezone to make the tests comparable at different locations
++     Sys.setenv("TZ"="UTC")
++ 
 +     ## load the PostgresSQL driver
 +     drv <- dbDriver("PostgreSQL")
 +     ## can't print result as it contains process id which changes  print(summary(drv))
@@ -74,41 +77,5 @@ Type 'q()' to quit R.
 + 
 +     dbDisconnect(con)
 + }
-Loading required package: RPostgreSQL
-Loading required package: DBI
-
-
-**** Trying with  timestamp 
-                   tt zz
-1 2008-07-01 14:15:16  1
-2 2000-01-02 03:04:05  2
-  name  Sclass      type len precision scale nullOK
-1   tt POSIXct TIMESTAMP   8        -1    -1   TRUE
-[1] "2008-07-01 14:15:16 CDT" "2000-01-02 03:04:05 CST"
-[1] "POSIXt"  "POSIXct"
-Time difference of -3103.424 days
-
-
-**** Trying with  timestamp with time zone 
-                   tt zz
-1 2008-07-01 14:15:16  1
-2 2000-01-02 03:04:05  2
-  name  Sclass           type len precision scale nullOK
-1   tt POSIXct TIMESTAMPTZOID   8        -1    -1   TRUE
-[1] "2008-07-01 14:15:16 UTC" "2000-01-02 03:04:05 UTC"
-[1] "POSIXt"  "POSIXct"
-Time difference of -3103.466 days
-
-
-**** Trying with  date 
-          tt zz
-1 2008-07-01  1
-2 2000-01-02  2
-  name Sclass type len precision scale nullOK
-1   tt   Date DATE   4        -1    -1   TRUE
-[1] "2008-07-01" "2000-01-02"
-[1] "Date"
-Time difference of -3103 days
-[1] TRUE
 > 
 > 
