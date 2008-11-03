@@ -1,3 +1,19 @@
+2008-11-02  Dirk Eddelbuettel  <edd@debian.org>
+
+	* DESCRIPTION: CRAN release 0.1-2
+
+	* tests/*: Even more small fixes 
+
+	* configure.win: Test for $PG_HOME
+
+2008-10-28  Dirk Eddelbuettel  <edd@debian.org>
+
+	* DESCRIPTION: CRAN release 0.1-1
+
+	* tests/*: More cleanup on the tests
+
+	* DESCRIPTION: URL fix
+
 2008-10-21  Dirk Eddelbuettel  <edd@debian.org>
 
 	* tests/*: Tests are now run if and only if the environment variables
@@ -8,11 +24,11 @@
 	it. For now, CRAN won't run this though and it is effectively
 	disabled in the default test during 'R CMD check' as the vars will
 	presumably not be set.
-	
+
 	* configure{,.in}: no longer test for libpq.so as a second
 	confirmation as OS X has it as libpq.dylib and would hence always
 	fail. Thanks to Jan de Leeuw for the pointer.
 
 2008-10-14  Dirk Eddelbuettel  <edd@debian.org>
 
-	* Initial CRAN release 0.1-0
+	* DESCRIPTION: Initial CRAN release 0.1-0
