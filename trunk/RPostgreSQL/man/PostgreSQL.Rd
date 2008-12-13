@@ -53,10 +53,13 @@ to multiple host servers and run multiple connections on each server
 simultaneously.
 }
 \section{User authentication}{
-The passed string can be empty to use all default parameters, or it can contain one or more parameter settings separated by comma. Each parameter setting is in the form parameter = "value". Spaces around the equal sign are optional.
+The passed string can be empty to use all default parameters, or it can
+contain one or more parameter settings separated by comma. Each
+parameter setting is in the form parameter = "value". Spaces around the
+equal sign are optional. 
 
-The most important parameters are \code{user}, \code{password}, \code{host}, \code{dbname}, \code{port}, \code{tty} and \code{options}
-}
+The most important parameters are \code{user}, \code{password},
+\code{host}, \code{dbname}, \code{port}, \code{tty} and \code{options}. 
 }
 \author{David A. James}
 \section{References}{
