@@ -1,8 +1,18 @@
+2008-12-12  Dirk Eddelbuettel  <edd@debian.org>
+
+	* DESCRIPTION: CRAN release 0.1-3
+
+	* src/RS-DBI.c: Fixed to small memory leaks, with thanks to
+  	  Jeff Horner for a small patch to which we added a similar
+	  fix
+
+	* tests/*: Corrected a small typo in env.var
+
 2008-11-02  Dirk Eddelbuettel  <edd@debian.org>
 
 	* DESCRIPTION: CRAN release 0.1-2
 
-	* tests/*: Even more small fixes 
+	* tests/*: Even more small fixes
 
 	* configure.win: Test for $PG_HOME
 
