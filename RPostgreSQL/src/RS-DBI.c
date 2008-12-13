@@ -67,11 +67,13 @@ RS_DBI_allocManager(const char *drvName, Sint max_con,
     mgr->connections =  (RS_DBI_connection **) 
 	calloc((size_t) max_con, sizeof(RS_DBI_connection));
     if(!mgr->connections){
+	free(mgr->drvName);
 	free(mgr);
 	RS_DBI_errorMessage("could not calloc RS_DBI_connections", RS_DBI_ERROR);
     }
     mgr->connectionIds = (Sint *) calloc((size_t)max_con, sizeof(Sint));
     if(!mgr->connectionIds){
+	free(mgr->drvName);
 	free(mgr->connections);
 	free(mgr);
 	RS_DBI_errorMessage("could not calloc vector of connection Ids",
@@ -115,6 +117,10 @@ RS_DBI_freeManager(Mgr_Handle *mgrHandle)
 	mgr->drvName = (char *) NULL;
     }
     if(mgr->connections) {
+	for (int i=0; i < mgr->num_con; i++) {
+	    if (mgr->connections[i])
+		free(mgr->connections[i]);
+	}
 	free(mgr->connections);
 	mgr->connections = (RS_DBI_connection **) NULL;
     }
@@ -360,7 +366,12 @@ RS_DBI_allocFields(int num_fields)
 void
 RS_DBI_freeFields(RS_DBI_fields *flds)
 {
-    if(flds->name) free(flds->name);
+    int i;
+    if (flds->name) {       /* (as per Jeff Horner's patch) */
+	for (i = 0; i < flds->num_fields; i++)
+	    if (flds->name[i]) free(flds->name[i]);
+	free(flds->name);
+    }
     if(flds->type) free(flds->type);
     if(flds->length) free(flds->length);
     if(flds->precision) free(flds->precision);
