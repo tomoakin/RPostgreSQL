@@ -18,7 +18,7 @@ if ((Sys.getenv("POSTGRES_USER") != "") &
                      user=Sys.getenv("POSTGRES_USER"),
                      password=Sys.getenv("POSTGRES_PASSWD"),
                      host=Sys.getenv("POSTGRES_HOST"),
-                     dbname=Sys.getenv("POSTGRES_DATABSE"))
+                     dbname=Sys.getenv("POSTGRES_DATABASE"))
 
     if (dbExistsTable(con, "tempostgrestable"))
         dbRemoveTable(con, "tempostgrestable")
