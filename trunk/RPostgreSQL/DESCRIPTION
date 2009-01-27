@@ -1,5 +1,5 @@
 Package: RPostgreSQL
-Version: 0.1-3
+Version: 0.1-4
 Date: $Date$
 Title: R interface to the PostgreSQL database system
 Author: Sameer Kumar Prayaga <sameer.bits@gmail.com> with mentor Dirk Eddelbuettel <edd@debian.org>
