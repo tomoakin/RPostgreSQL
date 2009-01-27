@@ -1,3 +1,10 @@
+2009-01-26  Dirk Eddelbuettel  <edd@debian.org>
+
+	* DESCRIPTION: CRAN release 0.1-4
+
+	* man/dbDataType-methods.Rd: small correction for error noticed
+	  by the new R parser
+
 2008-12-12  Dirk Eddelbuettel  <edd@debian.org>
 
 	* DESCRIPTION: CRAN release 0.1-3
