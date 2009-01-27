@@ -7,19 +7,21 @@
   Determine the SQL Data Type of an S object
 }
 \description{
-   This method is a straight-forward implementation of the corresponding
-   generic function.
+  This method is a straight-forward implementation of the corresponding
+  generic function.
 }
-\section{Methods}{\describe{
-\item{dbObj}{
-  any \code{PostgreSQLObject} object, e.g., \code{PostgreSQLDriver},
-  \code{PostgreSQLConnection}, \code{PostgreSQLResult}.}
-  }
-\item{obj}{
-  R/S-Plus object whose SQL type we want to determine.
-  }
-\item{\dots }{
-  any other parameters that individual methods may need.
+\section{Methods}{
+  \describe{
+    \item{dbObj}{
+      any \code{PostgreSQLObject} object, e.g., \code{PostgreSQLDriver},
+      \code{PostgreSQLConnection}, \code{PostgreSQLResult}.
+    }
+    \item{obj}{
+      R/S-Plus object whose SQL type we want to determine.
+    }
+    \item{\dots}{
+      any other parameters that individual methods may need.
+    }
   }
 }
 \references{
