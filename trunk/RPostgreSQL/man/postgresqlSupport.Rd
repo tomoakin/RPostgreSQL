@@ -63,7 +63,7 @@
       overwrite=FALSE, append=FALSE, ..., allow.keywords = FALSE)
    postgresqlImportFile(con, name, value, field.types, overwrite=FALSE,
       append=FALSE, header, row.names, nrows=50, sep=",", eol="\n", 
-      skip = 0, quote='"', ...)
+      skip = 0, quote="\"", ...)
 
    ## Transaction Management
    postgresqlTransactionStatement(con, statement)
@@ -183,7 +183,7 @@ Command-line options to be sent to the server
 \item{sep}{field separator character.}
 \item{eol}{end-of-line separator.}
 \item{skip}{number of lines to skip before reading data in the input file.}
-\item{quote}{the quote character used in the input file (defaults to \code{"}.}
+\item{quote}{the quote character used in the input file (defaults to \code{\"}.}
 \item{allow.keywords}{
    logical indicating whether column names that happen to be PostgreSQL
    keywords be used as column names in the resulting relation (table)
