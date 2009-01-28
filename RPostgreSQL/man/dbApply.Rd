@@ -7,13 +7,13 @@
   bringing an entire result set all at once.  The result set
   is expected to be sorted by the grouping field.
 }
-\usage{
-dbApply(res, ...)
-}
-\arguments{
-  \item{res}{a result set (see \code{\link[DBI]{dbSendQuery}}).}
-  \item{...}{any additional arguments to be passed to \code{FUN}.}
-}
+%\usage{
+%dbApply(res, ...)
+%}
+%\arguments{
+%  \item{res}{a result set (see \code{\link[DBI]{dbSendQuery}}).}
+%  \item{...}{any additional arguments to be passed to \code{FUN}.}
+%}
 \details{
   \code{dbApply} 
   This generic is meant to handle somewhat gracefully(?) large amounts 
@@ -38,7 +38,7 @@ dbApply(res, ...)
 }
 
 \examples{\dontrun{
-## compute quanitiles for each network agent
+## compute quantiles for each network agent
 con <- dbConnect(PostgreSQL(), user= "user", password="passwd", dbname="sample")
 rs <- dbSendQuery(con, 
              "select Agent, ip_addr, DATA from pseudo_data order by Agent")
