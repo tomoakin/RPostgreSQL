@@ -445,8 +445,8 @@ RS_PostgreSQL_createDataMappings(Res_Handle * rsHandle)
         if (PQftablecol(my_result, j) != 0) {
 
             /* Code to find whether a row can be nullable or not */
-            sprintf(buff, "select attnotnull from pg_attribute where attrelid=%d and attname='%s'",
-                    PQftable(my_result, j), (char *) PQfname(my_result, j));
+            sprintf(buff, "select attnotnull from pg_attribute where attrelid=%d and attnum='%d'",
+                    PQftable(my_result, j), PQftablecol(my_result, j));
             res = PQexec(conn, buff);
 
             if (strcmp(PQgetvalue(res, 0, 0), "f") == 0) {
