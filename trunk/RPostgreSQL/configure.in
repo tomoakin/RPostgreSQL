@@ -21,9 +21,10 @@ if test "${PG_CONFIG}" != ""; then
     PG_INCDIR=`${PG_CONFIG} --includedir`
     PG_LIBDIR=`${PG_CONFIG} --libdir`
 
-else 
+else
 
     # let's look around -- code copied from RdbuiPgSQL but modified to use test -f
+    # added fink standard install location Neil 8/30/2009
     AC_MSG_NOTICE([checking for PostgreSQL header files])
     if ! test $PG_INCDIR
     then
@@ -38,11 +39,14 @@ else
 	/usr/local/postgresql/include \
 	/opt/include \
 	/opt/include/pgsql \
-	/opt/include/postgresql
+	/opt/include/postgresql \
+	/opt/local/include \
+	/opt/local/include/postgresql \
+	/sw/include/postgresql
 	do
 
 	    if test -f ${dir}/libpq-fe.h
-	    then 
+	    then
 	    	PG_INCDIR=${dir}
 		break
 	    fi
@@ -63,15 +67,18 @@ else
 	/usr/local/postgresql/lib \
 	/opt/lib \
 	/opt/lib/pgsql \
-	/opt/lib/postgresql
+	/opt/lib/postgresql \
+	/opt/local/lib \
+	/opt/local/lib/postgresql \
+	/sw/lib
 	do
 	    if test -f ${dir}/libpq.so
-	    then 
+	    then
 	    	PG_LIBDIR=${dir}
 		break
 	    fi
 	    if test -f ${dir}/libpq.dylib
-	    then 
+	    then
 	    	PG_LIBDIR=${dir}
 		break
 	    fi
