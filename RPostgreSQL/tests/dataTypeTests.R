@@ -35,6 +35,7 @@ if ((Sys.getenv("POSTGRES_USER") != "") &
 
 
     dat <- dbReadTable(con, "tempostgrestable")
+    dbRemoveTable(con, "tempostgrestable")
     cat("Read Numeric values\n")
 
     ## now test the types of the colums we got
@@ -60,7 +61,7 @@ if ((Sys.getenv("POSTGRES_USER") != "") &
     res <- dbSendQuery(con, sql);
 
     dat <- dbReadTable(con, "testlogical")
-    dbRemoveTable(con, "tempostgrestable")
+    dbRemoveTable(con, "testlogical")
     cat("Read Logical values\n")
 
     ## now test the types of the colums we got
