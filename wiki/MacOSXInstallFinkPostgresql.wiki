@@ -1,0 +1,17 @@
+#summary Install RPostgreSQL on Mac OS X using Fink postgresql.
+#labels Phase-Deploy
+
+= Install RPostgreSQL on Mac OS X using Fink postgresql =
+
+Currently some compiles from within R are broken due to the location of postgresql.  The source configure code attempts to locate the correct postgresql libraries.  If this does not work you may need to manually compile the RPostgreSQL source.  The following provides an example.
+
+  # Download the source.
+  # Open Terminal.
+  # cd into the source location.
+  # Execute the following:
+
+{{{
+sudo R CMD INSTALL RPostgreSQL_0.1-4.tar.gz --configure-args='--with-pgsql-libraries=/sw/lib/postgresql-8.3 --with-pgsql-includes=/sw/include/postgresql'
+}}}
+
+This is for postgresql 8.3 in the standard Fink location.  If you install postgresql in a different location or use a different version you will need to modify the command line to match.
