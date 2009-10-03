@@ -1,6 +1,6 @@
 
-R version 2.8.0 (2008-10-20)
-Copyright (C) 2008 The R Foundation for Statistical Computing
+R version 2.9.2 (2009-08-24)
+Copyright (C) 2009 The R Foundation for Statistical Computing
 ISBN 3-900051-07-0
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
@@ -51,10 +51,4 @@ Type 'q()' to quit R.
 +     ## and disconnect
 +     dbDisconnect(con)
 + }
-Loading required package: RPostgreSQL
-Loading required package: DBI
-    datname encoding datallowconn
-1 template0        6        FALSE
-2 template1        6         TRUE
-[1] TRUE
 > 
