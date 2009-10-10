@@ -1,10 +1,10 @@
 Package: RPostgreSQL
-Version: 0.1-4
+Version: 0.1-5
 Date: $Date$
 Title: R interface to the PostgreSQL database system
 Author: Sameer Kumar Prayaga <sameer.bits@gmail.com> with mentor Dirk Eddelbuettel <edd@debian.org>
 Maintainer: Dirk Eddelbuettel <edd@debian.org>
-Description: Database interface and PostgreSQL driver for R.
+Description: Database interface and PostgreSQL driver for R
  This version complies with the database interface 
  definition as implemented in the package DBI.
 LazyLoad: true

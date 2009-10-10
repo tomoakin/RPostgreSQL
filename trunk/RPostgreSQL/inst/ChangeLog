@@ -1,3 +1,48 @@
+2009-10-10  Dirk Eddelbuettel  <edd@debian.org>
+
+	* DESCRIPTION: CRAN release 0.1-5
+	  + No new features but fixes for bugs #1, #2, #3 and #6 on the issue
+	    tracker
+	  + Both #4 and #5 are feature / enhancement request for which
+	    patch contributions are greatly appreciated.
+	  + Lastly #7 cannot be replicated.
+
+	[ Neil Tiffin ]
+	* configure.in: Added standard OS X / Fink location
+
+	* src/RS-DBI.*: Consistent formatting via use of GNU indent
+	* src/RS-PostgreSQL.*: idem
+	* src/S4R.h: idem
+
+	[ Dirk Eddelbuettel ]
+
+	* src/RS-PostgreSQL: Apply fix by Joe Conway for seg.fault on
+ 	  alias'ed queries report as issue #1 in the issue tracker.
+
+	* R/PostgresSQL.R: Correction to dbExistsTable() to also recognise
+	  queries of the form 'schemaname.tablename' which was reported as
+	  issue #3 in the issue tracker following earlier emails by Prasenjit
+	  Kapat -- thanks to Prasenjit and Joe Conway patches that I merged
+
+	* R/PostgreSQLSupport.R: In dbConnect(), stop if any one of user,
+  	  password, host, dbname, port or tty is NULL to prevent a seg.fault
+	  which was reported as issue #2 on the issue tracker 
+	* R/PostgreSQLSupport.R: Wrap dbSendQuery() in try() to be more
+	  fault-tolerant an queries with errors which was reported as 
+	  issue #6, thanks to Joe Conway for the suggested fix.
+
+	* man/dbApply.Rd: Commented-out \usage thanks to new Rd parser
+
+	* R/dbObjectId.R: Set missing SVN property Date
+	* R/S4R.R: idem
+
+	* tests/connectWithNull.*: added new test and comparison output
+	* tests/dbExistsIssue.*: idem
+	* tests/dbWriteTable.*: idem
+	* tests/selectWhereZero.*: idem
+	* tests/selectWithAlias.*: idem
+	* tests/dataTypeTests.R: Remove correct temp. table
+
 2009-01-26  Dirk Eddelbuettel  <edd@debian.org>
 
 	* DESCRIPTION: CRAN release 0.1-4
