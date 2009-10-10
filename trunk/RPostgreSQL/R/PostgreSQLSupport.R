@@ -203,11 +203,21 @@ postgresqlQuickSQL <- function(con, statement) {
     if(!isIdCurrent(con))
         stop(paste("expired", class(con)))
     nr <- length(dbListResults(con))
-    if(nr>0){                       ## are there resultSets pending on con?
+    if (nr > 0) {                   ## are there resultSets pending on con?
         new.con <- dbConnect(con)   ## yep, create a clone connection
         on.exit(dbDisconnect(new.con))
-        rs <- dbSendQuery(new.con, statement)
-    } else rs <- dbSendQuery(con, statement)
+        rs <- try(dbSendQuery(new.con, statement))
+        if (inherits(rs, ErrorClass)){
+            warning("Could not create execute", statement)
+            return(NULL)
+        }
+    } else {
+        rs <- try(dbSendQuery(con, statement))
+        if (inherits(rs, ErrorClass)){
+            warning("Could not create execute", statement)
+            return(NULL)
+        }
+    }
     if(dbHasCompleted(rs)){
         dbClearResult(rs)            ## no records to fetch, we're done
         invisible()
