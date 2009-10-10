@@ -138,8 +138,8 @@ setMethod("summary", "PostgreSQLConnection",
 setMethod("dbListTables", "PostgreSQLConnection",
           def = function(conn, ...){
               out <- dbGetQuery(conn,
-                                "select tablename from pg_tables where schemaname !='information_schema' and schemaname !='pg_catalog'",
-                                ...)
+                                "select tablename from pg_tables where schemaname !='information_schema' ",
+                                "and schemaname !='pg_catalog'", ...)
               if (is.null(out) || nrow(out) == 0)
                   out <- character(0)
               else
@@ -174,10 +174,21 @@ setMethod("dbWriteTable",
 setMethod("dbExistsTable",
           signature(conn="PostgreSQLConnection", name="character"),
           def = function(conn, name, ...){
-              ## TODO: find out the appropriate query to the PostgreSQL metadata
-              avail <- dbListTables(conn)
-              if(length(avail)==0) avail <- ""
-              match(tolower(name), tolower(avail), nomatch=0)>0
+              ## Edd 09 Oct 2009: Fusion of patches by Joe Conway and Prasenjit Kapat
+              names <- strsplit(name, ".", fixed=TRUE)[[1]]
+              if (length(names) == 2) {		# format was "public.sometable"
+                  res <- dbGetQuery(conn,
+                                    paste("select schemaname,tablename from pg_tables where ",
+                                          "schemaname !='information_schema' ",
+                                          "and schemaname !='pg_catalog' and schemaname='",
+                                          names[1], "' and tablename='", names[2], "'", sep=""))
+              } else {
+                  res <- dbGetQuery(conn,
+                                    paste("select tablename from pg_tables where ",
+                                          "schemaname !='information_schema' and schemaname !='pg_catalog' ",
+                                          "and tablename='", names[1], "'", sep=""))
+              }
+              return(as.logical(dim(res)[1]))
           },
           valueClass = "logical"
           )
