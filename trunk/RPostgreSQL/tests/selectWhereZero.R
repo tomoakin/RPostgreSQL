@@ -29,21 +29,21 @@ if (Sys.getenv("POSTGRES_USER") != "" & Sys.getenv("POSTGRES_HOST") != "" & Sys.
                      dbname=Sys.getenv("POSTGRES_DATABASE"))
 
 
-    if (dbExistsTable(con, "tmpIrisData")) {
-        print("Removing tmpIrisData\n")
-        dbRemoveTable(con, "tmpIrisData")
+    if (dbExistsTable(con, "tmpirisdata")) {
+        print("Removing tmpirisdata\n")
+        dbRemoveTable(con, "tmpirisdata")
     }
 
     dbWriteTable(con, "tmpIrisData", iris)
 
     ## run a simple query and show the query result
-    res <- dbGetQuery(con, "select * from tmpIrisData where Species=0")
+    res <- dbGetQuery(con, "select * from tmpirisdata where Species=0")
     print(res)
 
     ## cleanup
-    if (dbExistsTable(con, "tmpIrisData")) {
-        print("Removing tmpIrisData\n")
-        dbRemoveTable(con, "tmpIrisData")
+    if (dbExistsTable(con, "tmpirisdata")) {
+        print("Removing tmpirisdata\n")
+        dbRemoveTable(con, "tmpirisdata")
     }
 
     ## and disconnect
