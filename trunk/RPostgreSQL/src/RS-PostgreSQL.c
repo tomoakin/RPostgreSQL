@@ -89,7 +89,6 @@ RS_PostgreSQL_cloneConnection(Con_Handle * conHandle)
     RS_DBI_connection *con;
     RS_PostgreSQL_conParams *conParams;
     s_object *con_params;
-    char buf1[256], buf2[256];
 
     /* get connection params used to open existing connection */
     con = RS_DBI_getConnection(conHandle);
@@ -300,8 +299,7 @@ RS_PostgreSQL_exec(Con_Handle * conHandle, s_object * statement)
     RS_DBI_resultSet *result;
     PGconn *my_connection;
     PGresult *my_result;
-    int num_fields;
-
+ 
     Sint res_id, is_select;
     char *dyn_statement;
 
