@@ -45,6 +45,8 @@ drv <- dbDriver("PostgreSQL")
 con <- dbConnect(drv, "usr", "password", "dbname")
 res <- dbSendQuery(con, "SELECT * from sales")
 data <- fetch(res, n = -1)
+# alternatively, use dbGetQuery
+data <- dbGetQuery(con, "SELECT * from sales")
 }
 }
 \keyword{methods}
