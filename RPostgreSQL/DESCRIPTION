@@ -8,7 +8,7 @@ Description: Database interface and PostgreSQL driver for R
  This version complies with the database interface 
  definition as implemented in the package DBI.
 LazyLoad: true
-Depends: R (>= 2.7.0), methods, DBI (>= 0.1-4)
+Depends: R (>= 2.9.0), methods, DBI (>= 0.1-4)
 License: GPL-2
 URL: http://www.stat.bell-labs.com/RS-DBI, http://www.postgresql.org
 Collate:  S4R.R zzz.R PostgreSQLSupport.R dbObjectId.R PostgreSQL.R

@@ -1,4 +1,4 @@
-2009-10-10  Dirk Eddelbuettel  <edd@debian.org>
+2009-10-13  Dirk Eddelbuettel  <edd@debian.org>
 
 	* DESCRIPTION: CRAN release 0.1-5
 	  + No new features but fixes for bugs #1, #2, #3 and #6 on the issue
@@ -16,8 +16,9 @@
 
 	[ Dirk Eddelbuettel ]
 
-	* src/RS-PostgreSQL: Apply fix by Joe Conway for seg.fault on
+	* src/RS-PostgreSQL.c: Apply fix by Joe Conway for seg.fault on
  	  alias'ed queries report as issue #1 in the issue tracker.
+	* src/RS-PostgreSQL.c: Remove unused variables
 
 	* R/PostgresSQL.R: Correction to dbExistsTable() to also recognise
 	  queries of the form 'schemaname.tablename' which was reported as
@@ -32,6 +33,9 @@
 	  issue #6, thanks to Joe Conway for the suggested fix.
 
 	* man/dbApply.Rd: Commented-out \usage thanks to new Rd parser
+	* man/safe.write.Rd: Fixed cross-references thanks to R 2.10.0 parser
+	* man/PostgreSQL.Rd: idem
+	* man/dbReadTable-methods.Rd: idem
 
 	* R/dbObjectId.R: Set missing SVN property Date
 	* R/S4R.R: idem
