@@ -102,7 +102,7 @@ On meta-data:
 \code{\link[DBI]{dbGetStatement}}
 \code{\link[DBI]{dbHasCompleted}}
 \code{\link[DBI]{dbGetRowCount}}
-\code{\link[DBI]{dbGetAffectedRows}}
+\code{\link[DBI]{dbGetRowsAffected}}
 }
 \examples{\dontrun{
 # create a PostgreSQL instance and create one connection.
