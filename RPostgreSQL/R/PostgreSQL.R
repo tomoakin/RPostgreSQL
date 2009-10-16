@@ -138,8 +138,8 @@ setMethod("summary", "PostgreSQLConnection",
 setMethod("dbListTables", "PostgreSQLConnection",
           def = function(conn, ...){
               out <- dbGetQuery(conn,
-                                "select tablename from pg_tables where schemaname !='information_schema' ",
-                                "and schemaname !='pg_catalog'", ...)
+                                paste("select tablename from pg_tables where schemaname !='information_schema'",
+                                      "and schemaname !='pg_catalog'", ...))
               if (is.null(out) || nrow(out) == 0)
                   out <- character(0)
               else
