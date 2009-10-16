@@ -1,3 +1,11 @@
+2009-10-16  Dirk Eddelbuettel  <edd@debian.org>
+
+	* R/PostgreSQL.R: Add missing paste() with thanks to João G.
+
+2009-10-14  Dirk Eddelbuettel  <edd@debian.org>
+
+	* tests/selectWhereZero.R: Fix upper/lower case table name
+
 2009-10-13  Dirk Eddelbuettel  <edd@debian.org>
 
 	* DESCRIPTION: CRAN release 0.1-5
@@ -8,6 +16,7 @@
 	  + Lastly #7 cannot be replicated.
 
 	[ Neil Tiffin ]
+
 	* configure.in: Added standard OS X / Fink location
 
 	* src/RS-DBI.*: Consistent formatting via use of GNU indent
