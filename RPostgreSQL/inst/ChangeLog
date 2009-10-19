@@ -1,3 +1,16 @@
+2009-10-19  Dirk Eddelbuettel  <edd@debian.org>
+
+	* DESCRIPTION: CRAN release 0.1-6
+
+	* tests/connectWithNull.R: allow for port to be passed via an env. var.
+	* tests/dataTypeTests.R: idem
+	* tests/datetimeTests.R: idem
+	* tests/dbExistsIssue.R: idem
+	* tests/dbWriteTableTest.R: idem
+	* tests/loadDriverAndConnect.R: idem
+	* tests/selectWhereZero.R: idem
+	* tests/selectWithAlias.R: idem
+
 2009-10-16  Dirk Eddelbuettel  <edd@debian.org>
 
 	* R/PostgreSQL.R: Add missing paste() with thanks to João G.
