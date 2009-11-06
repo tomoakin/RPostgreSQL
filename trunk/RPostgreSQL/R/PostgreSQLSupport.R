@@ -630,7 +630,7 @@ postgresqlWriteTable <- function(con, name, value, field.types, row.names = TRUE
     ## in the R per-session temporary directory) is outside of Postgresql's directory
     ## So if you use SELinux, you may have to manually insert data or temporarily turn
     ## SELinux off to use this function
-    if(as.character(Sys.info()["sysname"])=="Linux")
+    if(as.character(Sys.info()["sysname"]) %in% c("Linux", "Darwin"))
         fn <- tempfile("rsdbi","/tmp")
     else
         fn <- tempfile("rsdbi")
