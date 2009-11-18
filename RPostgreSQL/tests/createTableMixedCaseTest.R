@@ -1,5 +1,5 @@
 
-## createTableCase test
+## createTableMixedCaseTest test
 ##
 ##
 ## Assumes that
@@ -35,45 +35,45 @@ if (Sys.getenv("POSTGRES_USER") != "" & Sys.getenv("POSTGRES_HOST") != "" & Sys.
     ## print res
 
     if (dbExistsTable(con, "Foo1")) {
-        print("OK - Foo1 Table exists.\n")
+        print("Pass - Foo1 Table exists.\n")
     }
     else {
-        print("Wrong - Foo1 Table does not exist.\n")
+        print("FAIL - Foo1 Table does not exist.\n")
     }
 
     if (dbExistsTable(con, "foo1")) {
-        print("OK - foo1 Table exists.\n")
+        print("Pass - foo1 Table exists.\n")
     }
     else {
-        print("Wrong - foo1 Table does not exist.\n")
+        print("FAIL - foo1 Table does not exist.\n")
     }
 
     if (dbExistsTable(con, "Foo2")) {
-        print("Wrong - Foo2 Table exists.\n")
+        print("FAIL - Foo2 Table exists.\n")
     }
     else {
-        print("OK - Foo2 Table does not exist.\n")
+        print("Pass - Foo2 Table does not exist.\n")
     }
 
     if (dbExistsTable(con, "foo2")) {
-        print("Wrong - foo2 Table exists.\n")
+        print("FAIL - foo2 Table exists.\n")
     }
     else {
-        print("OK foo2 - Table does not exist.\n")
+        print("Pass - foo2 Table does not exist.\n")
     }
 
     if (dbExistsTable(con, "\"Foo2\"")) {
-        print("OK Foo2 - Table exists.\n")
+        print("Pass - Foo2 Table exists.\n")
     }
     else {
-        print("Wrong - Foo2 Table does not exist.\n")
+        print("FAIL - Foo2 Table does not exist.\n")
     }
 
     if (dbExistsTable(con, "\"foo2\"")) {
-        print("foo2 Wrong - Table exists.\n")
+        print("FAIL - foo2 Table exists.\n")
     }
     else {
-        print("foo2 Ok -Table does not exist.\n")
+        print("Pass - foo2 Table does not exist.\n")
     }
 
     ## and disconnect
