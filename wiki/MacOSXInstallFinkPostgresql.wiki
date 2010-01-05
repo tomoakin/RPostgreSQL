@@ -10,8 +10,16 @@ Currently some compiles from within R are broken due to the location of postgres
   # cd into the source location.
   # Execute the following:
 
+*For Fink PostgreSQL 8.3*
 {{{
 sudo R CMD INSTALL RPostgreSQL_0.1-6.tar.gz --configure-args='--with-pgsql-libraries=/sw/lib/postgresql-8.3 --with-pgsql-includes=/sw/include/postgresql'
 }}}
 
-This is for postgresql 8.3 in the standard Fink location.  If you install postgresql in a different location or use a different version you will need to modify the command line to match.
+If you install postgresql in a different location or use a different version you will need to modify the command line to match.
+
+*For Fink PostgreSQL 8.4*
+{{{
+sudo R CMD INSTALL RPostgreSQL_0.1-6.tar.gz --configure-args='--with-pgsql-libraries=/sw/opt/postgresql-8.4/lib --with-pgsql-includes=/sw/opt/postgresql-8.4/include'
+}}}
+
+If you install postgresql in a different location or use a different version you will need to modify the command line to match.
