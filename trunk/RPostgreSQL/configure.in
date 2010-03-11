@@ -42,6 +42,8 @@ else
 	/opt/include/postgresql \
 	/opt/local/include \
 	/opt/local/include/postgresql \
+	/opt/local/include/postgresql84 \
+	/sw/opt/postgresql-8.4/include \
 	/sw/include/postgresql
 	do
 
@@ -70,6 +72,8 @@ else
 	/opt/lib/postgresql \
 	/opt/local/lib \
 	/opt/local/lib/postgresql \
+	/opt/local/lib/postgresql84 \
+	/sw/opt/postgresql-8.4/lib \
 	/sw/lib
 	do
 	    if test -f ${dir}/libpq.so
