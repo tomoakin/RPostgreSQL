@@ -1,9 +1,9 @@
-#summary Install RPostgreSQL on Mac OS X using Fink postgresql.
+#summary Install RPostgreSQL on Mac OS X when the normal install fails.
 #labels Phase-Deploy
 
 = Install RPostgreSQL on Mac OS X using Fink postgresql =
 
-Currently some compiles from within R are broken due to the location of postgresql.  The source configure code attempts to locate the correct postgresql libraries.  If this does not work you may need to manually compile the RPostgreSQL source.  The following provides an example.
+Currently some compiles from within R are broken due to the location of postgresql.  The source configure code attempts to locate the correct postgresql libraries.  If this does not work, you may need to manually compile the RPostgreSQL source.  The following example uses the fink installed location of PostgreSQL, however it will work for any PostgreSQL distribution.
 
   # Download the source.
   # Open Terminal.
