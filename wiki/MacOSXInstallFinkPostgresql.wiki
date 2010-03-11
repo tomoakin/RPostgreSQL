@@ -8,7 +8,9 @@ Currently some compiles from within R are broken due to the location of postgres
   # Download the source.
   # Open Terminal.
   # cd into the source location.
-  # Execute the following:
+  # locate postgresql libs and includes locations
+  # modify the following for the current RPostgreSQL and locations identified above
+  # Execute the modified command lines below:
 
 *For Fink PostgreSQL 8.3*
 {{{
