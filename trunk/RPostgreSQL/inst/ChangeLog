@@ -1,3 +1,9 @@
+2010-07-14  Dirk Eddelbuettel  <edd@debian.org>
+
+	* R/PostgreSQLSupport.R: In postgresqlFetch(), correct case
+	of as.POSIXct() call where format string is passed to tz argument
+	Thanks to Steve Eick for the bug report.
+
 2009-10-19  Dirk Eddelbuettel  <edd@debian.org>
 
 	* DESCRIPTION: CRAN release 0.1-6
