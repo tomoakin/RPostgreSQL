@@ -391,7 +391,8 @@ postgresqlFetch <- function(res, n=0, ...) {
         } else if(flds[[i]] == 1184)  {  ## 1184 corresponds to Timestamp with TimeZone
             ## TODO: Details about time zone has been dropped.
             ## Will try do improve it in the future
-            rel[,i] <- as.POSIXct(rel[,i],"%Y-%m-%d %H:%M:%S")
+            #rel[,i] <- as.POSIXct(rel[,i],"%Y-%m-%d %H:%M:%S")  # second arg. is tz, so this was wrong
+            rel[,i] <- as.POSIXct(rel[,i])
         }
     }
 
