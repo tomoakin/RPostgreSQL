@@ -44,9 +44,10 @@ else
 	/opt/local/include/postgresql \
 	/opt/local/include/postgresql84 \
 	/sw/opt/postgresql-8.4/include \
+	/Library/PostgresPlus/8.4SS/include \
 	/sw/include/postgresql
 	do
-
+        AC_MSG_NOTICE([Checking include ${dir}.])
 	    if test -f ${dir}/libpq-fe.h
 	    then
 	    	PG_INCDIR=${dir}
@@ -74,8 +75,10 @@ else
 	/opt/local/lib/postgresql \
 	/opt/local/lib/postgresql84 \
 	/sw/opt/postgresql-8.4/lib \
+	/Library/PostgresPlus/8.4SS/lib \
 	/sw/lib
 	do
+        AC_MSG_NOTICE([Checking lib ${dir}.])
 	    if test -f ${dir}/libpq.so
 	    then
 	    	PG_LIBDIR=${dir}

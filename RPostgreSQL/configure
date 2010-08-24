@@ -2614,6 +2614,7 @@ if test "${PG_CONFIG}" != ""; then
 else
 
     # let's look around -- code copied from RdbuiPgSQL but modified to use test -f
+    # added fink standard install location Neil 8/30/2009
     { echo "$as_me:$LINENO: checking for PostgreSQL header files" >&5
 echo "$as_me: checking for PostgreSQL header files" >&6;}
     if ! test $PG_INCDIR
@@ -2629,9 +2630,16 @@ echo "$as_me: checking for PostgreSQL header files" >&6;}
 	/usr/local/postgresql/include \
 	/opt/include \
 	/opt/include/pgsql \
-	/opt/include/postgresql
+	/opt/include/postgresql \
+	/opt/local/include \
+	/opt/local/include/postgresql \
+	/opt/local/include/postgresql84 \
+	/sw/opt/postgresql-8.4/include \
+	/Library/PostgresPlus/8.4SS/include \
+	/sw/include/postgresql
 	do
-
+        { echo "$as_me:$LINENO: Checking include ${dir}." >&5
+echo "$as_me: Checking include ${dir}." >&6;}
 	    if test -f ${dir}/libpq-fe.h
 	    then
 	    	PG_INCDIR=${dir}
@@ -2654,8 +2662,16 @@ echo "$as_me: checking for PostgreSQL header files" >&6;}
 	/usr/local/postgresql/lib \
 	/opt/lib \
 	/opt/lib/pgsql \
-	/opt/lib/postgresql
+	/opt/lib/postgresql \
+	/opt/local/lib \
+	/opt/local/lib/postgresql \
+	/opt/local/lib/postgresql84 \
+	/sw/opt/postgresql-8.4/lib \
+	/Library/PostgresPlus/8.4SS/lib \
+	/sw/lib
 	do
+        { echo "$as_me:$LINENO: Checking lib ${dir}." >&5
+echo "$as_me: Checking lib ${dir}." >&6;}
 	    if test -f ${dir}/libpq.so
 	    then
 	    	PG_LIBDIR=${dir}
