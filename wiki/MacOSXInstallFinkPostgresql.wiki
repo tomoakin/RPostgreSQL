@@ -14,14 +14,19 @@ Currently some compiles from within R are broken due to the location of postgres
 
 *For Fink PostgreSQL 8.3*
 {{{
-sudo R CMD INSTALL RPostgreSQL_0.1-6.tar.gz --configure-args='--with-pgsql-libraries=/sw/lib/postgresql-8.3 --with-pgsql-includes=/sw/include/postgresql'
+sudo R --arch=i386 CMD INSTALL RPostgreSQL_0.1-6.tar.gz --configure-args='--with-pgsql-libraries=/sw/lib/postgresql-8.3 --with-pgsql-includes=/sw/include/postgresql'
 }}}
 
 If you install postgresql in a different location or use a different version you will need to modify the command line to match.
 
 *For Fink PostgreSQL 8.4*
 {{{
-sudo R CMD INSTALL RPostgreSQL_0.1-6.tar.gz --configure-args='--with-pgsql-libraries=/sw/opt/postgresql-8.4/lib --with-pgsql-includes=/sw/opt/postgresql-8.4/include'
+sudo R --arch=i386 CMD INSTALL RPostgreSQL_0.1-6.tar.gz --configure-args='--with-pgsql-libraries=/sw/opt/postgresql-8.4/lib --with-pgsql-includes=/sw/opt/postgresql-8.4/include'
 }}}
 
 If you install postgresql in a different location or use a different version you will need to modify the command line to match.
+
+Note: The default R call compiles a 64-bit package, but installs it under 32-bit R, which results in an error when the package is loaded. For OS X Users, R needs to be called with the arch flag correctly set, as in
+{{{
+> sudo R --arch=i386 CMD INSTALL RPostgreSQL
+}}}
