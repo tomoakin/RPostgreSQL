@@ -1,3 +1,8 @@
+2010-09-11  Dirk Eddelbuettel  <edd@debian.org>
+
+	* src/RS-DBI.h: Applying patch by tomoakin@kenroku.kanazawa-u.ac.jp
+	from Issue #21 to add missing unistd.h to help with Intel compiler
+
 2010-07-14  Dirk Eddelbuettel  <edd@debian.org>
 
 	* R/PostgreSQLSupport.R: In postgresqlFetch(), correct case
