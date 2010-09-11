@@ -34,6 +34,7 @@ extern "C" {
 #define getpid _getpid
 #define pid_t int
 #else
+#include <sys/types.h>
 #include <unistd.h>
 #endif
 
