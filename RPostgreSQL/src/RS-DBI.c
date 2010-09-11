@@ -106,6 +106,7 @@ void
 RS_DBI_freeManager(Mgr_Handle * mgrHandle)
 {
     RS_DBI_manager *mgr;
+    int i;
 
     mgr = RS_DBI_getManager(mgrHandle);
     if (mgr->num_con > 0) {
@@ -121,7 +122,7 @@ RS_DBI_freeManager(Mgr_Handle * mgrHandle)
         mgr->drvName = (char *) NULL;
     }
     if (mgr->connections) {
-        for (int i = 0; i < mgr->num_con; i++) {
+        for (i = 0; i < mgr->num_con; i++) {
             if (mgr->connections[i]) {
                 free(mgr->connections[i]);
             }
