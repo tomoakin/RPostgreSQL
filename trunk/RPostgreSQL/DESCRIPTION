@@ -1,5 +1,5 @@
 Package: RPostgreSQL
-Version: 0.1-6
+Version: 0.1-7
 Date: $Date$
 Title: R interface to the PostgreSQL database system
 Author: Sameer Kumar Prayaga (during 2008) and Dirk Eddelbuettel with contributions by Neil Tiffin and Joe Conway
