@@ -199,32 +199,12 @@ RS_PostgreSQL_newConnection(Mgr_Handle * mgrHandle, s_object * con_params)
     if (!IS_EMPTY(CHR_EL(con_params, 6))) {
         options = (char *) CHR_EL(con_params, 6);
     }
-    if (user == NULL) {
-        user = "";
-    }
-    if (password == NULL) {
-        password = "";
-    }
-    if (host == NULL) {
-        host = "localhost";
-    }
-    if (port == NULL) {
-        port = "";
-    }
-    if (options == NULL) {
-        options = "";
-    }
-    if (tty == NULL) {
-        tty = "";
-    }
-    if (dbname == NULL) {
-        dbname = "template1";
-    }
+
     my_connection = PQsetdbLogin(host, port, options, tty, dbname, user, password);
 
     if (PQstatus(my_connection) != CONNECTION_OK) {
         char buf[1000];
-        sprintf(buf, "could not connect %s@%s on dbname \"%s\"\n", user, host, dbname);
+	sprintf(buf, "could not connect %s@%s on dbname \"%s\"\n", PQuser(my_connection), host?host:"local", PQdb(my_connection));
         RS_DBI_errorMessage(buf, RS_DBI_ERROR);
     }
 
@@ -233,7 +213,14 @@ RS_PostgreSQL_newConnection(Mgr_Handle * mgrHandle, s_object * con_params)
     /* save actual connection parameters */
     conParams->user = RS_DBI_copyString(PQuser(my_connection));
     conParams->password = RS_DBI_copyString(PQpass(my_connection));
-    conParams->host = RS_DBI_copyString(PQhost(my_connection));
+    {
+	const char *tmphost = PQhost(my_connection);
+	if (tmphost) {
+	    conParams->host = RS_DBI_copyString(tmphost);
+	} else {
+	    conParams->host = RS_DBI_copyString("");
+	}
+    }
     conParams->dbname = RS_DBI_copyString(PQdb(my_connection));
     conParams->port = RS_DBI_copyString(PQport(my_connection));
     conParams->tty = RS_DBI_copyString(PQtty(my_connection));
