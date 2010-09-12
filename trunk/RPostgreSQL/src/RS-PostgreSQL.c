@@ -316,10 +316,16 @@ RS_PostgreSQL_exec(Con_Handle * conHandle, s_object * statement)
 
     my_result = PQexec(my_connection, dyn_statement);
     if (my_result == NULL) {
-        char errMsg[256];
+        char *errMsg;
+        const char *omsg;
+        size_t len;
+        omsg = PQerrorMessage(my_connection);
+        len = strlen(omsg);
         free(dyn_statement);
-        (void) sprintf(errMsg, "could not run statement: %s", PQerrorMessage(my_connection));
+        errMsg = malloc(len + 80); /* 80 should be larger than the length of "could not ..."*/
+        snprintf(errMsg, len + 80,  "could not run statement: %s", omsg);
         RS_DBI_errorMessage(errMsg, RS_DBI_ERROR);
+        free(errMsg);
     }
 
 
@@ -337,9 +343,15 @@ RS_PostgreSQL_exec(Con_Handle * conHandle, s_object * statement)
     if (strcmp(PQresultErrorMessage(my_result), "") != 0) {
 
         free(dyn_statement);
-        char errResultMsg[256];
-        (void) sprintf(errResultMsg, "could not Retrieve the result : %s", PQresultErrorMessage(my_result));
+        char *errResultMsg;
+        const char *omsg;
+        size_t len;
+        omsg = PQerrorMessage(my_connection);
+        len = strlen(omsg);
+        errResultMsg = malloc(len + 80); /* 80 should be larger than the length of "could not ..."*/
+        snprintf(errResultMsg, len + 80, "could not Retrieve the result : %s", omsg);
         RS_DBI_errorMessage(errResultMsg, RS_DBI_ERROR);
+        free(errResultMsg);
 
         /*  Frees the storage associated with a PGresult.
          *  void PQclear(PGresult *res);   */
@@ -430,7 +442,7 @@ RS_PostgreSQL_createDataMappings(Res_Handle * rsHandle)
         if (PQftablecol(my_result, j) != 0) {
 
             /* Code to find whether a row can be nullable or not */
-            sprintf(buff, "select attnotnull from pg_attribute where attrelid=%d and attnum='%d'",
+            snprintf(buff, 1000, "select attnotnull from pg_attribute where attrelid=%d and attnum='%d'",
                     PQftable(my_result, j), PQftablecol(my_result, j));
             res = PQexec(conn, buff);
 
@@ -499,7 +511,7 @@ RS_PostgreSQL_createDataMappings(Res_Handle * rsHandle)
         default:
             flds->Sclass[j] = CHARACTER_TYPE;
             flds->isVarLength[j] = (Sint) 1;
-            (void) sprintf(errMsg, "unrecognized PostgreSQL field type %d in column %d", internal_type, j);
+            snprintf(errMsg, 128, "unrecognized PostgreSQL field type %d in column %d", internal_type, j);
             RS_DBI_errorMessage(errMsg, RS_DBI_WARNING);
             break;
         }
@@ -693,7 +705,7 @@ RS_PostgreSQL_fetch(s_object * rsHandle, s_object * max_rec)
                 }
                 else {
                     char warn[64];
-                    (void) sprintf(warn, "unrecognized field type %d in column %d", (int) fld_Sclass[j], (int) j);
+                    snprintf(warn, 64, "unrecognized field type %d in column %d", (int) fld_Sclass[j], (int) j);
                     RS_DBI_errorMessage(warn, RS_DBI_WARNING);
                     SET_LST_CHR_EL(output, j, i, C_S_CPY(PQgetvalue(my_result, k, j))); /* NOTE: changed */
                 }
@@ -1279,7 +1291,7 @@ RS_PostgreSQL_dbApply(s_object * rsHandle,      /* resultset handle */
                 else {
                     if ((size_t) PQfsize(my_result, j) != strlen(PQgetvalue(my_result, row_counter, j))) {      /* NOTE: changed */
                         char warn[128];
-                        (void) sprintf(warn, "internal error: row %ld field %ld truncated", (long) i, (long) j);
+                        snprintf(warn, 128, "internal error: row %ld field %ld truncated", (long) i, (long) j);
                         RS_DBI_errorMessage(warn, RS_DBI_WARNING);
                     }
                     SET_LST_CHR_EL(data, j, i, C_S_CPY(PQgetvalue(my_result, row_counter, j))); /* NOTE: changed */
@@ -1327,7 +1339,7 @@ RS_PostgreSQL_dbApply(s_object * rsHandle,      /* resultset handle */
                 }
                 else {
                     char warn[64];
-                    (void) sprintf(warn, "unrecognized field type %d in column %d", (int) fld_Sclass[j], (int) j);
+                    snprintf(warn, 64, "unrecognized field type %d in column %d", (int) fld_Sclass[j], (int) j);
                     RS_DBI_errorMessage(warn, RS_DBI_WARNING);
                     SET_LST_CHR_EL(data, j, i, C_S_CPY(PQgetvalue(my_result, row_counter, j)));
                 }
