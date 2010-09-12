@@ -18,7 +18,7 @@ fi
 echo " "
 echo "-------------- write version info ----------------------"
 
-tempfile=`mktemp Rpostgresql_XXXXXXXX.txt`
+tempfile=`mktemp Rpostgresql.txt.XXXXXXXX`
 
 sw_vers
 svn_version=$(svnversion -n)
@@ -35,6 +35,7 @@ R --slave -e 'packageDescription("RPostgreSQL", fields = c("Package", "Version",
 echo " "
 head -n 4 $tempfile
 
+rm $tempfile
 
 #R CMD check RPostgreSQL
 
