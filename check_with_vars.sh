@@ -15,6 +15,27 @@ then
     . ~/.RPostgreSQL_Test_Vars
 fi
 
+echo " "
+echo "-------------- write version info ----------------------"
+
+tempfile=`mktemp Rpostgresql_XXXXXXXX.txt`
+
+sw_vers
+svn_version=$(svnversion -n)
+echo "RPostgreSQL svn version: $svn_version"
+/sw/bin/psql --version | head -n 1
+
+#R --version | head -n 1
+
+R --slave -e 'sessionInfo(); capabilities()' >$tempfile
+echo " "
+head -n 5 $tempfile
+
+R --slave -e 'packageDescription("RPostgreSQL", fields = c("Package", "Version", "Packaged", "Built"))' >$tempfile
+echo " "
+head -n 4 $tempfile
+
+
 #R CMD check RPostgreSQL
 
 for f in RPostgreSQL/tests/*.R
