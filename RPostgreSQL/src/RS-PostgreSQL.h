@@ -70,6 +70,8 @@ extern "C" {
     s_object *RS_PostgreSQL_fetch(Res_Handle * rsHandle, s_object * max_rec);
     s_object *RS_PostgreSQL_closeResultSet(Res_Handle * rsHandle);
 
+    s_object *RS_PostgreSQL_copyin(Con_Handle * conHandle, s_object * filename);
+
     s_object *RS_PostgreSQL_validHandle(Db_Handle * handle);    /* boolean */
 
     RS_DBI_fields *RS_PostgreSQL_createDataMappings(Res_Handle * resHandle);

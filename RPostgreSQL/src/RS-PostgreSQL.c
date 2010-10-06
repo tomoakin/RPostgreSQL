@@ -287,7 +287,7 @@ RS_PostgreSQL_exec(Con_Handle * conHandle, s_object * statement)
     PGconn *my_connection;
     PGresult *my_result;
  
-    Sint res_id, is_select;
+    Sint res_id, is_select=0;
     char *dyn_statement;
 
     con = RS_DBI_getConnection(conHandle);
