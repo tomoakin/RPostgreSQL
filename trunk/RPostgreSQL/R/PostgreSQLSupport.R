@@ -197,6 +197,14 @@ postgresqlExecStatement <- function(con, statement) {
     new("PostgreSQLResult", Id = rsId)
 }
 
+postgresqlCopyIn <- function(con, filename) {
+    if(!isIdCurrent(con))
+        stop(paste("expired", class(con)))
+    conId <- as(con, "integer")
+    statement <- as(filename, "character")
+    .Call("RS_PostgreSQL_CopyIn", conId, filename, PACKAGE = .PostgreSQLPkgName)
+}
+
 ## helper function: it exec's *and* retrieves a statement. It should
 ## be named somehting else.
 postgresqlQuickSQL <- function(con, statement) {
@@ -639,10 +647,10 @@ postgresqlWriteTable <- function(con, name, value, field.types, row.names = TRUE
     safe.write(value, file = fn)
     on.exit(unlink(fn), add = TRUE)
 
-    sql4 <- paste("COPY ",name," FROM '",fn,"' ",sep="")
+    sql4 <- paste("COPY", name, "FROM STDIN")
 
     rs <- try(dbSendQuery(new.con, sql4))
-
+    postgresqlCopyIn(new.con, fn)
 
     if (inherits(rs, ErrorClass)) {
         warning("could not load data into table")
