@@ -18,12 +18,12 @@ fi
 echo " "
 echo "-------------- write version info ----------------------"
 
-tempfile=`mktemp Rpostgresql.txt.XXXXXXXX`
+tempfile=$(mktemp Rpostgresql.txt.XXXXXXXX)
 
 if [ -x sw_vers ]
 then
 	sw_vers
-elif [ -x lsb_release ]
+elif [ -x /usr/bin/lsb_release ]
 then
 	lsb_release -a
 fi
@@ -48,6 +48,7 @@ rm $tempfile
 
 for f in RPostgreSQL/tests/*.R
 do
+    echo ""
     echo "==== Running $f"
     R --slave < $f
 done
