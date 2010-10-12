@@ -18,8 +18,6 @@ fi
 echo " "
 echo "-------------- write version info ----------------------"
 
-tempfile=$(mktemp Rpostgresql.txt.XXXXXXXX)
-
 if [ -x /usr/bin/sw_vers ]
 then
 	sw_vers
@@ -27,22 +25,16 @@ elif [ -x /usr/bin/lsb_release ]
 then
 	lsb_release -a
 fi
-
+echo ""
 svn_version=$(svnversion -n)
 echo "RPostgreSQL svn version: $svn_version"
+echo ""
 psql --version | head -n 1
+echo ""
+Rscript -e 'sessionInfo(); capabilities()' | sed -n -e '1,2p'
+echo ""
+Rscript -e 'packageDescription("RPostgreSQL", fields = c("Package", "Version", "Packaged", "Built"))' | sed -n -e '1,4p'
 
-#R --version | head -n 1
-
-R --slave -e 'sessionInfo(); capabilities()' >$tempfile
-echo " "
-head -n 5 $tempfile
-
-R --slave -e 'packageDescription("RPostgreSQL", fields = c("Package", "Version", "Packaged", "Built"))' >$tempfile
-echo " "
-head -n 4 $tempfile
-
-rm $tempfile
 
 #R CMD check RPostgreSQL
 
