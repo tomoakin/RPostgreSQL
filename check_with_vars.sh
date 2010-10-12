@@ -20,7 +20,7 @@ echo "-------------- write version info ----------------------"
 
 tempfile=$(mktemp Rpostgresql.txt.XXXXXXXX)
 
-if [ -x sw_vers ]
+if [ -x /usr/bin/sw_vers ]
 then
 	sw_vers
 elif [ -x /usr/bin/lsb_release ]
