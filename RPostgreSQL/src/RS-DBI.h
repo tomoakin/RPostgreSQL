@@ -28,19 +28,16 @@ extern "C" {
 
 #include "S4R.h"
 
-/* Microsoft Visual C++ uses int _getpid()  */
-#ifdef MSVC
+#ifdef WIN32
 #include <process.h>
-#define getpid _getpid
-#define pid_t int
 #else
-#include <sys/types.h>
 #include <unistd.h>
 #endif
 
 #include<ctype.h>               /* NOTE:added this header because of using isalpha in RS-DBI.c -sameer */
 
-    pid_t getpid();
+//    pid_t getpid();
+
 
     /* We now define 4 important data structures:
      * RS_DBI_manager, RS_DBI_connection, RS_DBI_resultSet, and
