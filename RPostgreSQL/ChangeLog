@@ -1,3 +1,10 @@
+2010-10-12  Dirk Eddelbuettel  <edd@debian.org>
+
+	* src/RS-DBI.h: Applied patch by Brian D. Ripley to correct
+	declaration of getpid() on Windows
+
+	* ChangeLog: Moved from inst/ChangeLog; now C-x 4 a inserts filenames
+
 2010-09-11  Dirk Eddelbuettel  <edd@debian.org>
 
 	* src/RS-DBI.h: Applying patch by tomoakin@kenroku.kanazawa-u.ac.jp
