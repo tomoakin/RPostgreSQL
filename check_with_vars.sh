@@ -20,10 +20,17 @@ echo "-------------- write version info ----------------------"
 
 tempfile=`mktemp Rpostgresql.txt.XXXXXXXX`
 
-sw_vers
+if [ -x sw_vers ]
+then
+	sw_vers
+elif [ -x lsb_release ]
+then
+	lsb_release -a
+fi
+
 svn_version=$(svnversion -n)
 echo "RPostgreSQL svn version: $svn_version"
-/sw/bin/psql --version | head -n 1
+psql --version | head -n 1
 
 #R --version | head -n 1
 
