@@ -46,7 +46,7 @@ if (Sys.getenv("POSTGRES_USER") != "" & Sys.getenv("POSTGRES_HOST") != "" & Sys.
     ## cleanup
     if (dbExistsTable(con, "rockdata")) {
         print("Removing rockdata\n")
-        dbRemoveTable(con, "rockData")
+        dbRemoveTable(con, "rockdata")
     }
 
     ## and disconnect
