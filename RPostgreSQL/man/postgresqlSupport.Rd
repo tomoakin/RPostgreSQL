@@ -18,6 +18,9 @@
 \alias{postgresqlDescribeFields}
 \alias{postgresqlReadTable}
 \alias{postgresqlWriteTable}            % convenience functions
+\alias{postgresqlCopyIn}
+\alias{postgresqlEscapeStrings}
+\alias{postgresqlQuoteId}
 \alias{postgresqlImportFile}
 \alias{postgresqlDataType}
 \alias{postgresqlTransactionStatement}   % transaction management 
@@ -61,6 +64,9 @@
    postgresqlReadTable(con, name, row.names = "row_names", check.names = TRUE, ...)
    postgresqlWriteTable(con, name, value, field.types, row.names = TRUE,
       overwrite=FALSE, append=FALSE, ..., allow.keywords = FALSE)
+   postgresqlCopyIn(con, filename)
+   postgresqlEscapeStrings(con, preescapedstring)
+   postgresqlQuoteId(identifier)
    postgresqlImportFile(con, name, value, field.types, overwrite=FALSE,
       append=FALSE, header, row.names, nrows=50, sep=",", eol="\n", 
       skip = 0, quote="\"", ...)
@@ -190,6 +196,9 @@ Command-line options to be sent to the server
    being written.  Defaults to \code{FALSE}, forcing \code{postgresqlWriteTable}
    to modify column names to make them legal PostgreSQL identifiers.
    }
+\item{preescapedstring}{character string to be escaped}
+\item{identifier}{character string to be used as identfier in SQL statement}
+\item{filename}{character string indicating the file which contains the data to be copied to the PostgreSQL backend}
 \item{\dots}{
    placeholder for future use.
 }
@@ -242,6 +251,16 @@ Command-line options to be sent to the server
    
    \code{postgresqlWriteTable}  returns a logical indicating whether the
    operation succeeded or not.
+
+   \code{postgresqlCopyIn}  returns \code{NULL} (copies the content 
+   of the file through the socket connection to postgresql backend.
+   This should be used just after COPY tablename FROM STDIN query.)
+
+   \code{postgresqlEscapeStrings} returns a character string which is escaped properly
+   so that it can be surrounded with a single quote and used as literal in SQL.
+   The escape procedure is dependent on the character encoding of the connection.
+
+   \code{postgresqlQuoteId} returns a character string which is quoted as identifier.
    
    \code{postgresqlDataType} retuns a character string with the closest
    
