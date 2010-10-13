@@ -30,52 +30,54 @@ if (Sys.getenv("POSTGRES_USER") != "" & Sys.getenv("POSTGRES_HOST") != "" & Sys.
     res <- dbSendQuery(con, "create table Foo1 (f1 int)")
     res <- dbSendQuery(con, "create table \"Foo2\" (f1 int)")
 
-    print("Test should create foo1 and Foo2 tables\n")
+    cat("Test should create foo1 and Foo2 tables\n")
     ## res <- dbSendQuery(con, "SELECT * FROM information_schema.tables WHERE table_schema = 'public'")
     ## print res
 
     if (dbExistsTable(con, "Foo1")) {
-        print("Pass - Foo1 Table exists.\n")
+        cat("FAIL - Foo1 Table exists.\n")
     }
     else {
-        print("FAIL - Foo1 Table does not exist.\n")
+        cat("Pass - Foo1 Table does not exist.\n")
     }
 
     if (dbExistsTable(con, "foo1")) {
-        print("Pass - foo1 Table exists.\n")
+        cat("Pass - foo1 Table exists.\n")
     }
     else {
-        print("FAIL - foo1 Table does not exist.\n")
+        cat("FAIL - foo1 Table does not exist.\n")
     }
 
     if (dbExistsTable(con, "Foo2")) {
-        print("FAIL - Foo2 Table exists.\n")
+        cat("Pass - Foo2 Table exists.\n")
     }
     else {
-        print("Pass - Foo2 Table does not exist.\n")
+        cat("FAIL - Foo2 Table does not exist.\n")
     }
 
     if (dbExistsTable(con, "foo2")) {
-        print("FAIL - foo2 Table exists.\n")
+        cat("FAIL - foo2 Table exists.\n")
     }
     else {
-        print("Pass - foo2 Table does not exist.\n")
+        cat("Pass - foo2 Table does not exist.\n")
     }
 
     if (dbExistsTable(con, "\"Foo2\"")) {
-        print("Pass - Foo2 Table exists.\n")
+        cat("FAIL - \"Foo2\" Table exists.\n")
     }
     else {
-        print("FAIL - Foo2 Table does not exist.\n")
+        cat("Pass - \"Foo2\" Table does not exist.\n")
     }
 
     if (dbExistsTable(con, "\"foo2\"")) {
-        print("FAIL - foo2 Table exists.\n")
+        cat("FAIL - \"foo2\" Table exists.\n")
     }
     else {
-        print("Pass - foo2 Table does not exist.\n")
+        cat("Pass - \"foo2\" Table does not exist.\n")
     }
 
+    res <- dbSendQuery(con, "drop table Foo1")
+    res <- dbSendQuery(con, "drop table \"Foo2\"")
     ## and disconnect
     dbDisconnect(con)
 }
