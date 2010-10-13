@@ -49,4 +49,5 @@ if (Sys.getenv("POSTGRES_USER") != "" & Sys.getenv("POSTGRES_HOST") != "" & Sys.
 
     ## and disconnect
     dbDisconnect(con)
+    cat("PASS:  reached to the end of the test code without segmentation fault\n")
 }
