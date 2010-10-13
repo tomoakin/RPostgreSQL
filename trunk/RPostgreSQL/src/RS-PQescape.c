@@ -20,7 +20,6 @@ RS_PostgreSQL_escape(SEXP conHandle, SEXP preescapestring)
     S_EVALUATOR PGconn * my_connection;
     RS_DBI_connection *con;
     SEXP output;
-    SEXP outputch;
     size_t length;
     size_t rlength;
     const char *statement_cstr;
