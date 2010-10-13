@@ -1,7 +1,8 @@
 
-R version 2.11.1 (2010-05-31)
+R version 2.12.0 RC (2010-10-07 r53227)
 Copyright (C) 2010 The R Foundation for Statistical Computing
 ISBN 3-900051-07-0
+Platform: x86_64-pc-linux-gnu (64-bit)
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
 You are welcome to redistribute it under certain conditions.
@@ -55,7 +56,7 @@ Type 'q()' to quit R.
 +     dbWriteTable(con, "tmpirisdata", iris)
 + 
 +     ## run a simple query and show the query result
-+     res <- dbGetQuery(con, "select * from tmpirisdata where Species=0")
++     res <- dbGetQuery(con, "select * from tmpirisdata where \"Species\"=0")
 +     print(res)
 + 
 +     ## cleanup
@@ -66,5 +67,6 @@ Type 'q()' to quit R.
 + 
 +     ## and disconnect
 +     dbDisconnect(con)
++     cat("PASS:  reached to the end of the test code without segmentation fault\n")
 + }
 > 

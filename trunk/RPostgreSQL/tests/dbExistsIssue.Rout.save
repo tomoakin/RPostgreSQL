@@ -63,7 +63,7 @@ Type 'q()' to quit R.
 +     ## cleanup
 +     if (dbExistsTable(con, "rockdata")) {
 +         print("Removing rockdata\n")
-+         dbRemoveTable(con, "rockData")
++         dbRemoveTable(con, "rockdata")
 +     }
 + 
 +     ## and disconnect
