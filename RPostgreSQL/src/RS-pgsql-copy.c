@@ -22,12 +22,8 @@ s_object *
 RS_PostgreSQL_CopyIn(Con_Handle * conHandle, s_object * filename)
 {
     S_EVALUATOR RS_DBI_connection * con;
-    Res_Handle *rsHandle;
-    RS_DBI_resultSet *result;
     PGconn *my_connection;
-    PGresult *my_result;
  
-    Sint res_id, is_select;
     char *dyn_filename;
     char copybuf[COPY_IN_BUFSIZE];
     FILE* filehandle;
@@ -47,7 +43,7 @@ RS_PostgreSQL_CopyIn(Con_Handle * conHandle, s_object * filename)
         return S_NULL_ENTRY;
     }
 
-    while(len = fread(copybuf,1,COPY_IN_BUFSIZE, filehandle)){
+    while((len = fread(copybuf,1,COPY_IN_BUFSIZE, filehandle))){
         pqretcode = PQputCopyData(my_connection, copybuf, len);
         if(pqretcode == -1){
              char * pqerrmsg = PQerrorMessage(my_connection);

@@ -160,39 +160,6 @@ extern "C" {
 #    define ANYNONARRAYOID		2776
 #    define ANYENUMOID		3500
 
-
-    static struct data_types RS_PostgreSQL_dataTypes[] = {
-
-        {"BIGINT", 20},         /* ALSO KNOWN AS INT8 */
-        {"DECIMAL", 1700},      /* ALSO KNOWN  AS NUMERIC */
-        {"FLOAT8", 701},        /* DOUBLE PRECISION */
-        {"FLOAT", 700},         /* ALSO CALLED FLOAT4 (SINGLE PRECISION) */
-        {"INTEGER", 23},        /*ALSO KNOWN AS INT 4 */
-        {"SMALLINT", 21},       /* ALSO KNOWN AS INT2 */
-        {"MONEY", 790},         /* MONEY (8 bytes) */
-
-        {"CHAR", 1042},         /* FIXED LENGTH STRING-BLANK PADDED */
-        {"VARCHAR", 1043},      /* VARIABLE LENGTH STRING WITH SPECIFIED LIMIT */
-        {"TEXT", 25},           /* VARIABLE LENGTH STRING */
-
-        {"DATE", 1082},
-        {"TIME", 1083},
-        {"TIMESTAMP", 1114},
-        {"TIMESTAMPTZOID", 1184},
-        {"INTERVAL", 1186},
-        {"TIMETZOID", 1266},
-
-        {"BOOL", 16},           /* BOOLEAN */
-
-        {"BYTEA", 17},          /* USED FOR STORING RAW DATA */
-
-        {"OID", 26},
-
-        {"NULL", 2278},
-
-        {(char *) 0, -1}
-    };
-
     s_object *RS_PostgreSQL_typeNames(s_object * typeIds);
     extern const struct data_types RS_dataTypeTable[];
 
