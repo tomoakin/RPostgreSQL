@@ -100,6 +100,13 @@ setMethod("dbDisconnect", "PostgreSQLConnection",
           valueClass = "logical"
           )
 
+setGeneric("dbEscapeStrings", def = function(conn, string, ...) standardGeneric("dbEscapeStrings"))
+setMethod("dbEscapeStrings", 
+          signature(conn="PostgreSQLConnection", string="character"),
+          def = function(conn, string, ...) postgresqlEscapeStrings(conn, string, ...),
+          valueClass = "character"
+          )
+
 setMethod("dbSendQuery",
           signature(conn = "PostgreSQLConnection", statement = "character"),
           def = function(conn, statement,...) postgresqlExecStatement(conn, statement,...),
@@ -181,12 +188,12 @@ setMethod("dbExistsTable",
                                     paste("select schemaname,tablename from pg_tables where ",
                                           "schemaname !='information_schema' ",
                                           "and schemaname !='pg_catalog' and schemaname='",
-                                          names[1], "' and tablename='", names[2], "'", sep=""))
+                                          names[1], "' and tablename='", postgresqlEscapeStrings(conn, names[2]), "'", sep=""))
               } else {
                   res <- dbGetQuery(conn,
                                     paste("select tablename from pg_tables where ",
                                           "schemaname !='information_schema' and schemaname !='pg_catalog' ",
-                                          "and tablename='", names[1], "'", sep=""))
+                                          "and tablename='", postgresqlEscapeStrings(conn, names[1]), "'", sep=""))
               }
               return(as.logical(dim(res)[1]))
           },
@@ -197,7 +204,7 @@ setMethod("dbRemoveTable",
           signature(conn="PostgreSQLConnection", name="character"),
           def = function(conn, name, ...){
               if(dbExistsTable(conn, name)){
-                  rc <- try(dbGetQuery(conn, paste("DROP TABLE", name)))
+                  rc <- try(dbGetQuery(conn, paste("DROP TABLE", postgresqlQuoteId(name))))
                   !inherits(rc, ErrorClass)
               }
               else FALSE
