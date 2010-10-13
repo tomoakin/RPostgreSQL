@@ -446,12 +446,12 @@ RS_PostgreSQL_createDataMappings(Res_Handle * rsHandle)
                     PQftable(my_result, j), PQftablecol(my_result, j));
             res = PQexec(conn, buff);
 
-            if (strcmp(PQgetvalue(res, 0, 0), "f") == 0) {
-                flds->nullOk[j] = (Sint) 1;
-            }
-            else {
+	    if (res && (PQntuples(res) > 0) &&
+		strcmp(PQgetvalue(res, 0, 0), "f") == 0) {
+		flds->nullOk[j] = (Sint) 1;
+	    } else {
                 flds->nullOk[j] = (Sint) 0;
-            }
+	    }
 
             PQclear(res);
 
