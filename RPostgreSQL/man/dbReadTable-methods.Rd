@@ -32,8 +32,13 @@
   }
 \item{value}{
   a data.frame (or coercible to data.frame).
+
+  When the \code{value} is a character string, it is assumed to be a file name containing the data to be loaded;
+  The implementation is INCOMPLETE and should not be used in current state.
   }
 \item{row.names}{
+  UNTESTED;
+
   in the case of \code{dbReadTable}, this argument can be a string or
   an index specifying the column in the DBMS table to be used as 
   \code{row.names} in the output data.frame (a \code{NULL}, \code{""}, or 0 
@@ -64,7 +69,7 @@
   When \code{dbWriteTable} is used to import data from a file, 
   you may optionally specify \code{header=}, \code{row.names=},
   \code{col.names=}, \code{sep=}, \code{eol=}, \code{field.types=}, 
-  \code{skip=}, and \code{quote=}.
+  \code{skip=}, and \code{quote=}. NOT FULLY IMPLEMENTED YET.
 
   \code{header} is a logical indicating whether the first data line
   (but see \code{skip}) has a header or not.  If missing, it value
@@ -76,9 +81,8 @@
   is a set of row names.  If missing its default follows the 
   \code{\link{read.table}} convention.
   
-  \code{col.names} a character vector with column names (these names
-  will be filtered with \code{\link[DBI]{make.db.names}} to 
-  ensure valid SQL identifiers. (See also \code{field.types} below.)
+  \code{col.names} a character vector with column names; column names are quoted to work as SQL identifiers.
+  Thus, the column names are case sensitive and \code{\link[DBI]{make.db.names}} will NOT be used here.
 
   \code{sep=} specifies the field separator, and its default is \code{','}.
 
@@ -101,11 +105,9 @@
    indicating whether the operation was successful.  
 }
 \note{
-dbWriteTable will fail if SElinux is ON. So if dbWriteTable is not working then please turn off
-the SElinux using the following command at the command prompt
-echo 0 > /selinux/enforce/
-To turn SElinux ON use:
-echo 1 > /selinux/enforce/
+dbWriteTable creates additional column in the database, while dbReadTable 
+reads that column by default. So, it is not symmetrical in its current implementation.
+the backend raw_names may change in future versions.
 }
 \references{
    See the Database Interface definition document
@@ -129,7 +131,7 @@ echo 1 > /selinux/enforce/
 conn <- dbConnect("PostgreSQL", dbname = "wireless")
 if(dbExistsTable(con, "frame_fuel")){
    dbRemoveTable(conn, "frame_fuel")
-   dbWriteTable(conn, "frame", fuel.frame)
+   dbWriteTable(conn, "frame_fuel", fuel.frame)
 }
 if(dbExistsTable(conn, "RESULTS")){
    dbWriteTable(conn, "RESULTS", results2000, append = T)
