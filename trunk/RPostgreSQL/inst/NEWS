@@ -1,23 +1,26 @@
+Version 0.1-7 -- 2010-xx-yy
 
-    o   Many potential buffer overrun was fixed.
+    o   Many potential buffer overruns were fixed.
 
-    o   dbWriteTable writes data.frame to database through 
-        network connection
-        Note row_names may further changed in future releases.
-        Passing filenames instead of data.frame is not managed 
-        at this time.
+    o   dbWriteTable now writes data.frame to database through a network
+        connection rather than a temporary file.
+        Note row_names may be changed in future releases.  Also, passing in
+        filenames instead of data.frame is not supported at this time.
 
-    o   Connect to postgresql server via UNIX domain socket 
-        when no host is specified
+    o   When no host is specified, a connection to the PostgreSQL server 
+        is made via UNIX domain socket (just like psql does)
 
-    o   Table and column names are case sensitive
-        Identifiers are escaped or quoted appropriately,
-        so that any table/column names can be created,
-        searched, or removed.
+    o   Table and column names are case sensitive, and identifiers are escaped
+        or quoted appropriately, so that any form of table/column names can be
+        created, searched, or removed,
 
-    o   nullOk in dbColumnInfo return value is NA when 
-        the column does not correspond to a column in table
-        The utility of nullOk is doubtful but not removed at this time.
+    o   nullOk in dbColumnInfo has a return value of NA when the column does
+        not correspond to a column in the table. The utility of nullOk is
+        doubtful but not removed at this time.
+
+Version 0.1-6 -- 2009-10-19
+
+    o   Added missing paste() call to dbGetQuery() for dbListTables
 
 Version 0.1-5 -- 2009-10-13
 
