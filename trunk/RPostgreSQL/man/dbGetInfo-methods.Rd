@@ -70,6 +70,7 @@ names(dbGetInfo(con))
 names(dbGetInfo(rs)) 
 }
 }
+\note{nullOk in \code{dbColumnInfo} was changed. Now it may be TRUE, FALSE, or NA; the column may be totally deleted in future releases;}
 \keyword{methods}
 \keyword{interface}
 \keyword{database}
