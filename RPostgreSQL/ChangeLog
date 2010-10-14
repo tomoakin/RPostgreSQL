@@ -1,3 +1,7 @@
+2010-10-13  Joe Conway  <joe@conway.com>
+
+	* src/RS-PostgreSQL.c: Correct segfault from issue ticket #24
+
 2010-10-12  Dirk Eddelbuettel  <edd@debian.org>
 
 	* src/RS-DBI.h: Applied patch by Brian D. Ripley to correct
