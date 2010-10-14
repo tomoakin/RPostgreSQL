@@ -13,6 +13,7 @@
  *
  */
 
+#include <limits.h>
 #include "RS-PostgreSQL.h"
 
 struct data_types RS_PostgreSQL_dataTypes[] = {
@@ -473,29 +474,28 @@ RS_PostgreSQL_createDataMappings(Res_Handle * rsHandle)
          * table.
          */
 
-        if (PQftablecol(my_result, j) != 0) {
+        flds->nullOk[j] = (Sint) INT_MIN; /* This should translate to NA in R */
 
+        if (PQftablecol(my_result, j) != 0) {
             /* Code to find whether a row can be nullable or not */
+            /* we might better just store the table id and column number 
+               for lazy evaluation at dbColumnInfo call*/
+            /* although the database structure can change, we are not in transaction anyway 
+               and there is no guarantee in current code */
             snprintf(buff, 1000, "select attnotnull from pg_attribute where attrelid=%d and attnum='%d'",
                     PQftable(my_result, j), PQftablecol(my_result, j));
             res = PQexec(conn, buff);
 
-	    if (res && (PQntuples(res) > 0) &&
-		strcmp(PQgetvalue(res, 0, 0), "f") == 0) {
-		flds->nullOk[j] = (Sint) 1;
-	    } else {
-                flds->nullOk[j] = (Sint) 0;
+	    if (res && (PQntuples(res) > 0)){
+                const char * attnotnull = PQgetvalue(res, 0, 0);
+		if(strcmp(attnotnull, "f") == 0) {
+		    flds->nullOk[j] = (Sint) 1; /* nollOK is TRUE when attnotnull is f*/
+                }
+		if(strcmp(attnotnull, "t") == 0) {
+		    flds->nullOk[j] = (Sint) 0; /* nollOK is FALSE when attnotnull is t*/
+                }
 	    }
-
             PQclear(res);
-
-        }
-        else {
-            /* 'else' gets executed when the column in result does not
-             * belong to the table.for eg. in the * query "SELECT
-             * COUNT(*) FROM TABLE_NAME" or "SHOW DateStyle", nullOK
-             * is always false */
-            flds->nullOk[j] = (Sint) 0;
         }
 
         internal_type = (int) PQftype(my_result, j);
