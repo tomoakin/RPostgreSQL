@@ -23,7 +23,8 @@ if (Sys.getenv("POSTGRES_USER") != "" & Sys.getenv("POSTGRES_HOST") != "" & Sys.
                      user=Sys.getenv("POSTGRES_USER"),
                      password=Sys.getenv("POSTGRES_PASSWD"),
                      host=Sys.getenv("POSTGRES_HOST"),
-                     dbname=Sys.getenv("POSTGRES_DATABASE"))
+                     dbname=Sys.getenv("POSTGRES_DATABASE"),
+                     port=Sys.getenv("POSTGRES_PORT"))
 
 
 
