@@ -1,6 +1,24 @@
+2010-10-14  Tomoaki NISHIYAMA  <tomoakin@kenroku.asrc.kanazawa-u.ac.jp>
+
+	* src/RS-PostgreSQL.c: nullOk column in dbColumnInfo to have NA unless the backend has clear statement
+
 2010-10-13  Joe Conway  <joe@conway.com>
 
 	* src/RS-PostgreSQL.c: Correct segfault from issue ticket #24
+
+2010-10-13  Tomoaki NISHIYAMA  <tomoakin@kenroku.asrc.kanazawa-u.ac.jp>
+
+	postgresqlEscapeStrings and postgresqlQuoteId to escape and quote strings and identifiers.
+	This is used in dbWriteTable, dbExitsTable, and dbRemoveTable.
+
+	* NAMESPACE: exporting postgresqlEscapeStrings
+	* R/PostgreSQL.R: use postgresqlEscapeStrings and postgresqlQuoteId in dbExistsTable and dbRemoveTable
+	* R/PostgreSQLSupport.R: define postgresqlQuoteId
+	* src/RS-PQescape.c: implements postgresqlEscapeStrings, which is adapter to PQescapeStringConn
+	* tests/createTableMixedCaseTest.R: modified what is the right behavior
+	* tests/escape.R: test for postgresqlEscapeStrings
+	* tests/dbExistsq.R: test for dbExistsTable with complex name
+	* tests/selectWhereZero.R: Change species to "Species" so that the error message will not change.
 
 2010-10-12  Dirk Eddelbuettel  <edd@debian.org>
 
@@ -8,6 +26,16 @@
 	declaration of getpid() on Windows
 
 	* ChangeLog: Moved from inst/ChangeLog; now C-x 4 a inserts filenames
+
+2010-10-05  Tomoaki NISHIYAMA  <tomoakin@kenroku.asrc.kanazawa-u.ac.jp>
+	
+	dbWriteTable copies tha data via the network connection
+	
+	* R/PostgreSQLSupport.R: postgresqlCopyIn, adapter to RS_PostgreSLQ_copyin
+	* src/RS-pgsql-copy.c: implements RS_PostgreSQL_copyin, adapter to PQputCopyData and PQputCopyEnd
+	* src/RS-PostgreSQL.c: initialize is_select
+	* src/RS-PostgreSQL.h: decleration of RS_PostgreSQL_copyin
+	* NAMESPACE: decleration
 
 2010-09-11  Dirk Eddelbuettel  <edd@debian.org>
 
