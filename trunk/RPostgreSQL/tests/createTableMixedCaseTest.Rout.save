@@ -41,8 +41,8 @@ Type 'q()' to quit R.
 +                      user=Sys.getenv("POSTGRES_USER"),
 +                      password=Sys.getenv("POSTGRES_PASSWD"),
 +                      host=Sys.getenv("POSTGRES_HOST"),
-+                      dbname=Sys.getenv("POSTGRES_DATABASE"))
-+ 
++                      dbname=Sys.getenv("POSTGRES_DATABASE"),
++                      port=Sys.getenv("POSTGRES_PORT"))
 + 
 + 
 +     res <- dbSendQuery(con, "create table Foo1 (f1 int)")
