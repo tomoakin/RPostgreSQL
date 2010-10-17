@@ -7,8 +7,11 @@ Maintainer: Dirk Eddelbuettel <edd@debian.org>
 Description: Database interface and PostgreSQL driver for R
  This package provides a Database Interface (DBI) compliant 
  driver for R to access PostgreSQL database systems.  
+ .
+ A wiki and issue tracking system for the package are available
+ at Google Code at https://code.google.com/p/rpostgresql/ .
 LazyLoad: true
 Depends: R (>= 2.9.0), methods, DBI (>= 0.1-4)
 License: GPL-2
-URL: http://www.stat.bell-labs.com/RS-DBI, http://www.postgresql.org
 Collate: S4R.R zzz.R PostgreSQLSupport.R dbObjectId.R PostgreSQL.R
+URL: https://code.google.com/p/rpostgresql/, http://www.stat.bell-labs.com/RS-DBI, http://www.postgresql.org

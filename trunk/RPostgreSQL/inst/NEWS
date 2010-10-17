@@ -1,22 +1,31 @@
-Version 0.1-7 -- 2010-xx-yy
+Version 0.1-7 -- 2010-10-17
 
-    o   Many potential buffer overruns were fixed.
+    o   Several potential buffer overruns were fixed
 
-    o   dbWriteTable now writes data.frame to database through a network
-        connection rather than a temporary file.
-        Note row_names may be changed in future releases.  Also, passing in
-        filenames instead of data.frame is not supported at this time.
+    o   dbWriteTable now writes a data.frame to database through a network
+        connection rather than a temporary file. Note that row_names may be
+        changed in future releases.  Also, passing in filenames instead of
+        data.frame is not supported at this time. 
 
     o   When no host is specified, a connection to the PostgreSQL server 
         is made via UNIX domain socket (just like psql does)
 
     o   Table and column names are case sensitive, and identifiers are escaped
         or quoted appropriately, so that any form of table/column names can be
-        created, searched, or removed,
+        created, searched, or removed, including upper-, lower- and mixed-case.
 
     o   nullOk in dbColumnInfo has a return value of NA when the column does
         not correspond to a column in the table. The utility of nullOk is
         doubtful but not removed at this time.
+
+    o   Correct Windows getpid() declaration (with thanks to Brian D. Ripley)
+
+    o   A call of as.POSIXct() with a time format string wrongly passed to TZ
+        has been corrected; this should help with intra-day timestamps (with
+        thanks to Steve Eick)
+
+    o   Usage of tmpdir has been improved on similarly to Linux (with thanks
+        to Robert McGehee)
 
 Version 0.1-6 -- 2009-10-19
 
