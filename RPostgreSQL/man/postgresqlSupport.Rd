@@ -18,7 +18,9 @@
 \alias{postgresqlDescribeFields}
 \alias{postgresqlReadTable}
 \alias{postgresqlWriteTable}            % convenience functions
+\alias{postgresqlpqExec}
 \alias{postgresqlCopyIn}
+\alias{postgresqlgetResult}
 \alias{postgresqlEscapeStrings}
 \alias{postgresqlQuoteId}
 \alias{postgresqlImportFile}
@@ -64,7 +66,9 @@
    postgresqlReadTable(con, name, row.names = "row_names", check.names = TRUE, ...)
    postgresqlWriteTable(con, name, value, field.types, row.names = TRUE,
       overwrite=FALSE, append=FALSE, ..., allow.keywords = FALSE)
+   postgresqlpqExec(con, statement)
    postgresqlCopyIn(con, filename)
+   postgresqlgetResult(con)
    postgresqlEscapeStrings(con, preescapedstring)
    postgresqlQuoteId(identifier)
    postgresqlImportFile(con, name, value, field.types, overwrite=FALSE,
@@ -110,7 +114,8 @@
    and \code{postgresqlCloneConnection}.
 }
 \item{res}{
-   an \code{PostgreSQLResult} object as produced by by \code{postgresqlExecStatement}.
+   an \code{PostgreSQLResult} object as produced by by \code{postgresqlExecStatement}
+   and \code{postgresqlgetResult}.
 }
 \item{user}{
    a character string with the PostgreSQL's user name.
@@ -252,9 +257,16 @@ Command-line options to be sent to the server
    \code{postgresqlWriteTable}  returns a logical indicating whether the
    operation succeeded or not.
 
+   \code{postgresqlpqExec}  returns \code{NUL} (executes the statement
+   but does not try to get result.  This is called internally
+   from \code{postgresqlWriteTable} before \code{postgresqlCopyIn}
+
    \code{postgresqlCopyIn}  returns \code{NULL} (copies the content 
    of the file through the socket connection to postgresql backend.
    This should be used just after COPY tablename FROM STDIN query.)
+
+   \code{postgresqlgetResult}  returns an \code{PostgreSQLResult} object.  
+   This is called after completion of execution of \code{postgresqlpqExec}.
 
    \code{postgresqlEscapeStrings} returns a character string which is escaped properly
    so that it can be surrounded with a single quote and used as literal in SQL.

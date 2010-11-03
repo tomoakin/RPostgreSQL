@@ -204,13 +204,28 @@ postgresqlEscapeStrings <- function(con, preescapedstring) {
     return(escapedstring)
 }
 
+postgresqlpqExec <- function(con, statement) {
+    if(!isIdCurrent(con))
+        stop(paste("expired", class(con)))
+    conId <- as(con, "integer")
+    statement <- as(statement, "character")
+    .Call("RS_PostgreSQL_pqexec", conId, statement, PACKAGE = .PostgreSQLPkgName)
+}
 postgresqlCopyIn <- function(con, filename) {
     if(!isIdCurrent(con))
         stop(paste("expired", class(con)))
     conId <- as(con, "integer")
-    statement <- as(filename, "character")
+    filename <- as(filename, "character")
     .Call("RS_PostgreSQL_CopyIn", conId, filename, PACKAGE = .PostgreSQLPkgName)
 }
+postgresqlgetResult <- function(con) {
+    if(!isIdCurrent(con))
+        stop(paste("expired", class(con)))
+    conId <- as(con, "integer")
+    rsId <- .Call("RS_PostgreSQL_getResult", conId, PACKAGE = .PostgreSQLPkgName)
+    new("PostgreSQLResult", Id = rsId)
+}
+
 
 ## helper function: it exec's *and* retrieves a statement. It should
 ## be named somehting else.
@@ -656,8 +671,9 @@ postgresqlWriteTable <- function(con, name, value, field.types, row.names = TRUE
 
     sql4 <- paste("COPY", postgresqlQuoteId(name), "FROM STDIN")
 
-    rs <- try(dbSendQuery(new.con, sql4))
+    postgresqlpqExec(new.con, sql4)
     postgresqlCopyIn(new.con, fn)
+    rs<-postgresqlgetResult(new.con)
 
     if (inherits(rs, ErrorClass)) {
         warning("could not load data into table")
