@@ -23,6 +23,7 @@
 \alias{postgresqlgetResult}
 \alias{postgresqlEscapeStrings}
 \alias{postgresqlQuoteId}
+\alias{postgresqlTableRef}
 \alias{postgresqlImportFile}
 \alias{postgresqlDataType}
 \alias{postgresqlTransactionStatement}   % transaction management 
@@ -70,7 +71,8 @@
    postgresqlCopyIn(con, filename)
    postgresqlgetResult(con)
    postgresqlEscapeStrings(con, preescapedstring)
-   postgresqlQuoteId(identifier)
+   postgresqlQuoteId(identifiers)
+   postgresqlTableRef(identifiers)
    postgresqlImportFile(con, name, value, field.types, overwrite=FALSE,
       append=FALSE, header, row.names, nrows=50, sep=",", eol="\n", 
       skip = 0, quote="\"", ...)
@@ -272,7 +274,11 @@ Command-line options to be sent to the server
    so that it can be surrounded with a single quote and used as literal in SQL.
    The escape procedure is dependent on the character encoding of the connection.
 
-   \code{postgresqlQuoteId} returns a character string which is quoted as identifier.
+   \code{postgresqlQuoteId} returns a character string which is quoted as identifier. Returns vector on vector arguemnt.
+
+   \code{postgresqlTableRef} returns a character string which is quoted as identifier. 
+    Reterns a charcter string concatenated with "." so that "dbname"."schemaname"."tablename" reference
+    is created upon c("dbname", "schemaname", "tablename") arguemnt.
    
    \code{postgresqlDataType} retuns a character string with the closest
    

@@ -470,7 +470,7 @@ postgresqlCloseResult <- function(res, ...) {
 
 ## Use NULL, "", or 0 as row.names to prevent using any field as row.names.
 postgresqlReadTable <- function(con, name, row.names = "row_names", check.names = TRUE, ...) {
-    out <- dbGetQuery(con, paste("SELECT * from", postgresqlQuoteId(name)))
+    out <- dbGetQuery(con, paste("SELECT * from", postgresqlTableRef(name)))
     if(check.names)
         names(out) <- make.names(names(out), unique = TRUE)
     ## should we set the row.names of the output data.frame?
@@ -640,7 +640,7 @@ postgresqlWriteTable <- function(con, name, value, field.types, row.names = TRUE
     }
     if(!dbExistsTable(con,name)){      ## need to re-test table for existance
         ## need to create a new (empty) table
-        sql1 <- paste("create table ", postgresqlQuoteId(name), "\n(\n\t", sep="")
+        sql1 <- paste("create table ", postgresqlTableRef(name), "\n(\n\t", sep="")
         sql2 <- paste(paste(postgresqlQuoteId(names(field.types)), field.types), collapse=",\n\t",
                       sep="")
         sql3 <- "\n)\n"
@@ -669,7 +669,7 @@ postgresqlWriteTable <- function(con, name, value, field.types, row.names = TRUE
     safe.write(value, file = fn)
     on.exit(unlink(fn), add = TRUE)
 
-    sql4 <- paste("COPY", postgresqlQuoteId(name), "FROM STDIN")
+    sql4 <- paste("COPY", postgresqlTableRef(name), "FROM STDIN")
 
     postgresqlpqExec(new.con, sql4)
     postgresqlCopyIn(new.con, fn)
@@ -703,7 +703,7 @@ dbBuildTableDefinition <- function(dbObj, name, obj, field.types = NULL, row.nam
 
     ## need to create a new (empty) table
     flds <- paste(postgresqlQuoteId(names(field.types)), field.types)
-    paste("CREATE TABLE", postgresqlQuoteId(name), "\n(", paste(flds, collapse=",\n\t"), "\n)")
+    paste("CREATE TABLE", postgresqlTableRef(name), "\n(", paste(flds, collapse=",\n\t"), "\n)")
 }
 
 ## the following is almost exactly from the ROracle driver
@@ -767,6 +767,10 @@ postgresqlDataType <- function(obj, ...) {
 
 postgresqlQuoteId <- function(identifier){
     ret <- paste('"', gsub('"','""',identifier), '"', sep="")
+    ret
+}
+postgresqlTableRef <- function(identifier){
+    ret <- paste('"', gsub('"','""',identifier), '"', sep="", collapse=".")
     ret
 }
 
