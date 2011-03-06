@@ -208,7 +208,7 @@ setMethod("dbRemoveTable",
           signature(conn="PostgreSQLConnection", name="character"),
           def = function(conn, name, ...){
               if(dbExistsTable(conn, name)){
-                  rc <- try(dbGetQuery(conn, paste("DROP TABLE", postgresqlQuoteId(name))))
+                  rc <- try(dbGetQuery(conn, paste("DROP TABLE", postgresqlTableRef(name))))
                   !inherits(rc, ErrorClass)
               }
               else FALSE
