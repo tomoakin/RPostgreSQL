@@ -87,6 +87,8 @@ export(
   postgresqlWriteTable,
   postgresqlEscapeStrings,
   postgresqlDataType,
+  postgresqlQuoteId,
+  postgresqlTableRef,
   safe.write
 )
 
