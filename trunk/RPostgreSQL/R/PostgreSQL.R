@@ -181,12 +181,24 @@ setMethod("dbWriteTable",
 setMethod("dbExistsTable",
           signature(conn="PostgreSQLConnection", name="character"),
           def = function(conn, name, ...){
+              qlength <- length(name)
+              if(qlength == 1){
               currentschema <- dbGetQuery(conn, "SELECT current_schema()")
               res <- dbGetQuery(conn,
                   paste("select tablename from pg_tables where ",
                   "schemaname !='information_schema' and schemaname !='pg_catalog' ",
                   "and schemaname='", postgresqlEscapeStrings(conn, currentschema[[1]]), "' ",
                   "and tablename='", postgresqlEscapeStrings(conn, name), "'", sep=""))
+              }
+              else{
+                  if(qlength == 2){
+                  res <- dbGetQuery(conn,
+                      paste("select tablename from pg_tables where ",
+                      "schemaname !='information_schema' and schemaname !='pg_catalog' ",
+                      "and schemaname='", postgresqlEscapeStrings(conn, name[1]), "' ",
+                      "and tablename='", postgresqlEscapeStrings(conn, name[2]), "'", sep=""))
+                  }
+              }
               return(as.logical(dim(res)[1]))
           },
           valueClass = "logical"

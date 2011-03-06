@@ -56,6 +56,22 @@ if (Sys.getenv("POSTGRES_USER") != "" & Sys.getenv("POSTGRES_HOST") != "" & Sys.
       cat("PASS: false as the search_path changed\n")
     }
 
+    cat("Does testschema.\"rock.data\" exist? \n")
+    res <- dbExistsTable(con, c('testschema', "rock.data"))
+    if(res){
+      cat("FAIL: true despite testschema specified\n")
+    }else{
+      cat("PASS: false as the testschema specified\n")
+    }
+
+    cat("Does public.\"rock.data\" exist? \n")
+    res <- dbExistsTable(con, c('public', "rock.data"))
+    if(res){
+      cat("PASS: true despite search_path change\n")
+    }else{
+      cat("FAIL: false as the search_path changed\n")
+    }
+
     
     cat("write in current schema\n")
     dbWriteTable(con, "rock.data", rock)
