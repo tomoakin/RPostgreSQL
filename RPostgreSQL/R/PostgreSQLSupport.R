@@ -765,12 +765,12 @@ postgresqlDataType <- function(obj, ...) {
     sql.type
 }
 
-postgresqlQuoteId <- function(identifier){
-    ret <- paste('"', gsub('"','""',identifier), '"', sep="")
+postgresqlQuoteId <- function(identifiers){
+    ret <- paste('"', gsub('"','""',identifiers), '"', sep="")
     ret
 }
-postgresqlTableRef <- function(identifier){
-    ret <- paste('"', gsub('"','""',identifier), '"', sep="", collapse=".")
+postgresqlTableRef <- function(identifiers){
+    ret <- paste('"', gsub('"','""',identifiers), '"', sep="", collapse=".")
     ret
 }
 
