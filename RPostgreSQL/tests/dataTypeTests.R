@@ -25,14 +25,14 @@ if ((Sys.getenv("POSTGRES_USER") != "") &
         dbRemoveTable(con, "tempostgrestable")
 
     ## Test the numeric mapping
-    dbSendQuery(con, "create table tempostgrestable (intcolumn integer, floatcolumn float);")
+    dbGetQuery(con, "create table tempostgrestable (intcolumn integer, floatcolumn float);")
 
     i <- as.integer(10)
     j <- as.numeric(56.6)
 
     sql <- paste("insert into tempostgrestable ",
                  "values (",i, "," ,j ,") ", sep="")
-    res <- dbSendQuery(con, sql)
+    res <- dbGetQuery(con, sql)
 
 
     dat <- dbReadTable(con, "tempostgrestable")
@@ -52,14 +52,14 @@ if ((Sys.getenv("POSTGRES_USER") != "") &
     ## Test the logical mapping
     if (dbExistsTable(con, "testlogical"))
         dbRemoveTable(con, "testlogical")
-    dbSendQuery(con,"create table testlogical (col1 boolean, col2 boolean)")
+    dbGetQuery(con,"create table testlogical (col1 boolean, col2 boolean)")
 
     i <- as.logical(TRUE)
     j <- as.logical(FALSE)
 
     sql <- paste("insert into testlogical ",
                  "values (",i, "," ,j ,") ", sep="")
-    res <- dbSendQuery(con, sql);
+    res <- dbGetQuery(con, sql);
 
     dat <- dbReadTable(con, "testlogical")
     dbRemoveTable(con, "testlogical")
@@ -78,7 +78,7 @@ if ((Sys.getenv("POSTGRES_USER") != "") &
     ## Test the character mapping
     if (dbExistsTable(con, "testchar"))
         dbRemoveTable(con, "testchar")
-    dbSendQuery(con,"create table testchar (code char(3),city varchar(20),country text);")
+    dbGetQuery(con,"create table testchar (code char(3),city varchar(20),country text);")
 
     i <- as.character("IN")
     j <- as.character("Hyderabad")
@@ -86,7 +86,7 @@ if ((Sys.getenv("POSTGRES_USER") != "") &
 
     sql <- paste("insert into testchar ",
                  "values ('",i,"' , '",j ,"' , '",k,"') ", sep="")
-    res <- dbSendQuery(con, sql);
+    res <- dbGetQuery(con, sql);
 
     dat <- dbReadTable(con, "testchar")
     cat("Read Character values\n")
