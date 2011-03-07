@@ -760,6 +760,8 @@ postgresqlDataType <- function(obj, ...) {
                            logical = "bool",
                            factor = "text",
                            ordered = "text",
+                           Date = "date",
+                           POSIXct = "timestamp with time zone",
                            "text")
     }
     sql.type
