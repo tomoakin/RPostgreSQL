@@ -204,7 +204,7 @@ Command-line options to be sent to the server
    to modify column names to make them legal PostgreSQL identifiers.
    }
 \item{preescapedstring}{character string to be escaped}
-\item{identifier}{character string to be used as identfier in SQL statement}
+\item{identifiers}{one or more character strings to be used as identfier in SQL statement}
 \item{filename}{character string indicating the file which contains the data to be copied to the PostgreSQL backend}
 \item{\dots}{
    placeholder for future use.
