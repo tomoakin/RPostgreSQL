@@ -28,14 +28,14 @@ if (Sys.getenv("POSTGRES_USER") != "" & Sys.getenv("POSTGRES_HOST") != "" & Sys.
 
 
 
-    a <- dbSendQuery(con, "CREATE TABLE foo (name text)")
-    b <- dbSendQuery(con, "INSERT INTO foo VALUES ('bar')")
+    a <- dbGetQuery(con, "CREATE TABLE foo (name text)")
+    b <- dbGetQuery(con, "INSERT INTO foo VALUES ('bar')")
 
     ## run a simple query and show the query result
     x <- dbSendQuery(con, "CREATE TEMPORARY TABLE xyz ON COMMIT DROP AS select * from foo limit 1; select * from xyz;")
     res <- fetch(x, n=-1)
     print(res)
-    a <- dbSendQuery(con, "DROP TABLE foo")
+    a <- dbGetQuery(con, "DROP TABLE foo")
 
 
     ## cleanup

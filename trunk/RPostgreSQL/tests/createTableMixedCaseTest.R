@@ -28,11 +28,11 @@ if (Sys.getenv("POSTGRES_USER") != "" & Sys.getenv("POSTGRES_HOST") != "" & Sys.
 
 
 
-    res <- dbSendQuery(con, "create table Foo1 (f1 int)")
-    res <- dbSendQuery(con, "create table \"Foo2\" (f1 int)")
+    res <- dbGetQuery(con, "create table Foo1 (f1 int)")
+    res <- dbGetQuery(con, "create table \"Foo2\" (f1 int)")
 
     cat("Test should create foo1 and Foo2 tables\n")
-    ## res <- dbSendQuery(con, "SELECT * FROM information_schema.tables WHERE table_schema = 'public'")
+    ## res <- dbGetQuery(con, "SELECT * FROM information_schema.tables WHERE table_schema = 'public'")
     ## print res
 
     if (dbExistsTable(con, "Foo1")) {
@@ -77,8 +77,8 @@ if (Sys.getenv("POSTGRES_USER") != "" & Sys.getenv("POSTGRES_HOST") != "" & Sys.
         cat("Pass - \"foo2\" Table does not exist.\n")
     }
 
-    res <- dbSendQuery(con, "drop table Foo1")
-    res <- dbSendQuery(con, "drop table \"Foo2\"")
+    res <- dbGetQuery(con, "drop table Foo1")
+    res <- dbGetQuery(con, "drop table \"Foo2\"")
     ## and disconnect
     dbDisconnect(con)
 }

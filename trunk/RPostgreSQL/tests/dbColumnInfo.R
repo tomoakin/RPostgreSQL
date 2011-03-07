@@ -27,10 +27,10 @@ if (Sys.getenv("POSTGRES_USER") != "" & Sys.getenv("POSTGRES_HOST") != "" & Sys.
 
 
     #  create a table
-    res <- dbSendQuery(con, "CREATE TABLE aa (pk integer primary key, v1 float not null, v2 float)" )
+    res <- dbGetQuery(con, "CREATE TABLE aa (pk integer primary key, v1 float not null, v2 float)" )
 
     ## run a simple query and show the query result
-    res <- dbSendQuery(con, "INSERT INTO aa VALUES(3, 2, NULL)" )
+    res <- dbGetQuery(con, "INSERT INTO aa VALUES(3, 2, NULL)" )
     res <- dbSendQuery(con, "select pk, v1, v2, v1+v2 from aa")
     cat("dbColumnInfo\n")
     print(dbColumnInfo(res))

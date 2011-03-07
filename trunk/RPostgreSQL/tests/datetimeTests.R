@@ -9,11 +9,11 @@ dbTypeTests <- function(con, dateclass="timestamp without time zone") {
     if (dbExistsTable(con, "tempostgrestable"))
         dbRemoveTable(con, "tempostgrestable")
 
-    dbSendQuery(con, paste("create table tempostgrestable (tt ", dateclass, ", zz integer);", sep=""))
-    dbSendQuery(con, "insert into tempostgrestable values('2008-07-01 14:15:16.123', 1);")
+    dbGetQuery(con, paste("create table tempostgrestable (tt ", dateclass, ", zz integer);", sep=""))
+    dbGetQuery(con, "insert into tempostgrestable values('2008-07-01 14:15:16.123', 1);")
 
     now <- ISOdatetime(2000,1,2,3,4,5.678)
-    dbSendQuery(con, paste("insert into tempostgrestable values('", format(now), "', 2);", sep=""))
+    dbGetQuery(con, paste("insert into tempostgrestable values('", format(now), "', 2);", sep=""))
 
     res <- dbReadTable(con, "tempostgrestable")
     print(res)
