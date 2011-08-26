@@ -56,6 +56,7 @@ extern "C" {
  */
 
 #    ifdef USING_R
+#        include "R.h"
 #        include "Rversion.h"
 #        if defined(R_VERSION) && R_VERSION >= R_Version(1,2,0)
 #            define USE_RINTERNALS 1
@@ -69,7 +70,6 @@ extern "C" {
 #            include "Rdefines.h"
 #        endif
 #        define singl double
-#        define Sint  int
 #        define charPtr SEXP *
 #        define CHAR_DEREF(x) CHAR(x)
 #        define C_S_CPY(p)    COPY_TO_USER_STRING(p)

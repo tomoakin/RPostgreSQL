@@ -74,6 +74,7 @@ export(
   postgresqlExecStatement,
   postgresqlpqExec,
   postgresqlCopyIn,
+  postgresqlCopyInDataframe,
   postgresqlgetResult,
   postgresqlQuickSQL,
   postgresqlDBApply,

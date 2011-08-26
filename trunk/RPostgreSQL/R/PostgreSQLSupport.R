@@ -218,6 +218,14 @@ postgresqlCopyIn <- function(con, filename) {
     filename <- as(filename, "character")
     .Call("RS_PostgreSQL_CopyIn", conId, filename, PACKAGE = .PostgreSQLPkgName)
 }
+postgresqlCopyInDataframe <- function(con, dataframe) {
+    if(!isIdCurrent(con))
+        stop(paste("expired", class(con)))
+    conId <- as(con, "integer")
+    nrow <- nrow(dataframe)
+    p <- ncol(dataframe)
+    .Call("RS_PostgreSQL_CopyInDataframe", conId, dataframe, nrow, p , PACKAGE = .PostgreSQLPkgName)
+}
 postgresqlgetResult <- function(con) {
     if(!isIdCurrent(con))
         stop(paste("expired", class(con)))
@@ -654,35 +662,24 @@ postgresqlWriteTable <- function(con, name, value, field.types, row.names = TRUE
         }
     }
 
-    ## TODO: here, we should query the PostgreSQL to find out if it supports
-    ## LOAD DATA thru pipes; if so, should open the pipe instead of a file.
-    ##
-    ## It appears that this will fail under SELinux as the temporary file (created
-    ## in the R per-session temporary directory) is outside of Postgresql's directory
-    ## So if you use SELinux, you may have to manually insert data or temporarily turn
-    ## SELinux off to use this function
-    if(as.character(Sys.info()["sysname"]) %in% c("Linux", "Darwin"))
-        fn <- tempfile("rsdbi","/tmp")
-    else
-        fn <- tempfile("rsdbi")
-    ## copied from MySQL, not sure we need it  fn <- gsub("\\\\", "/", fn)  # Since PostgreSQL on Windows wants \ double (BDR)
-    safe.write(value, file = fn)
-    on.exit(unlink(fn), add = TRUE)
-
+    oldenc <- dbGetQuery(new.con, "SHOW client_encoding")
+    postgresqlpqExec(new.con, "SET CLIENT_ENCODING TO 'UTF8'")
     sql4 <- paste("COPY", postgresqlTableRef(name), "FROM STDIN")
-
     postgresqlpqExec(new.con, sql4)
-    postgresqlCopyIn(new.con, fn)
+    postgresqlCopyInDataframe(new.con, value)
     rs<-postgresqlgetResult(new.con)
-
+ 
+    retv <- TRUE
     if (inherits(rs, ErrorClass)) {
         warning("could not load data into table")
-        return(FALSE)
-    } else {
-        dbClearResult(rs)
+        retv <- FALSE
     }
-    TRUE
 
+    dbClearResult(rs)
+    sql5 <- paste("SET CLIENT_ENCODING TO '", oldenc, "'", sep="")
+    dbGetQuery(new.con, sql5)
+
+    retv
 }
 
 dbBuildTableDefinition <- function(dbObj, name, obj, field.types = NULL, row.names = TRUE, ...) {
