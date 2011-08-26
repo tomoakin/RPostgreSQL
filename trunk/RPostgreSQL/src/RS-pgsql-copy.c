@@ -208,7 +208,7 @@ static const char
                 else if(value > 0) return "Inf";
                 else return "-Inf";
             }
-            snprintf(buff->data, buff->bufsize, "%15g", value);
+            snprintf(buff->data, buff->bufsize, "%.15g", value);
             return buff->data;
         }
         default:
