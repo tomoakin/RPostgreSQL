@@ -20,6 +20,7 @@
 \alias{postgresqlWriteTable}            % convenience functions
 \alias{postgresqlpqExec}
 \alias{postgresqlCopyIn}
+\alias{postgresqlCopyInDataframe}
 \alias{postgresqlgetResult}
 \alias{postgresqlEscapeStrings}
 \alias{postgresqlQuoteId}
@@ -261,10 +262,15 @@ Command-line options to be sent to the server
 
    \code{postgresqlpqExec}  returns \code{NUL} (executes the statement
    but does not try to get result.  This is called internally
-   from \code{postgresqlWriteTable} before \code{postgresqlCopyIn}
+   from \code{postgresqlWriteTable} before \code{postgresqlCopyInDataframe}
 
    \code{postgresqlCopyIn}  returns \code{NULL} (copies the content 
    of the file through the socket connection to postgresql backend.
+   This should be used just after COPY tablename FROM STDIN query. This is not used now.)
+
+   \code{postgresqlCopyInDataframe}  returns \code{NULL} (copies the content 
+   of the dataframe through the socket connection to postgresql backend. 
+   Strings are encoded as UTF-8 for transfer.  The client_encoding should be set to UTF-8.
    This should be used just after COPY tablename FROM STDIN query.)
 
    \code{postgresqlgetResult}  returns an \code{PostgreSQLResult} object.  
