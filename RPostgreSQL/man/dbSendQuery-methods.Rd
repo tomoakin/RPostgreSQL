@@ -16,6 +16,8 @@
 \description{
    These methods are straight-forward implementations of the corresponding
    generic functions.
+   However, for complex data like array are just transferred as a string instead of the corresponding
+   vector in R.  This behavior will change in future releases, and the author is advised not to rely on it.
 }
 \section{Methods}{\describe{
 \item{conn}{
