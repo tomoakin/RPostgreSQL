@@ -512,6 +512,8 @@ RS_PostgreSQL_createDataMappings(Res_Handle * rsHandle)
         case TEXTOID:
         case BYTEAOID:
         case NAMEOID:
+        case MACADDROID:
+        case INETOID:
             flds->Sclass[j] = CHARACTER_TYPE;
             flds->isVarLength[j] = (Sint) 1;
             break;
@@ -545,8 +547,31 @@ RS_PostgreSQL_createDataMappings(Res_Handle * rsHandle)
         default:
             flds->Sclass[j] = CHARACTER_TYPE;
             flds->isVarLength[j] = (Sint) 1;
-            snprintf(errMsg, 128, "unrecognized PostgreSQL field type %d in column %d", internal_type, j);
-            RS_DBI_errorMessage(errMsg, RS_DBI_WARNING);
+            snprintf(buff, 1000, "select typname, typcategory from pg_type where oid = %d", internal_type); 
+            res = PQexec(conn, buff);
+	    if (res){ 
+                char * typename;
+                char * typecat;
+                int ntuples;
+                ntuples = PQntuples(res);
+                if(ntuples == 1){
+                    typename = PQgetvalue(res, 0, 0);
+                    typecat = PQgetvalue(res, 0, 1);
+                    if(*typecat == 'E'){ /* This is enum, ok */
+                    }else if(*typecat == 'A'){ /*This is array, ok */
+                    }else{
+                        snprintf(errMsg, 128, "unrecognized PostgreSQL field type %s (id:%d) in column %d", typename, internal_type, j);
+                        RS_DBI_errorMessage(errMsg, RS_DBI_WARNING);
+                    }
+                }else{
+                    snprintf(errMsg, 128, "oid: %d, ntuples: %d", internal_type, ntuples);
+                    RS_DBI_errorMessage(errMsg, RS_DBI_WARNING);
+                }
+                PQclear(res);
+	    }else{
+                snprintf(errMsg, 128, "unrecognized PostgreSQL field type %d in column %d", internal_type, j);
+                RS_DBI_errorMessage(errMsg, RS_DBI_WARNING);
+            }
             break;
         }
     }
