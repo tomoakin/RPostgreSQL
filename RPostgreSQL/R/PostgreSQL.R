@@ -220,8 +220,25 @@ setMethod("dbRemoveTable",
 setMethod("dbListFields",
           signature(conn="PostgreSQLConnection", name="character"),
           def = function(conn, name, ...){
-              flds <- dbGetQuery(conn, paste("SELECT a.attname FROM pg_class c,pg_attribute a,pg_type t WHERE c.relname = '",
-                                             name,"' and a.attnum > 0 and a.attrelid = c.oid and a.atttypid = t.oid",sep=""))[,1]
+              qlength <- length(name)
+              if(qlength == 1){
+              currentschema <- dbGetQuery(conn, "SELECT current_schema()")
+              flds <- dbGetQuery(conn,
+                  paste("select a.attname from pg_attribute a, pg_class c, pg_tables t, pg_namespace nsp",
+                  " where a.attrelid = c.oid and c.relname = tablename and c.relnamespace = nsp.oid and a.attnum > 0 and ",
+                  "nspname = current_schema() and schemaname = nspname and ",
+                  "tablename = '", postgresqlEscapeStrings(conn, name), "'", sep=""))[,1]
+              }
+              else{
+                  if(qlength == 2){
+                  flds <- dbGetQuery(conn,
+                      paste("select a.attname from pg_attribute a, pg_class c, pg_tables t, pg_namespace nsp",
+                      " where a.attrelid = c.oid and c.relname = t.tablename and c.relnamespace = nsp.oid and a.attnum > 0 and ",
+                      "nspname = schemaname ",
+                      "and schemaname = '", postgresqlEscapeStrings(conn, name[1]), "' ",
+                      "and tablename = '", postgresqlEscapeStrings(conn, name[2]), "'", sep=""))[,1]
+                  }
+              }
 
               if(length(flds)==0)
                   flds <- character()
