@@ -1,7 +1,8 @@
 
-R version 2.11.1 (2010-05-31)
-Copyright (C) 2010 The R Foundation for Statistical Computing
+R version 2.13.1 (2011-07-08)
+Copyright (C) 2011 The R Foundation for Statistical Computing
 ISBN 3-900051-07-0
+Platform: x86_64-pc-linux-gnu (64-bit)
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
 You are welcome to redistribute it under certain conditions.
@@ -26,11 +27,11 @@ Type 'q()' to quit R.
 +     if (dbExistsTable(con, "tempostgrestable"))
 +         dbRemoveTable(con, "tempostgrestable")
 + 
-+     dbSendQuery(con, paste("create table tempostgrestable (tt ", dateclass, ", zz integer);", sep=""))
-+     dbSendQuery(con, "insert into tempostgrestable values('2008-07-01 14:15:16.123', 1);")
++     dbGetQuery(con, paste("create table tempostgrestable (tt ", dateclass, ", zz integer);", sep=""))
++     dbGetQuery(con, "insert into tempostgrestable values('2008-07-01 14:15:16.123', 1);")
 + 
 +     now <- ISOdatetime(2000,1,2,3,4,5.678)
-+     dbSendQuery(con, paste("insert into tempostgrestable values('", format(now), "', 2);", sep=""))
++     dbGetQuery(con, paste("insert into tempostgrestable values('", format(now), "', 2);", sep=""))
 + 
 +     res <- dbReadTable(con, "tempostgrestable")
 +     print(res)
