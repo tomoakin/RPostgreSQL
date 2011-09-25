@@ -1,3 +1,8 @@
+2011-09-25  Dirk Eddelbuettel  <edd@debian.org>
+
+	* tests/*Rout.save: Updated six reference output files to match
+	current output, differences mostly in whitespace or formatting
+
 2010-10-17  Dirk Eddelbuettel  <edd@debian.org>
 
 	* DESCRIPTION: Release 0.1-7

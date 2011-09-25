@@ -1,6 +1,6 @@
 
-R version 2.12.0 RC (2010-10-07 r53227)
-Copyright (C) 2010 The R Foundation for Statistical Computing
+R version 2.13.1 (2011-07-08)
+Copyright (C) 2011 The R Foundation for Statistical Computing
 ISBN 3-900051-07-0
 Platform: x86_64-pc-linux-gnu (64-bit)
 
@@ -45,10 +45,10 @@ Type 'q()' to quit R.
 + 
 + 
 +     #  create a table
-+     res <- dbSendQuery(con, "CREATE TABLE aa (pk integer primary key, v1 float not null, v2 float)" )
++     res <- dbGetQuery(con, "CREATE TABLE aa (pk integer primary key, v1 float not null, v2 float)" )
 + 
 +     ## run a simple query and show the query result
-+     res <- dbSendQuery(con, "INSERT INTO aa VALUES(3, 2, NULL)" )
++     res <- dbGetQuery(con, "INSERT INTO aa VALUES(3, 2, NULL)" )
 +     res <- dbSendQuery(con, "select pk, v1, v2, v1+v2 from aa")
 +     cat("dbColumnInfo\n")
 +     print(dbColumnInfo(res))
