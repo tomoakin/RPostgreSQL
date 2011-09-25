@@ -614,12 +614,6 @@ postgresqlWriteTable <- function(con, name, value, field.types, row.names = TRUE
         field.types <- sapply(value, dbDataType, dbObj = con)
     }
 
-    ## Do we need to coerce any field prior to write it out?
-    ## TODO: PostgreSQL has boolean data type.
-    for(i in seq(along = value)){
-        if(is(value[[i]], "logical"))
-            value[[i]] <- as(value[[i]], "integer")
-    }
     i <- match("row.names", names(field.types), nomatch=0)
     if(i>0) ## did we add a row.names value?  If so, it's a text field.
         ## MODIFIED -- Sameer
@@ -750,10 +744,9 @@ safe.write <- function(value, file, batch, ...) {
 ## NOTE: PostgreSQL data types differ from the SQL92 (e.g., varchar truncate
 ## trailing spaces).
 postgresqlDataType <- function(obj, ...) {
-    rs.class <- data.class(obj)    ## this differs in R 1.4 from older vers
-    rs.mode <- storage.mode(obj)
-    if(rs.class=="numeric" || rs.class == "integer"){
-        sql.type <- if(rs.mode=="integer") "bigint" else  "float8"
+    rs.class <- data.class(obj)    
+    if(rs.class=="numeric"){
+        sql.type <- if(class(obj)=="integer") "integer" else  "float8"
     }
     else {
         sql.type <- switch(rs.class,
