@@ -1,4 +1,3 @@
-
 ## PostgreSQL.R
 ## Last Modified: $Date$
 
@@ -13,7 +12,7 @@
 
 ##.PostgreSQLRCS <- "$Id: PostgreSQL.R,v 0.1 2008/06/10 14:00:00$"
 .PostgreSQLPkgName <- "RPostgreSQL"
-.PostgreSQLVersion <- "0.1-0"       ##package.description(.PostgreSQLPkgName, fields = "Version")
+.PostgreSQLVersion <- "0.2-0"       ##package.description(.PostgreSQLPkgName, fields = "Version")
 .PostgreSQL.NA.string <- "\\N"      ## on input, PostgreSQL interprets \N as NULL (NA)
 
 setOldClass("data.frame")      ## to appease setMethod's signature warnings...
