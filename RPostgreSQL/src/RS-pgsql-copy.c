@@ -136,9 +136,6 @@ static const char
 *EncodeElementS(SEXP x, int indx,
                 R_StringBuffer *buff, char cdec)
 {
-    int w, d, e, wi, di, ei;
-    const char *res;
-
     switch(TYPEOF(x)) {
        case STRSXP:
        {

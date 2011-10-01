@@ -29,11 +29,6 @@ RS_PostgreSQL_getResult(Con_Handle * conHandle)
     Res_Handle *rsHandle;
     Sint res_id;
  
-    char *dyn_filename;
-    char copybuf[COPY_IN_BUFSIZE];
-    FILE* filehandle;
-    size_t len;
-    int pqretcode;
     PGresult *my_result;
    
     con = RS_DBI_getConnection(conHandle);
