@@ -42,11 +42,10 @@ RS_PostgreSQL_pqexec(Con_Handle * conHandle, s_object * statement)
 {
     S_EVALUATOR RS_DBI_connection * con;
     SEXP retval;
-    RS_DBI_resultSet *result;
     PGconn *my_connection;
     PGresult *my_result;
  
-    Sint res_id, is_select=0;
+    Sint is_select=0;
     char *dyn_statement;
 
     con = RS_DBI_getConnection(conHandle);
