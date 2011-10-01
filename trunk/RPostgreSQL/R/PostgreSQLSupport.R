@@ -1,6 +1,6 @@
 
 ## PostgreSQLSupport.R
-## Last Modified: $Date$
+## $Id$
 
 ## This package was developed as a part of Summer of Code program organized by Google.
 ## Thanks to David A. James & Saikat DebRoy, the authors of RMySQL package.
@@ -666,7 +666,7 @@ postgresqlWriteTable <- function(con, name, value, field.types, row.names = TRUE
     postgresqlpqExec(new.con, sql4)
     postgresqlCopyInDataframe(new.con, value)
     rs<-postgresqlgetResult(new.con)
- 
+
     retv <- TRUE
     if (inherits(rs, ErrorClass)) {
         warning("could not load data into table")
@@ -744,7 +744,7 @@ safe.write <- function(value, file, batch, ...) {
 ## NOTE: PostgreSQL data types differ from the SQL92 (e.g., varchar truncate
 ## trailing spaces).
 postgresqlDataType <- function(obj, ...) {
-    rs.class <- data.class(obj)    
+    rs.class <- data.class(obj)
     if(rs.class=="numeric"){
         sql.type <- if(class(obj)=="integer") "integer" else  "float8"
     }

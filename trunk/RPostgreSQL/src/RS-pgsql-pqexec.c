@@ -1,7 +1,7 @@
 /*
- *    RS-PostgreSQL.c
+ * RS-PostgreSQL.c
  *
- * Last Modified: $Date: 2010-10-14 09:34:04 +0900 (Thu, 14 Oct 2010) $
+ * $Id$
  *
  * This package was developed as a part of Summer of Code program organized by Google.
  * Thanks to David A. James & Saikat DebRoy, the authors of RMySQL package.
