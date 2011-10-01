@@ -1,4 +1,4 @@
-/* $Id: S4R.h,v 1.3 2003/12/02 14:54:33 dj Exp dj $
+/* $Id$
  *
  * S4 (Splus5+) and R portability macros.
  *

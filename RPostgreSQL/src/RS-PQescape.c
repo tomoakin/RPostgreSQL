@@ -1,6 +1,7 @@
 /*
- *    RS-PQescape.c
+ *  RS-PQescape.c
  *
+ *  $Id$
  */
 
 #include "RS-PostgreSQL.h"

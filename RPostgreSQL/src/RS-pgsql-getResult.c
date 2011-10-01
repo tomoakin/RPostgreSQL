@@ -1,5 +1,7 @@
 /*
  *    RS-pgsql-copy.c
+ *
+ *    $Id$
  */
 
 #include "RS-PostgreSQL.h"

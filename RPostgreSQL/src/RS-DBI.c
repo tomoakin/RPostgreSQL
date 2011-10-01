@@ -1,7 +1,7 @@
 /*
- *    RS-DBI.c
+ * RS-DBI.c
  *
- * Last Modified: $Date$
+ * $Id$
  *
  * This package was developed as a part of Summer of Code program organized by Google.
  * Thanks to David A. James & Saikat DebRoy, the authors of RMySQL package.

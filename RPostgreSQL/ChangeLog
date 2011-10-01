@@ -1,7 +1,6 @@
-<<<<<<< .mine
 2011-09-26  Tomoaki NISHIYAMA  <tomoakin@kenroku.asrc.kanazawa-u.ac.jp>
 
-	Raise the version no to 0.2.
+	Raise the version number to 0.2-0
 
 	* ChangeLog
 	* DESCRIPTION
@@ -16,7 +15,7 @@
 
 	Type conversion: integer is mapped to integer in postgresql;
 
-	* R/PostgreSQLSupport.R: code change	
+	* R/PostgreSQLSupport.R: code change
 	* tests/dbWriteTabletypes.R: testcode that R integer stored to
 	PostgreSQL gets back as integer in R.
 
@@ -113,20 +112,13 @@
 	incompatible table exists for dbWriteTable(append=TRUE)
 
 	* NAMESPACE: exporting postgresqlEscapeStrings
-	* R/PostgreSQLSupport.R: call sequence change for dbWriteTable: 
+	* R/PostgreSQLSupport.R: call sequence change for dbWriteTable:
 	pqExec, CopyIn, and getResult
 	* src/RS-RS-pgsql-getResult.c: new function to get return results.
 	* src/RS-RS-pgsql-pqexec.c: new function to call pqexec.
 	* man/postgresqlSupport.Rd: documentation
 	* tests/dbWriteTableFailTest.R: New test code
 
-=======
-2011-09-25  Dirk Eddelbuettel  <edd@debian.org>
-
-	* tests/*Rout.save: Updated six reference output files to match
-	current output, differences mostly in whitespace or formatting
-
->>>>>>> .r187
 2010-10-17  Dirk Eddelbuettel  <edd@debian.org>
 
 	* DESCRIPTION: Release 0.1-7
