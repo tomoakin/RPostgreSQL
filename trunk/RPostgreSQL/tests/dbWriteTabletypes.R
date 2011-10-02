@@ -30,14 +30,18 @@ if (Sys.getenv("POSTGRES_USER") != "" & Sys.getenv("POSTGRES_HOST") != "" & Sys.
         dbRemoveTable(con, "rockdata")
     }
 
-    difficultstrings <- c("normal", "t\tab", "v\vertical tab", "n\newline", "r carriage \retern", "back \\ slash", "f\form feed", "漢字", "müß")
+    difficultstrings <- c("normal", "t\tab", "v\vertical tab", "n\newline", "r carriage \retern", "back \\ slash", "f\form feed", "kanji\u6f22\u5b57", "m\u00fc\u00df")
     df <- data.frame(strings=difficultstrings)
 
     dbWriteTable(con, "rockdata", df)
 
     ## run a simple query and show the query result
-    res <- dbGetQuery(con, "select * from rockdata limit 10")
-    print(res)
+    res <- dbGetQuery(con, "select * from rockdata")
+    for(n in 1:9){
+      cat(paste(as.character(n), "\t"))
+      cat(res[n,2])
+      cat("\n")
+    }
 
     ## cleanup
     if (dbExistsTable(con, "rockdata")) {
