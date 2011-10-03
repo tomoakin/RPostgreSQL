@@ -30,17 +30,62 @@ if (Sys.getenv("POSTGRES_USER") != "" & Sys.getenv("POSTGRES_HOST") != "" & Sys.
         dbRemoveTable(con, "rockdata")
     }
 
-    difficultstrings <- c("normal", "t\tab", "v\vertical tab", "n\newline", "r carriage \retern", "back \\ slash", "f\form feed", "kanji\u6f22\u5b57", "m\u00fc\u00df")
+    dbGetQuery(con, "set client_encoding to 'UTF-8'")
+    difficultstrings <- c("normal", "t\tab", "v\vertical tab", "n\newline", "r carriage \retern", "back \\ slash", "f\form feed")
     df <- data.frame(strings=difficultstrings)
 
     dbWriteTable(con, "rockdata", df)
 
     ## run a simple query and show the query result
     res <- dbGetQuery(con, "select * from rockdata")
-    for(n in 1:9){
-      cat(paste(as.character(n), "\t"))
-      cat(res[n,2])
-      cat("\n")
+    print(res)
+    print("Removing rockdata\n")
+    dbRemoveTable(con, "rockdata")
+
+    difficultstringe <- c("normal", "m\u00fc\u00df")
+    df <- data.frame(strings=difficultstringe)
+    tryres <- try({dbWriteTable(con, "rockdata", df)
+        res <- dbGetQuery(con, "select * from rockdata")
+        for(n in 1:2){
+            cat(paste(as.character(n), "\t"))
+            cat(res[n,2])
+            cat("\n")
+        }
+        print("Removing rockdata\n")
+        dbRemoveTable(con, "rockdata")
+    })
+    if(tryres != TRUE){
+       cat("FAIL:  could not write small umlaut u and ligature sz\n")
+       cat("This might be no problem for you if you don't use those special characters\n")
+       cat("Otherwise, please check for the server encoding\n")
+       cat("Database encoding is usually set at the time of createdb.\n")
+       cat("see for more information how to setup at \n")
+       cat("http://www.postgresql.org/docs/9.1/static/multibyte.html\n")
+    }else{
+       cat("PASS:  could write small umlaut u and ligature sz\n")
+    }
+   
+    difficultstringk <- c("normal", "kanji\u6f22\u5b57")
+    df <- data.frame(strings=difficultstringk)
+    tryres <- try({dbWriteTable(con, "rockdata", df)
+        res <- dbGetQuery(con, "select * from rockdata")
+        for(n in 1:2){
+            cat(paste(as.character(n), "\t"))
+            cat(res[n,2])
+            cat("\n")
+        }
+        print("Removing rockdata\n")
+        dbRemoveTable(con, "rockdata")
+    })
+    if(tryres != TRUE){
+       cat("FAIL:  could not write kanji\n")
+       cat("This might be no problem for you if you don't use multibyte characters\n")
+       cat("Otherwise, please check for the server encoding\n")
+       cat("Database encoding is usually set at the time of createdb.\n")
+       cat("see for more information how to setup at \n")
+       cat("http://www.postgresql.org/docs/9.1/static/multibyte.html\n")
+    }else{
+       cat("PASS:  could write kanji\n")
     }
 
     ## cleanup
