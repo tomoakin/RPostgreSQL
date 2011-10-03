@@ -1,20 +1,19 @@
 Things yet to be completed:
 
-1. Try to implement dbWrite (currently using temp files) using network
-   connections. 
+1. Array and other complex structures are not converted properly:
+   just the strings are transmitted.  Datatype conversion callback
+   table for supporting complex data types are desired.
 
-2. 'Scale' is not calculated in dbGetInfo(result_set)
+2. Add commands for prepared statements.
+
+3. Try to suppress automatic clone connection.
+
+4. More explicit encoding support.
+
+5. 'Scale' is not calculated in dbGetInfo(result_set)
    Try to write an SQL query to get the value or hardcode
    the appropriate details in the code.For more details
    refer to : "RS_PostgreSQL_createDataMappings".
 
-3. Check whether it works in windows or not & make corresponding changes. 
-
-4. Check whether all the data mappings are working perfectly fine.
-   [Partially Done]
-
-5. Add commands for prepared statements.
-
 6. Check the working of DBI extension "dbApply".
 
-7. Try to implement multiple resultsets per connection if possible.

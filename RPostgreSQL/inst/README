@@ -17,7 +17,13 @@ Basic usage:
   con <- dbConnect(drv, user="userName", password="123456",
                    dbname="gsoc", host="10.23.34.23")
 
-  ## run a query, leave results on the server
+  ## run a query, and get the result set as a dataframe
+  dFrame <- dbGetQuery(con, "select * from someTable LIMIT 50")
+
+  ## run a query, leave results in the library*
+  ## note current implementation does not leave the result in the Server
+  ## and there is no benefit using dbSendQuery() fetch() pair other than
+  ## compatibility.
   rs <- dbSendQuery(con, "select * from someTable")
 
   ## fetch up to, say, 50 records
@@ -117,6 +123,7 @@ Frequently Asked Questions (FAQ):
 
 For any queries,suggestions and comments, mail: 
  
+    Tomoaki Nishiyama <tomoakin@kenroku.kanazawa-u.ac.jp>
     Sameer Kumar Prayaga <sameer.bits@gmail.com>    GSoC student for this project
     Dirk Eddelbuettel <edd@debian.org>		    GSoC mentor
                                                 

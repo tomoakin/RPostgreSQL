@@ -1,5 +1,5 @@
 
-       RPostgreSQL version 0.1.0
+       RPostgreSQL version 0.2-0
 
 We are pround to announce the availability of the RPostgreSQL package on CRAN
 and its mirrors.  This package provides an a DBI-compliant interface between
@@ -10,15 +10,16 @@ by Sameer Kumar Prayaga.
 
 Some highlights:
 
-  o  Implemented all the DBI features 
+  o  dbWriteTable directly writes to network without  temporary file.
 
-  o  Added support for transaction management 
+  o  Initial support for schema.
 
-  o  Added type mapping for dates & timestamps
+  o  Building on Windows possible.
 
 Known bugs/deficiencies:
 
-  o  Building on Windows unknown/untested. Feedback welcome
+  o  Arrays are not converted vector or other datastructure.
+
 
 RPostgreSQL is hosted on Google Code, for more information see
 
@@ -26,5 +27,6 @@ RPostgreSQL is hosted on Google Code, for more information see
 
 For any suggestions and queries, please contact:
 
+   Tomoaki Nishiyama <tomoakin@kenroku.kanazawa-u.ac.jp>
    Sameer Kumar Prayaga <sameer.bits@gmail.com>
    Dirk Eddelbuettel <edd@debian.org>
