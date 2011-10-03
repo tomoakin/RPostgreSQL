@@ -1,3 +1,17 @@
+Version 0.2-0 -- 2010-10-03
+
+    o   Error check for dbWriteTable
+
+    o   dbWriteTable does not write a temporary file.
+        Control characters in strings are properly escaped for dbWriteTable.
+
+    o   Remove warning for enum and arrays etc.  The value are still transferred
+        as string and not converted to arrays etc.
+
+    o   use c('schema', 'table') to specify schema
+
+    o   Integer is mapped to integer in postgresql rather than bigint.
+
 Version 0.1-7 -- 2010-10-17
 
     o   Several potential buffer overruns were fixed
