@@ -1,3 +1,25 @@
+2011-10-03  Tomoaki NISHIYAMA  <tomoakin@kenroku.asrc.kanazawa-u.ac.jp>
+
+	Use try() not to abort on error to write spacial/kanji characters.
+	For control characters use print again, but not for kanji special
+	latin characters as umlaut.
+
+	* ChangeLog
+	* DESCRIPTION: Change maintainer name & address
+	* tests/dbWriteTabletypes.R: use try()
+	
+2011-10-02  Tomoaki NISHIYAMA  <tomoakin@kenroku.asrc.kanazawa-u.ac.jp>
+
+	Avoid using raw UTF-8 string and conversion by print() for the test.
+
+	* tests/dbWriteTabletypes.R: use \uxxxx escape for utf-8 string
+	and use cat() to output them.
+
+2011-10-01  Dirk Eddelbuettel  <edd@debian.org>
+
+	Added $Id$ to all .R .c .h files and removed $Date$ from them.
+	Removed declared-but-unused variables.
+
 2011-09-26  Tomoaki NISHIYAMA  <tomoakin@kenroku.asrc.kanazawa-u.ac.jp>
 
 	Raise the version number to 0.2-0
