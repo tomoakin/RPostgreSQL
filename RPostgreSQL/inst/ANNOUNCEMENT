@@ -6,11 +6,11 @@ and its mirrors.  This package provides an a DBI-compliant interface between
 PostgreSQL and R.
 
 RPostgreSQL was developed as part of the Google Summer of Code 2008 program
-by Sameer Kumar Prayaga.
+by Sameer Kumar Prayaga <sameer.bits@gmail.com>.
 
 Some highlights:
 
-  o  dbWriteTable directly writes to network without  temporary file.
+  o  dbWriteTable directly writes to network without temporary file.
 
   o  Initial support for schema.
 
@@ -20,6 +20,7 @@ Known bugs/deficiencies:
 
   o  Arrays are not converted vector or other datastructure.
 
+  o  Active issue list is at http://code.google.com/p/rpostgresql/issues/list
 
 RPostgreSQL is hosted on Google Code, for more information see
 
@@ -27,6 +28,12 @@ RPostgreSQL is hosted on Google Code, for more information see
 
 For any suggestions and queries, please contact:
 
+   rpostgresql-dev@googlegroups.com
+
+For security issues that should not directly go to public,
+you may contact:
+
    Tomoaki Nishiyama <tomoakin@kenroku.kanazawa-u.ac.jp>
-   Sameer Kumar Prayaga <sameer.bits@gmail.com>
+   Neil Tiffin <neilt@neiltiffin.com>
+   Joe Conway <mail@joeconway.com>
    Dirk Eddelbuettel <edd@debian.org>

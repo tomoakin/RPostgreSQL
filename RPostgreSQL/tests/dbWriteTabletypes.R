@@ -55,12 +55,12 @@ if (Sys.getenv("POSTGRES_USER") != "" & Sys.getenv("POSTGRES_HOST") != "" & Sys.
         dbRemoveTable(con, "rockdata")
     })
     if(tryres != TRUE){
-       cat("FAIL:  could not write small umlaut u and ligature sz\n")
-       cat("This might be no problem for you if you don't use those special characters\n")
-       cat("Otherwise, please check for the server encoding\n")
-       cat("Database encoding is usually set at the time of createdb.\n")
-       cat("see for more information how to setup at \n")
-       cat("http://www.postgresql.org/docs/9.1/static/multibyte.html\n")
+       cat("FAIL:  could not write small umlaut u and ligature sz.\n")
+       cat("       This might be no problem for you if you don't use those special characters.\n")
+       cat("       Otherwise, please check for the server encoding.\n")
+       cat("       Database encoding is usually set at the time of createdb.\n")
+       cat("       You can see for more information on how to setup at \n")
+       cat("       http://www.postgresql.org/docs/9.1/static/multibyte.html\n\n")
     }else{
        cat("PASS:  could write small umlaut u and ligature sz\n")
     }
@@ -78,12 +78,12 @@ if (Sys.getenv("POSTGRES_USER") != "" & Sys.getenv("POSTGRES_HOST") != "" & Sys.
         dbRemoveTable(con, "rockdata")
     })
     if(tryres != TRUE){
-       cat("FAIL:  could not write kanji\n")
-       cat("This might be no problem for you if you don't use multibyte characters\n")
-       cat("Otherwise, please check for the server encoding\n")
-       cat("Database encoding is usually set at the time of createdb.\n")
-       cat("see for more information how to setup at \n")
-       cat("http://www.postgresql.org/docs/9.1/static/multibyte.html\n")
+       cat("FAIL:  could not write kanji.\n")
+       cat("       This might be no problem for you if you don't use multibyte characters.\n")
+       cat("       Otherwise, please check for the server encoding.\n")
+       cat("       Database encoding is usually set at the time of createdb.\n")
+       cat("       You can see for more information on how to setup at \n")
+       cat("       http://www.postgresql.org/docs/9.1/static/multibyte.html\n\n")
     }else{
        cat("PASS:  could write kanji\n")
     }
