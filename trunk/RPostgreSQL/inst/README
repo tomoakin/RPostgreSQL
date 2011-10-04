@@ -123,7 +123,12 @@ Frequently Asked Questions (FAQ):
 
 For any queries,suggestions and comments, mail: 
  
+    rpostgresql-dev@googlegroups.com
+
+For security issues that should not directly go to public,
+you may contact:
+
     Tomoaki Nishiyama <tomoakin@kenroku.kanazawa-u.ac.jp>
-    Sameer Kumar Prayaga <sameer.bits@gmail.com>    GSoC student for this project
-    Dirk Eddelbuettel <edd@debian.org>		    GSoC mentor
-                                                
+    Neil Tiffin <neilt@neiltiffin.com>
+    Joe Conway <mail@joeconway.com>
+    Dirk Eddelbuettel <edd@debian.org>
