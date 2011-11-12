@@ -1,2 +1,9 @@
-PKG_CPPFLAGS=-I"${PG_HOME}"/include
-PKG_LIBS=-L"${PG_HOME}"/lib -llibpq
+PKG_CPPFLAGS=-I./libpq
+PKG_LIBS=libpq/libpq.a
+
+.PHONY: all 
+all:  $(SHLIB)
+$(SHLIB): libpq/libpq.a
+
+libpq/libpq.a:
+	(cd libpq; make)
