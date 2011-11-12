@@ -1,4 +1,4 @@
-#You need libpq.dll compiled with the same compiler as R binary
+#summary You need libpq.dll compiled with the same compiler as R binary
 
 = Introduction =
 
@@ -7,6 +7,14 @@ was used to compile the R binary and a libpq library compiled
 with the same compiler.  As the R binary distribution is compiled
 with MinGW, you should use that to compile the 
 PostgreSQL library (libpq) with MinGW.
+
+= Status of this Document =
+
+This document is *provisional draft* and there is no guarantee 
+whatsoever on its accuracy.  Futhermore, the content may become
+incoherent with the development of the software.  (It is better
+if the install become simpler so that such document is not
+necessary.)
 
 = Details =
 
@@ -35,7 +43,7 @@ The method described below is what seems the minimal step, but there can be some
   }}}
   * copy the new libpq to an appropriate place.
 {{{
-   cp src/interfaces/libpq/libpq.dll /cygdrive/c/PROGRA~1/R/R-2.14.0/bin/x64
+   cp src/interfaces/libpq/libpq.dll /cygdrive/c/Program\ Files/R/R-2.14.0/bin/x64
 }}}
 
   * set the PG_HOME environment variable to C:/MinGW/MSYS/1.0/local/pgsql
