@@ -1,9 +1,0 @@
-# configure.win for RPostgreSQL
-# Dirk Eddelbuettel, 02 Nov 2008
-#
-# idea copied from XML/configure.win
-if test -z "$PG_HOME" ; then
-  echo "Please define PG_HOME (i.e. directory above Postgresql headers and library)"
-  exit 1
-fi
-
