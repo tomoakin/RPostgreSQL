@@ -1,4 +1,4 @@
-#libpq.pl should be compiled with MinGW
+#summary libpq.pl should be compiled with MinGW
 
 = Introduction =
 
