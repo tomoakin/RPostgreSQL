@@ -1,3 +1,29 @@
+2011-11-14  Tomoaki NISHIYAMA  <tomoakin@kenroku.asrc.kanazawa-u.ac.jp>
+
+	Remove make 3.80 dependency, so that the library can be compiled with
+	Rtools214 without newer MinGW/MSYS installation. 
+
+	* ChangeLog
+	* src/libpq/.gitignore: remove
+	* src/libpq/Makefile.global.win32: remove recursion support
+	* src/libpq/Makefile.global.win64: remove recursion support
+	* src/libpq/Makefile.shlib: remove '| $(SHLIB_PREREQS)'
+
+2011-11-12  Tomoaki NISHIYAMA  <tomoakin@kenroku.asrc.kanazawa-u.ac.jp>
+
+	Bundle libpq source for compilation on windows.
+
+	* libpq/:
+		src/interfaces/libpq from postgresql-9.1.1 
+		configured on MinGW-w64 environment with some additional files
+		required and Makefile edited to remove reference to other
+		paths.  Makefile.global.win32 is from postgesql-9.1.1
+		configured on MinGW 32-bit envionment.
+	* configure.win: not depending on PG_HOME on windows.
+	* src/Makevars.win: depend on libpq/
+	* src/install.libs.R: derived from R-2.14.0/src/library/tools/R
+		copy libpq/libpq.dll to the destination same as RPostgreSQL.dll.  
+
 2011-10-03  Tomoaki NISHIYAMA  <tomoakin@kenroku.asrc.kanazawa-u.ac.jp>
 
 	Use try() not to abort on error to write spacial/kanji characters.
