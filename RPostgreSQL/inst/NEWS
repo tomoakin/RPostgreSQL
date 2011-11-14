@@ -1,3 +1,9 @@
+Version 0.2-1 -- 2010-11-14
+
+    o   libpq source codes are bundled for Windows.
+	In other envirionment, this code is not used and existence of libpq as 
+	specified by PG_HOME is still required.
+
 Version 0.2-0 -- 2010-10-04
 
     o   Error check for dbWriteTable
