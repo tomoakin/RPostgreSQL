@@ -1,5 +1,5 @@
 
-       RPostgreSQL version 0.2-0
+       RPostgreSQL version 0.2-1
 
 We are pround to announce the availability of the RPostgreSQL package on CRAN
 and its mirrors.  This package provides an a DBI-compliant interface between
