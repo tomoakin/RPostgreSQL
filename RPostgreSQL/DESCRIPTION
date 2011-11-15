@@ -10,12 +10,16 @@ Description: Database interface and PostgreSQL driver for R
  .
  In order to build and install this package from source, PostgreSQL 
  itself must be present your system to provide PostgreSQL functionality 
- via through its libraries and header files.
+ via its libraries and header files. These files are provided as
+ postgresql-devel package under some Linux distributions.
+ .
+ On Microsoft Windows system the attached libpq library source will be used.
  .
  A wiki and issue tracking system for the package are available
  at Google Code at https://code.google.com/p/rpostgresql/ .
 LazyLoad: true
 Depends: R (>= 2.9.0), methods, DBI (>= 0.1-4)
-License: GPL-2 (except libpq/) and PostgreSQL (libpq/)
+License: GPL-2 | file LICENSE
+Copyright: Authors listed above, PostgreSQL Global Development Group, and The Regents of the University of California
 Collate: S4R.R zzz.R PostgreSQLSupport.R dbObjectId.R PostgreSQL.R
 URL: https://code.google.com/p/rpostgresql/, http://www.stat.bell-labs.com/RS-DBI, http://www.postgresql.org
