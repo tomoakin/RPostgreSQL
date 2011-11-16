@@ -1,4 +1,4 @@
-Version 0.2-1 -- 2010-11-14
+Version 0.2-1 -- 2010-11-16
 
     o   libpq source codes are bundled for Windows.
 	In other envirionment, this code is not used and existence of libpq as 
