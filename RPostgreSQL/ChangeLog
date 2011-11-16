@@ -1,3 +1,18 @@
+2011-11-16  Tomoaki NISHIYAMA  <tomoakin@kenroku.asrc.kanazawa-u.ac.jp>
+
+	add LICENSE file
+
+	* ChangeLog
+	* inst/NEWS: Change the release date.
+	* LICENSE
+
+2011-11-15  Tomoaki NISHIYAMA  <tomoakin@kenroku.asrc.kanazawa-u.ac.jp>
+
+	Edit DESCRIPTION for LICENSE format, Copyright notice, and
+	requirements for installation.
+
+	* DESCRIPTION
+
 2011-11-14  Tomoaki NISHIYAMA  <tomoakin@kenroku.asrc.kanazawa-u.ac.jp>
 
 	Remove make 3.80 dependency, so that the library can be compiled with
