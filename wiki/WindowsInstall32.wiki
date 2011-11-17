@@ -1,4 +1,4 @@
-#summary libpq.pl should be compiled with MinGW
+#summary Now it is easy
 
 = Introduction =
 
@@ -10,7 +10,7 @@ PostgreSQL library (libpq) with MinGW.
 
 = Status of this Document =
 
-This document is going to be *outdated* as we included the libpq library source in the rpostgresql development tree. When you download the latest via svn that should be compiled without error just using Rtools.  We hope that windows binaries are provided.
+This document is going to be *outdated* as we included the libpq library source in the rpostgresql development tree. 
 
 This document is *provisional draft* and there is no guarantee 
 whatsoever on its accuracy.  Futhermore, the content may become
@@ -20,6 +20,27 @@ necessary.)
 
 = Details =
 
+== Future ==
+After the binary package are made available in CRAN.
+
+Just
+{{{
+  install.packages('RPostgreSQL')
+}}}
+
+
+== Current ==
+Now the new source package is available on CRAN (but it may take a day til the package is distributed in many mirrors).
+
+  * Install Rtools 
+  check http://www.murdoch-sutherland.com/Rtools/
+  for the appropriate Rtools version, get it and install.
+  * Install from source package
+{{{
+  install.packages('RPostgreSQL', type='source', repo='http://mirror.having.the.latest.archive')
+}}}
+
+== Old way ==
 * How to do
 
 The method described below is what seems the minimal step, but there can be something lacking or unnecessary. Please let me know if you find such thing.
