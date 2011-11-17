@@ -10,6 +10,8 @@ PostgreSQL library (libpq) with MinGW.
 
 = Status of this Document =
 
+This document is going to be *outdated* as we included the libpq library source in the rpostgresql development tree. When you download the latest via svn that should be compiled without error just using Rtools.  We hope that windows binaries are provided.
+
 This document is *provisional draft* and there is no guarantee 
 whatsoever on its accuracy.  Futhermore, the content may become
 incoherent with the development of the software.  (It is better
@@ -29,12 +31,17 @@ The method described below is what seems the minimal step, but there can be some
   Install MinGW and MSYS by mingw-get-inst. 
   http://www.mingw.org/wiki/Getting_Started
   * Get PostgreSQL source code
-    http://www.postgresql.org/
+  http://www.postgresql.org/
   * Configure C: drive visible in MSYS environment
-    add a line "C:\  /cygdrive/c" to /etc/fstab.
+  add a line "C:\  /cygdrive/c" to /etc/fstab.
+  This can be done as
+{{{
+    echo C:\\ /cygdrive/c >> /etc/fstab
+}}}
+  if you don't have an appropriate editor. 
   * Compile and install the postgresql
     {{{
-   cd /cygdrive/c/R64
+   cd /cygdrive/c/R
    tar jxvf /some/path/to/file/postgresql-9.1.1.tar.bz2
    cd postgresql-9.1.1
    ./configure --without-zlib
@@ -54,9 +61,11 @@ install.packages("RPostgreSQL", type="source")
 }}}
 
 
-= Note: Why you need to compile =
+= Note: Is it necessary to compile the library =
 The libpq that comes with the
 binary package of postgresql is made with a microsoft C compiler
 and R distribution is prepared with a variant of MinGW.
-These two system are quite different and therefore copy
-The method will be briefly described.
+We got a report that the library coming with the binary package
+of PostgreSQL did not work on 64 bit envirionment.
+Nevertheless, I also heard that the library for 32 bit envirionment
+works.  
