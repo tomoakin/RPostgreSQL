@@ -2,15 +2,15 @@
 
 = Binary Install =
 
-Just
+Just use the command
 {{{
 install.packages('RPostgreSQL')
 }}}
-is sufficient for binary install.
+from inside R as it is sufficient for binary install.
 
-= Source Install =
+= Source Install (which is no longer required) =
 
-Now the new source package is available on CRAN (but it may take a day til the package is distributed in many mirrors).
+This needs package 0.2-0 or newer, and as of 0.2-1 Windows users can get a binary package pre-made (see previous paragraph).  But should you still desire to install from source, do this:
 
  # Install Rtools 
   check http://www.murdoch-sutherland.com/Rtools/
