@@ -1,6 +1,29 @@
 #summary Now it is easy
 
-= Introduction =
+= Binary Install =
+
+Just
+{{{
+install.packages('RPostgreSQL')
+}}}
+is sufficient for binary install.
+
+= Source Install =
+
+Now the new source package is available on CRAN (but it may take a day til the package is distributed in many mirrors).
+
+ # Install Rtools 
+  check http://www.murdoch-sutherland.com/Rtools/
+  for the appropriate Rtools version, get it and install.
+ # Install from source package
+  {{{
+  install.packages('RPostgreSQL', type='source')
+  }}}
+
+
+= Historical document for compilation =
+
+== Introduction ==
 
 To run RPosgreSQL on windows system, you need the compiler that
 was used to compile the R binary and a libpq library compiled
@@ -10,7 +33,7 @@ PostgreSQL library (libpq) with MinGW.
 
 = Status of this Document =
 
-This document is going to be *outdated* as we included the libpq library source in the rpostgresql development tree. 
+This document is *historical* as we included the libpq library source in the rpostgresql development tree. 
 
 This document is *provisional draft* and there is no guarantee 
 whatsoever on its accuracy.  Futhermore, the content may become
@@ -20,25 +43,8 @@ necessary.)
 
 = Details =
 
-== Future ==
-After the binary package are made available in CRAN.
-
-Just
-{{{
-  install.packages('RPostgreSQL')
-}}}
-
 
 == Current ==
-Now the new source package is available on CRAN (but it may take a day til the package is distributed in many mirrors).
-
-  * Install Rtools 
-  check http://www.murdoch-sutherland.com/Rtools/
-  for the appropriate Rtools version, get it and install.
-  * Install from source package
-{{{
-  install.packages('RPostgreSQL', type='source', repo='http://mirror.having.the.latest.archive')
-}}}
 
 == Old way ==
 * How to do
