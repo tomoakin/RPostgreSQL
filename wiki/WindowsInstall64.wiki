@@ -1,4 +1,27 @@
-#summary You need libpq.dll compiled with the same compiler as R binary
+#summary Now it is easy
+
+= Binary Install =
+
+Just
+{{{
+install.packages('RPostgreSQL')
+}}}
+is sufficient for binary install.
+
+= Source Install =
+
+Now the new source package is available on CRAN (but it may take a day til the package is distributed in many mirrors).
+
+ # Install Rtools 
+  check http://www.murdoch-sutherland.com/Rtools/
+  for the appropriate Rtools version, get it and install.
+ # Install from source package
+  {{{
+  install.packages('RPostgreSQL', type='source')
+  }}}
+
+
+= Historical document for compilation =
 
 = Introduction =
 
@@ -10,7 +33,7 @@ PostgreSQL library (libpq) with MinGW.
 
 = Status of this Document =
 
-This document is *provisional draft* and there is no guarantee 
+This document is *historical* and there is no guarantee 
 whatsoever on its accuracy.  Futhermore, the content may become
 incoherent with the development of the software.  (It is better
 if the install become simpler so that such document is not
