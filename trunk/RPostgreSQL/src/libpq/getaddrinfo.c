@@ -329,9 +329,11 @@ gai_strerror(int errcode)
 			return "Not enough memory";
 #endif
 #ifdef EAI_NODATA
+#if EAI_NODATA != EAI_NONAME
 #if !defined(WIN64) && !defined(WIN32_ONLY_COMPILER)	/* MSVC/WIN64 duplicate */
 		case EAI_NODATA:
 			return "No host data of that type was found";
+#endif
 #endif
 #endif
 #ifdef EAI_SERVICE
