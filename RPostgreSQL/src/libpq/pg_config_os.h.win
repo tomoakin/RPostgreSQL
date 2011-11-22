@@ -31,7 +31,7 @@
  * The Mingw64 headers choke if this is already defined - they
  * define it themselves.
  */
-#if !defined(WIN64) || defined(WIN32_ONLY_COMPILER)
+#if defined(WIN32_ONLY_COMPILER)
 #define _WINSOCKAPI_
 #endif
 #include <winsock2.h>
