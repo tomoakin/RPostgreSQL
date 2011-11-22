@@ -1256,7 +1256,6 @@ RS_na_set(void *ptr, Stype type)
 {
     double *d;
     Sint *i;
-    char *c;
     switch (type) {
     case INTEGER_TYPE:
         i = (Sint *) ptr;
@@ -1270,10 +1269,16 @@ RS_na_set(void *ptr, Stype type)
         d = (double *) ptr;
         *d = NA_REAL;
         break;
+#if 0
+/* this is apparently wrong code and currently NA_SET with STRING_TYPE is not used in the code*/
     case STRING_TYPE:
-        c = (char *) ptr;
-        c = (char *) CHR_EL(NA_STRING, 0);      /*NOTE: modified the RHS by adding cating to (char*) */
-        break;
+        {
+          char *c;
+          c = (char *) ptr;
+          c = (char *) CHR_EL(NA_STRING, 0);      /*NOTE: modified the RHS by adding cating to (char*) */
+          break;
+        }
+#endif
     }
 }
 int

@@ -591,7 +591,8 @@ RS_PostgreSQL_fetch(s_object * rsHandle, s_object * max_rec)
 #endif
     /* unsigned long  *lens;  */
     int i, j, null_item, expand;
-    Sint *fld_nullOk, completed;
+    Sint completed;
+    /* Sint * fld_nullOk set but not used */
     Stype *fld_Sclass;
     Sint num_rec;
     int num_fields;
@@ -626,7 +627,7 @@ RS_PostgreSQL_fetch(s_object * rsHandle, s_object * max_rec)
     }
 #endif
     fld_Sclass = flds->Sclass;
-    fld_nullOk = flds->nullOk;
+/*    fld_nullOk = flds->nullOk; set but not used */
 
 
 
@@ -1122,7 +1123,7 @@ RS_DBI_invokeBeginGroup(s_object * callObj,     /* should be initialized */
                         const char *group_name, /* one string */
                         s_object * rho)
 {
-    S_EVALUATOR s_object * s_group_name, *val;
+    S_EVALUATOR s_object * s_group_name;
 
     /* make a copy of the argument */
     MEM_PROTECT(s_group_name = NEW_CHARACTER((Sint) 1));
@@ -1130,7 +1131,7 @@ RS_DBI_invokeBeginGroup(s_object * callObj,     /* should be initialized */
 
     /* and stick into call object */
     SETCADR(callObj, s_group_name);
-    val = EVAL_IN_FRAME(callObj, rho);
+    EVAL_IN_FRAME(callObj, rho);
     MEM_UNPROTECT(1);
 
     return S_NULL_ENTRY;
@@ -1141,14 +1142,14 @@ RS_DBI_invokeNewRecord(s_object * callObj,      /* should be initialized already
                        s_object * new_record,   /* a 1-row data.frame */
                        s_object * rho)
 {
-    S_EVALUATOR s_object * df, *val;
+    S_EVALUATOR s_object * df;
 
     /* make a copy of the argument */
     MEM_PROTECT(df = COPY_ALL(new_record));
 
     /* and stick it into the call object */
     SETCADR(callObj, df);
-    val = EVAL_IN_FRAME(callObj, rho);
+    EVAL_IN_FRAME(callObj, rho);
     MEM_UNPROTECT(1);
 
     return S_NULL_ENTRY;
@@ -1200,7 +1201,8 @@ RS_PostgreSQL_dbApply(s_object * rsHandle,      /* resultset handle */
 #endif
     /*  unsigned long  *lens = (unsigned long *)0; NOTE: not being used */
     Stype *fld_Sclass;
-    Sint i, j, null_item, expand, *fld_nullOk, completed;
+    Sint i, j, null_item, expand, completed;
+    /* *fld_nullOk not used */
     Sint num_rec, num_groups;
     int num_fields;
     Sint max_rec = INT_EL(s_max_rec, 0);        /* max rec per group */
@@ -1243,7 +1245,7 @@ RS_PostgreSQL_dbApply(s_object * rsHandle,      /* resultset handle */
     }
     num_fields = flds->num_fields;
     fld_Sclass = flds->Sclass;
-    fld_nullOk = flds->nullOk;
+/*    fld_nullOk = flds->nullOk; * set but not used*/
     MEM_PROTECT(data = NEW_LIST((Sint) num_fields));    /* buffer records */
     MEM_PROTECT(cur_rec = NEW_LIST((Sint) num_fields)); /* current record */
     np += 2;
