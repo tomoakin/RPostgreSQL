@@ -9,22 +9,23 @@
 #
 #-------------------------------------------------------------------------
 
-subdir = src/interfaces/libpq
 top_builddir = ..
+include Makefile.global.darwin
 
-ifeq "$(WIN)"  "64"
-include Makefile.global.win64
-else
-include Makefile.global.win32
-endif
-
+all: pg_config.h pg_config_os.h
+pg_config.h: pg_config.h.darwin
+	cp pg_config.h.darwin pg_config.h
+pg_config_os.h: pg_config_os.h.darwin
+	cp pg_config_os.h.darwin pg_config_os.h
+pg_config_paths.h: pg_config_paths.h.darwin
+	cp  pg_config_paths.h.darwin pg_config_paths.h
 
 # shared library parameters
 NAME= pq
 SO_MAJOR_VERSION= 5
 SO_MINOR_VERSION= 4
 
-override CPPFLAGS :=  -DFRONTEND -DUNSAFE_STAT_OK -I$(srcdir) $(CPPFLAGS) -Iport 
+override CPPFLAGS :=  -DFRONTEND -DUNSAFE_STAT_OK -I$(srcdir) $(CPPFLAGS) 
 ifneq ($(PORTNAME), win32)
 override CFLAGS += $(PTHREAD_CFLAGS)
 endif
@@ -84,7 +85,6 @@ all: all-lib
 # Shared library stuff
 include Makefile.shlib
 
-
 distprep: libpq-dist.rc
 
 libpq.rc libpq-dist.rc: libpq.rc.in
@@ -93,10 +93,9 @@ libpq.rc libpq-dist.rc: libpq.rc.in
 # Depend on Makefile.global to force rebuild on re-run of configure.
 # (But libpq-dist.rc is shipped in the distribution for shell-less
 # installations and is only updated by distprep.)
-# libpq.rc: Makefile.global
-#not for static port
 
 fe-connect.o: fe-connect.c pg_config_paths.h
+
 
 install: all installdirs install-lib
 	$(INSTALL_DATA) $(srcdir)/libpq-fe.h '$(DESTDIR)$(includedir)'
@@ -117,13 +116,11 @@ uninstall: uninstall-lib
 
 clean distclean: clean-lib
 	rm -f $(OBJS) pthread.h libpq.rc
+	rm -f libpq.dylib libpq.$(SO_MAJOR_VERSION).dylib libpq.$(SO_MAJOR_VERSION).$(SO_MINOR_VERSION).dylib
 # Might be left over from a Win32 client-only build
+	rm -f pg_config.h
+	rm -f pg_config_os.h
 	rm -f pg_config_paths.h
-	rm -f inet_net_ntop.c noblock.c pgstrcasecmp.c thread.c
-	rm -f chklocale.c crypt.c getaddrinfo.c getpeereid.c inet_aton.c open.c snprintf.c strerror.c strlcpy.c win32error.c win32setlocale.c
-	rm -f pgsleep.c	
-	rm -f md5.c ip.c
-	rm -f encnames.c wchar.c
 
 maintainer-clean: distclean maintainer-clean-lib
 	rm -f libpq-dist.rc

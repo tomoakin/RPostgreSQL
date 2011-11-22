@@ -1,3 +1,16 @@
+2011-11-22  Tomoaki NISHIYAMA  <tomoakin@kenroku.asrc.kanazawa-u.ac.jp>
+
+	Restructuring libpq directory so that the dynamic library for 
+	Mac OS X / darwin can be made with make -f Makefile.darwin in that
+	directory. Move windows specific include files to wininclude/ so
+	that they do not interfere darwin.  Configuration dependent files
+	are separated as *.win and *.darwin and that should be copied 
+	at the first step of make.  This is not enabled in OS X, though.
+
+	* ChangeLog
+	* src/Makevars.win
+	* src/libpq
+
 2011-11-16  Tomoaki NISHIYAMA  <tomoakin@kenroku.asrc.kanazawa-u.ac.jp>
 
 	add LICENSE file
