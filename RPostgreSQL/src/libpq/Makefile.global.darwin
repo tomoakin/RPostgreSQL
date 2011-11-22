@@ -37,7 +37,6 @@ MAJORVERSION = 9.1
 
 # Support for VPATH builds
 vpath_build = no
-abs_top_srcdir = /cygdrive/c/R/postgresql-9.1.1
 
 ifneq ($(vpath_build),yes)
 top_srcdir = $(top_builddir)
@@ -51,7 +50,7 @@ endif
 vpathsearch = `for f in $(addsuffix /$(1),$(subst :, ,. $(VPATH))); do test -r $$f && echo $$f && break; done`
 
 # Saved arguments from configure
-configure_args =  '--without-zlib'
+configure_args = 
 
 
 ##########################################################################
@@ -164,7 +163,7 @@ with_selinux	= no
 with_libxml	= no
 with_libxslt	= no
 with_system_tzdata = 
-with_zlib	= no
+with_zlib	= yes
 enable_shared	= yes
 enable_rpath	= yes
 enable_nls	= no
@@ -191,8 +190,8 @@ TCL_INCLUDE_SPEC	=
 TCL_SHARED_BUILD	= 
 TCL_SHLIB_LD_LIBS	= 
 
-PTHREAD_CFLAGS		= 
-PTHREAD_LIBS		= 
+PTHREAD_CFLAGS		=   -Kthread -kthread -pthread -pthreads  -D_REENTRANT -D_THREAD_SAFE -D_POSIX_PTHREAD_SEMANTICS
+PTHREAD_LIBS		=  -lpthread           
 
 
 ##########################################################################
@@ -202,12 +201,14 @@ PTHREAD_LIBS		=
 # Compilers
 
 CPP = gcc -E
-CPPFLAGS =  -I./wininclude -DEXEC_BACKEND 
+CPPFLAGS =  
 
 ifdef PGXS
 override CPPFLAGS := -I$(includedir_server) -I$(includedir_internal) $(CPPFLAGS)
 else # not PGXS
+override CPPFLAGS := -I$(top_srcdir)/src/include $(CPPFLAGS)
 ifdef VPATH
+override CPPFLAGS := -I$(top_builddir)/src/include $(CPPFLAGS)
 endif
 endif # not PGXS
 
@@ -218,9 +219,9 @@ CFLAGS = -O2 -Wall -Wmissing-prototypes -Wpointer-arith -Wdeclaration-after-stat
 
 # Kind-of compilers
 
-BISON = /bin/bison
+BISON = /usr/bin/bison
 BISONFLAGS =  $(YFLAGS)
-FLEX = /bin/flex
+FLEX = /usr/bin/flex
 FLEXFLAGS =  $(LFLAGS)
 DTRACE = 
 DTRACEFLAGS = 
@@ -229,14 +230,14 @@ ZIC =
 # Linking
 
 AR = ar
-DLLTOOL = dlltool
-DLLWRAP = dllwrap
-LIBS = -lm 
+DLLTOOL = 
+DLLWRAP = 
+LIBS = -lz -lreadline -lm 
 LDAP_LIBS_FE = 
 LDAP_LIBS_BE = 
 OSSP_UUID_LIBS = 
-LD = c:/mingw/mingw32/bin/ld.exe
-with_gnu_ld = yes
+#LD = /usr/libexec/gcc/i686-apple-darwin10/4.2.1/ld
+with_gnu_ld = no
 ld_R_works = 
 
 # We want -L for libpgport.a to be first in LDFLAGS.  We also need LDFLAGS
@@ -246,9 +247,9 @@ ld_R_works =
 ifdef PGXS
   LDFLAGS = -L$(libdir)
 else
-  LDFLAGS = -L$(top_builddir)/src/port
+  LDFLAGS = -L.
 endif
-LDFLAGS += -Wl,--allow-multiple-definition  -Wl,--as-needed
+LDFLAGS +=   -Wl,-dead_strip_dylibs
 
 LDFLAGS_EX = 
 # LDFLAGS_SL might have already been assigned by calling makefile
@@ -256,14 +257,14 @@ LDFLAGS_SL +=
 LDREL = -r
 LDOUT = -o
 RANLIB = ranlib
-WINDRES = windres
-X = .exe
+WINDRES = 
+X = 
 
 # Perl
 
-ifneq (/bin/perl,)
+ifneq (/usr/bin/perl,)
     # quoted to protect pathname with spaces
-    PERL		= '/bin/perl'
+    PERL		= '/usr/bin/perl'
 else
     PERL		= $(missing) perl
 endif
@@ -274,12 +275,12 @@ perl_embed_ldflags	=
 
 # Miscellaneous
 
-AWK	= gawk
-LN_S	= cp -p
+AWK	= awk
+LN_S	= ln -s
 MSGFMT  = 
 MSGMERGE = 
 PYTHON	= 
-TAR	= /bin/tar
+TAR	= /usr/bin/tar
 XGETTEXT = 
 
 GZIP	= gzip
@@ -299,13 +300,13 @@ INSTALL_SHLIB	= $(INSTALL_SHLIB_ENV) $(INSTALL) $(INSTALL_SHLIB_OPTS) $(INSTALL_
 # Override in Makefile.port if necessary
 INSTALL_SHLIB_OPTS = -m 755
 
-MKDIR_P = /bin/mkdir -p
+MKDIR_P = ${SHELL} ${top_srcdir}/config/install-sh -c -d
 
 missing		= $(SHELL) $(top_srcdir)/config/missing
 
 STRIP		= strip
-STRIP_STATIC_LIB = strip -x
-STRIP_SHARED_LIB = strip --strip-unneeded
+STRIP_STATIC_LIB = :
+STRIP_SHARED_LIB = :
 
 # Documentation
 
@@ -315,7 +316,7 @@ DOCBOOKSTYLE	=
 JADE			= 
 NSGMLS			= 
 OSX				= 
-XSLTPROC		= 
+XSLTPROC		= xsltproc
 
 # Code coverage
 
@@ -340,19 +341,19 @@ WANTED_LANGUAGES =
 #
 
 # Name of the "template"
-PORTNAME= win32
+PORTNAME= darwin
 
-build_os = mingw32
+build_os = darwin10.8.0
 
-host_tuple = i686-pc-mingw32
-host_os = mingw32
-host_cpu = i686
+host_tuple = x86_64-apple-darwin10.8.0
+host_os = darwin10.8.0
+host_cpu = x86_64
 
 # Make HAVE_IPV6 available for initdb script creation
 HAVE_IPV6= yes
 
 # The HP-UX port makefile, for one, needs access to this symbol
-HAVE_POSIX_SIGNALS= 
+HAVE_POSIX_SIGNALS= yes
 
 # This is mainly for use on FreeBSD, where we have both a.out and elf
 # systems now.  May be applicable to other systems to?
@@ -365,7 +366,7 @@ WIN32_STACK_RLIMIT=4194304
 have_win32_dbghelp = no
 
 # Pull in platform-specific magic
-include Makefile.port
+include Makefile.port.darwin
 
 # Set up rpath if enabled.  By default it will point to our libdir,
 # but individual Makefiles can force other rpath paths if needed.
@@ -486,7 +487,7 @@ endif
 # substitute implementations of C library routines (see src/port/)
 # note we already included -L.../src/port in LDFLAGS above
 
-LIBOBJS =  ${LIBOBJDIR}fseeko$U.o ${LIBOBJDIR}crypt$U.o ${LIBOBJDIR}erand48$U.o ${LIBOBJDIR}getrusage$U.o ${LIBOBJDIR}inet_aton$U.o ${LIBOBJDIR}random$U.o ${LIBOBJDIR}srandom$U.o ${LIBOBJDIR}strlcat$U.o ${LIBOBJDIR}strlcpy$U.o ${LIBOBJDIR}getaddrinfo$U.o ${LIBOBJDIR}getopt$U.o ${LIBOBJDIR}getopt_long$U.o ${LIBOBJDIR}kill$U.o ${LIBOBJDIR}open$U.o ${LIBOBJDIR}win32env$U.o ${LIBOBJDIR}win32error$U.o ${LIBOBJDIR}win32setlocale$U.o ${LIBOBJDIR}snprintf$U.o
+LIBOBJS = 
 
 LIBS := -lpgport $(LIBS)
 
@@ -558,6 +559,60 @@ install-strip:
 	    INSTALL_SHLIB_ENV="STRIPPROG='$(STRIP_SHARED_LIB)'" \
 	    INSTALL_STRIP_FLAG=-s \
 	    install
+
+
+##########################################################################
+#
+# Recursive make support
+# ----------------------
+# Instead of recursing through subdirectories with a for loop or
+# repeated $(MAKE) -C whatever calls, this is a little smarter: it
+# allows parallel make across directories and lets make -k and -q work
+# correctly.
+
+# We need the $(eval) function and order-only prerequisites, which are
+# available in GNU make 3.80.  That also happens to be the version
+# where the .VARIABLES variable was introduced, so this is a simple check.
+ifndef .VARIABLES
+$(error GNU make 3.80 or newer is required.  You are using version $(MAKE_VERSION))
+endif
+
+# This function is only for internal use below.  It should be called
+# using $(eval).  It will set up a target so that it recurses into
+# a given subdirectory.  Note that to avoid a nasty bug in make 3.80,
+# this function has to avoid using any complicated constructs (like
+# multiple targets on a line) and also not contain any lines that expand
+# to more than about 200 bytes.  This is why we make it apply to just one
+# subdirectory at a time, rather than to a list of subdirectories.
+# $1: target name, e.g., all
+# $2: subdir name
+# $3: target to run in subdir, usually same as $1
+define _create_recursive_target
+.PHONY: $(1)-$(2)-recurse
+$(1): $(1)-$(2)-recurse
+$(1)-$(2)-recurse:
+	$$(MAKE) -C $(2) $(3)
+endef
+# Note that the use of $$ on the last line above is important; we want
+# $(MAKE) to be evaluated when the rule is run, not when the $(eval) is run
+# to create the rule.  This is necessary to get make -q working.
+
+# Call this function in a makefile that needs to recurse into subdirectories.
+# In the normal case all arguments can be defaulted.
+# $1: targets to make recursive (defaults to list of standard targets)
+# $2: list of subdirs (defaults to SUBDIRS variable)
+# $3: target to run in subdir (defaults to current element of $1)
+recurse = $(foreach target,$(if $1,$1,$(standard_targets)),$(foreach subdir,$(if $2,$2,$(SUBDIRS)),$(eval $(call _create_recursive_target,$(target),$(subdir),$(if $3,$3,$(target))))))
+
+# If a makefile's list of SUBDIRS varies depending on configuration, then
+# any subdirectories excluded from SUBDIRS should instead be added to
+# ALWAYS_SUBDIRS, and then it must call recurse_always as well as recurse.
+# This ensures that distprep, distclean, etc will apply to all subdirectories.
+# In the normal case all arguments will be defaulted.
+# $1: targets to make recursive (defaults to standard_always_targets)
+# $2: list of subdirs (defaults to ALWAYS_SUBDIRS variable)
+# $3: target to run in subdir (defaults to current element of $1)
+recurse_always = $(foreach target,$(if $1,$1,$(standard_always_targets)),$(foreach subdir,$(if $2,$2,$(ALWAYS_SUBDIRS)),$(eval $(call _create_recursive_target,$(target),$(subdir),$(if $3,$3,$(target))))))
 
 
 ##########################################################################

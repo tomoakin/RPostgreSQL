@@ -6,4 +6,4 @@ all:  $(SHLIB)
 $(SHLIB): libpq/libpq.a
 
 libpq/libpq.a:
-	(cd libpq; make)
+	(cd libpq; make -f Makefile.win)
