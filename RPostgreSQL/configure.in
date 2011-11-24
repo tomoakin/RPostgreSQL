@@ -6,13 +6,22 @@
 # This file draws heavily on configure.in files from littler, RMySQL, and RdbiPgSQL
 
 # Set the name and version -- the version set here will propagate to other files from here
-AC_INIT(RPostgreSQL, 0.1)
+AC_INIT(RPostgreSQL, 0.2)
 
 # Checks for common programs using default macros
 AC_PROG_CC
 
+AC_CANONICAL_HOST
+AC_CANONICAL_TARGET
+case "${host_os}" in
+  darwin*)
+    R_OS_TYPE="darwin"
+    ;;
+esac
+
 # Check for non-standard programs: pg_configg(1) to configure PostgreSQL builds
 AC_PATH_PROG([PG_CONFIG], [pg_config])
+
 
 # If pg_config was found, let's use it
 if test "${PG_CONFIG}" != ""; then
@@ -96,11 +105,10 @@ fi
 # Expand into arguments
 PKG_CPPFLAGS="-I${PG_INCDIR}"
 PKG_LIBS="-L${PG_LIBDIR} -lpq"
-
 # Test for sanity by looking for libpq-fe.h, no explicit action on found, error on failure
 AC_CHECK_FILE(["${PG_INCDIR}/libpq-fe.h"],
 	,
-	AC_MSG_ERROR([File libpq-fe.h not in ${PG_INCDIR}; installation may be broken.]))
+	AC_SUBST(R_OS_TYPE))
 
 # Now substitute these two variable in src/Makevars.in to create src/Makevars
 AC_SUBST(PKG_CPPFLAGS)
