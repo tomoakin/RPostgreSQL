@@ -12,7 +12,10 @@ all:  $(SHLIB)
 $(SHLIB): libpq/libpq.5.dylib
 
 libpq/libpq.5.dylib:
-	(cd libpq; make CC="$(CC)" CFLAGS="$(CFLAGS)" -f Makefile.darwin)
+	(cd libpq; $(MAKE) CC="$(CC)" CFLAGS="$(CFLAGS)" -f Makefile.darwin)
+
+clean:
+	(cd libpq; $(MAKE) -f Makefile.darwin clean)
 endif
 
 
