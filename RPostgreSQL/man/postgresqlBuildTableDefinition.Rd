@@ -1,13 +1,13 @@
 %% TODO: Should we move this to the DBI package?
-\name{dbBuildTableDefinition}
-\alias{dbBuildTableDefinition}
+\name{postgresqlBuildTableDefinition}
+\alias{postgresqlBuildTableDefinition}
 \title{Build the SQL CREATE TABLE definition as a string}
 \description{
    Build the SQL CREATE TABLE definition as a string for the
    input data.frame
 }
 \usage{
-dbBuildTableDefinition(dbObj, name, obj, field.types = NULL, row.names = TRUE, ...)
+postgresqlBuildTableDefinition(dbObj, name, obj, field.types = NULL, row.names = TRUE, ...)
 }
 \arguments{
   \item{dbObj}{any DBI object (used only to dispatch according to the 
