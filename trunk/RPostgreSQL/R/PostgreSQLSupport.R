@@ -701,41 +701,6 @@ dbBuildTableDefinition <- function(dbObj, name, obj, field.types = NULL, row.nam
     paste("CREATE TABLE", postgresqlTableRef(name), "\n(", paste(flds, collapse=",\n\t"), "\n)")
 }
 
-## the following is almost exactly from the ROracle driver
-## safe.write makes sure write.table doesn't exceed available memory by batching
-## at most batch rows (but it is still slowww)
-safe.write <- function(value, file, batch, ...) {
-
-    N <- nrow(value)
-    if(N<1){
-        warning("no rows in data.frame")
-        return(NULL)
-    }
-    digits <- options(digits = 17)
-    on.exit(options(digits))
-    if(missing(batch) || is.null(batch))
-        batch <- 10000
-    else if(batch<=0)
-        batch <- N
-    from <- 1
-    to <- min(batch, N)
-    while(from<=N){
-        if(usingR())
-            write.table(value[from:to,, drop=FALSE], file = file, append = TRUE,
-                        quote = FALSE, sep="\t", na = .PostgreSQL.NA.string,
-                        row.names=FALSE, col.names=FALSE, eol = '\n', ...)
-        else
-            write.table(value[from:to,, drop=FALSE], file = file, append = TRUE,
-                                        #quote.string = FALSE,
-                        sep="\t", na = .PostgreSQL.NA.string,
-                                        #dimnames.write=FALSE,
-                                        #end.of.row = '\n',
-                        ...)
-        from <- to+1
-        to <- min(to+batch, N)
-    }
-    invisible(NULL)
-}
 
 ## find a suitable SQL data type for the R/S object obj
 ## TODO: Lots and lots!! (this is a very rough first draft)
