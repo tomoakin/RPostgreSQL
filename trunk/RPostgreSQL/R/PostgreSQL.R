@@ -377,7 +377,7 @@ setMethod("dbDataType",
 setMethod("make.db.names",
           signature(dbObj="PostgreSQLObject", snames = "character"),
           def = function(dbObj, snames,keywords,unique, allow.keywords,...){
-              make.db.names.default(snames, keywords = .PostgreSQLKeywords,unique, allow.keywords)
+              postgresqlQuoteId(snames)
           },
           valueClass = "character"
           )
