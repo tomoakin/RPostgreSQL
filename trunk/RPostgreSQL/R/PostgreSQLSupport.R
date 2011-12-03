@@ -81,6 +81,17 @@ postgresqlNewConnection <- function(drv, user = "", password = "",
                                     port = "", tty = "", options = "") {
     if(!isPostgresqlIdCurrent(drv))
         stop("expired manager")
+    if(is.null(user))
+        stop("user argument cannot be NULL")
+    if(is.null(password))
+        stop("password argument cannot be NULL")
+    if(is.null(dbname))
+        stop("dbname argument cannot be NULL")
+    if(is.null(port))
+        stop("port argument cannot be NULL")
+    if(is.null(tty))
+        stop("tty argument cannot be NULL")
+
     con.params <- as.character(c(user, password, host,
                                  dbname, port,
                                  tty, options))
