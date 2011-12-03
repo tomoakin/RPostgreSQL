@@ -477,7 +477,7 @@ postgresqlCloseResult <- function(res, ...) {
 }
 
 ## Use NULL, "", or 0 as row.names to prevent using any field as row.names.
-postgresqlReadTable <- function(con, name, row.names = "row_names", check.names = TRUE, ...) {
+postgresqlReadTable <- function(con, name, row.names = "row.names", check.names = TRUE, ...) {
     out <- dbGetQuery(con, paste("SELECT * from", postgresqlTableRef(name)))
     if(check.names)
         names(out) <- make.names(names(out), unique = TRUE)
@@ -618,8 +618,6 @@ postgresqlWriteTable <- function(con, name, value, field.types, row.names = TRUE
     if(i>0) ## did we add a row.names value?  If so, it's a text field.
         ## MODIFIED -- Sameer
         field.types[i] <- dbDataType(dbObj=con, field.types[row.names])
-    names(field.types) <- make.db.names(con, names(field.types),
-                                        allow.keywords = allow.keywords)
     ## Do we need to clone the connection (ie., if it is in use)?
     if(length(dbListResults(con))!=0){
         new.con <- dbConnect(con)              ## there's pending work, so clone
