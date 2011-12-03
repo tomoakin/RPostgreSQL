@@ -1,6 +1,6 @@
-% $Id: isIdCurrent.Rd,v 0.1 2008/07/23 02:38:31 psk Exp $
-\name{isIdCurrent}
-\alias{isIdCurrent}
+% $Id: isPostgresqlIdCurrent.Rd,v 0.1 2008/07/23 02:38:31 psk Exp $
+\name{isPostgresqlIdCurrent}
+\alias{isPostgresqlIdCurrent}
 \title{
   Check whether a database handle object is valid or not
 }
@@ -9,7 +9,7 @@ Support function that verifies that an object holding a reference
 to a foreign object is still valid for communicating with the RDBMS
 }
 \usage{
-isIdCurrent(obj)
+isPostgresqlIdCurrent(obj)
 }
 \arguments{
 \item{obj}{

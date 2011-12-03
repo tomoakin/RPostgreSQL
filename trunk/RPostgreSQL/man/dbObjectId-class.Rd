@@ -36,10 +36,10 @@ historically this class has existed mainly for R/S-Plus portability.}
   con <- dbConnect(pg, "user", "password")
   is(pg, "dbObjectId")   ## True
   is(con, "dbObjectId")  ## True
-  isIdCurrent(con)       ## True
+  isPostgresqlIdCurrent(con)       ## True
   q("yes")
   \$ R 
-  isIdCurrent(con)       ## False
+  isPostgresqlIdCurrent(con)       ## False
 }
 }
 \keyword{classes}
