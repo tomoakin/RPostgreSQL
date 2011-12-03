@@ -558,7 +558,7 @@ postgresqlImportFile <- function(con, name, value, field.types = NULL, overwrite
         ## need to init table, say, with the first nrows lines
         d <- read.table(fn, sep=sep, header=header, skip=skip, nrows=nrows, ...)
         sql <-
-            dbBuildTableDefinition(new.con, name, obj=d, field.types = field.types,
+            postgresqlBuildTableDefinition(new.con, name, obj=d, field.types = field.types,
                                    row.names = row.names)
         rs <- try(dbSendQuery(new.con, sql))
         if(inherits(rs, ErrorClass)){
@@ -680,7 +680,7 @@ postgresqlWriteTable <- function(con, name, value, field.types, row.names = TRUE
     retv
 }
 
-dbBuildTableDefinition <- function(dbObj, name, obj, field.types = NULL, row.names = TRUE, ...) {
+postgresqlBuildTableDefinition <- function(dbObj, name, obj, field.types = NULL, row.names = TRUE, ...) {
     if(!is.data.frame(obj))
         obj <- as.data.frame(obj)
     if(!is.null(row.names) && row.names){
