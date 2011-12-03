@@ -89,8 +89,7 @@ export(
   postgresqlEscapeStrings,
   postgresqlDataType,
   postgresqlQuoteId,
-  postgresqlTableRef,
-  safe.write
+  postgresqlTableRef
 )
 
 ## constants
