@@ -42,7 +42,7 @@ setMethod("show", "dbObjectId", def = function(object) print(object))
 
 setMethod("print", "dbObjectId",
           def = function(x, ...){
-              expired <- if(isIdCurrent(x)) "" else "Expired "
+              expired <- if(isPostgresqlIdCurrent(x)) "" else "Expired "
               str <- paste("<", expired, class(x), ":", format(x), ">", sep="")
               cat(str, "\n")
               invisible(NULL)
@@ -50,7 +50,7 @@ setMethod("print", "dbObjectId",
           )
 
 ## verify that obj refers to a currently open/loaded database
-isIdCurrent <- function(obj) {
+isPostgresqlIdCurrent <- function(obj) {
     obj <- as(obj, "integer")
     .Call("RS_DBI_validHandle", obj, PACKAGE = .PostgreSQLPkgName)
 }

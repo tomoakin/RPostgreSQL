@@ -65,7 +65,7 @@
 
    ## data mappings, convenience functions, and extensions
    postgresqlDataType(obj, ...)
-   postgresqlReadTable(con, name, row.names = "row_names", check.names = TRUE, ...)
+   postgresqlReadTable(con, name, row.names = "row.names", check.names = TRUE, ...)
    postgresqlWriteTable(con, name, value, field.types, row.names = TRUE,
       overwrite=FALSE, append=FALSE, ..., allow.keywords = FALSE)
    postgresqlpqExec(con, statement)

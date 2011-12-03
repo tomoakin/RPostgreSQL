@@ -60,7 +60,7 @@ exportMethods(
 export(
   PostgreSQL,
   postgresqlBuildTableDefinition,
-  isIdCurrent,
+  isPostgresqlIdCurrent,
   .PostgreSQLKeywords,
   postgresqlInitDriver,
   postgresqlCloseDriver,

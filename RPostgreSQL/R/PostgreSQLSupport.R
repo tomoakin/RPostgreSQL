@@ -25,7 +25,7 @@ postgresqlInitDriver <- function(max.con=16, fetch.default.rec = 500, force.relo
 }
 
 postgresqlCloseDriver <- function(drv, ...) {
-   if(!isIdCurrent(drv))
+   if(!isPostgresqlIdCurrent(drv))
       return(TRUE)
    drvId <- as(drv, "integer")
    .Call("RS_PostgreSQL_closeManager", drvId, PACKAGE = .PostgreSQLPkgName)
@@ -55,7 +55,7 @@ postgresqlDescribeDriver <- function(obj, verbose = FALSE, ...) {
 }
 
 postgresqlDriverInfo <- function(obj, what="", ...) {
-    if(!isIdCurrent(obj))
+    if(!isPostgresqlIdCurrent(obj))
         stop(paste("expired", class(obj)))
     drvId <- as(obj, "integer")
     info <- .Call("RS_PostgreSQL_managerInfo", drvId, PACKAGE = .PostgreSQLPkgName)
@@ -76,34 +76,22 @@ postgresqlDriverInfo <- function(obj, what="", ...) {
 ## The distinction between "" and NULL is that "" is interpreted by
 ## the PostgreSQL API as the default database (PostgreSQL config specific)
 ## while NULL means "no database".
-postgresqlNewConnection <- function(drv, user="", password="",
-                                    host="",dbname = "",
-                                    port = "", tty ="",options="" ) {
-    if (!isIdCurrent(drv))
+postgresqlNewConnection <- function(drv, user = "", password = "",
+                                    host = "", dbname = "",
+                                    port = "", tty = "", options = "") {
+    if(!isPostgresqlIdCurrent(drv))
         stop("expired manager")
-    if (is.null(user))
-        stop("user argument cannot be NULL")
-    if (is.null(password))
-        stop("password argument cannot be NULL")
-    if (is.null(host))
-        stop("host argument cannot be NULL")
-    if (is.null(dbname))
-        stop("dbname argument cannot be NULL")
-    if (is.null(port))
-        stop("port argument cannot be NULL")
-    if (is.null(tty))
-        stop("tty argument cannot be NULL")
     con.params <- as.character(c(user, password, host,
                                  dbname, port,
-                                 tty,options))
+                                 tty, options))
 
     drvId <- as(drv, "integer")
-    conId <- .Call("RS_PostgreSQL_newConnection", drvId, con.params,PACKAGE = .PostgreSQLPkgName)
+    conId <- .Call("RS_PostgreSQL_newConnection", drvId, con.params, PACKAGE = .PostgreSQLPkgName)
     new("PostgreSQLConnection", Id = conId)
 }
 
 postgresqlCloneConnection <- function(con, ...) {
-    if(!isIdCurrent(con))
+    if(!isPostgresqlIdCurrent(con))
         stop(paste("expired", class(con)))
     conId <- as(con, "integer")
     newId <- .Call("RS_PostgreSQL_cloneConnection", conId, PACKAGE = .PostgreSQLPkgName)
@@ -138,7 +126,7 @@ postgresqlDescribeConnection <- function(obj, verbose = FALSE, ...) {
 }
 
 postgresqlCloseConnection <- function(con, ...) {
-    if(!isIdCurrent(con))
+    if(!isPostgresqlIdCurrent(con))
         return(TRUE)
     rs <- dbListResults(con)
     if(length(rs)>0){
@@ -152,7 +140,7 @@ postgresqlCloseConnection <- function(con, ...) {
 }
 
 postgresqlConnectionInfo <- function(obj, what="", ...) {
-    if(!isIdCurrent(obj))
+    if(!isPostgresqlIdCurrent(obj))
         stop(paste("expired", class(obj), deparse(substitute(obj))))
     id <- as(obj, "integer")
     info <- .Call("RS_PostgreSQL_connectionInfo", id, PACKAGE = .PostgreSQLPkgName)
@@ -189,7 +177,7 @@ postgresqlTransactionStatement <- function(con, statement) {
 ## output, otherwise it produces a resultSet that can
 ## be used for fetching rows.
 postgresqlExecStatement <- function(con, statement) {
-    if(!isIdCurrent(con))
+    if(!isPostgresqlIdCurrent(con))
         stop(paste("expired", class(con)))
     conId <- as(con, "integer")
     statement <- as(statement, "character")
@@ -205,21 +193,21 @@ postgresqlEscapeStrings <- function(con, preescapedstring) {
 }
 
 postgresqlpqExec <- function(con, statement) {
-    if(!isIdCurrent(con))
+    if(!isPostgresqlIdCurrent(con))
         stop(paste("expired", class(con)))
     conId <- as(con, "integer")
     statement <- as(statement, "character")
     .Call("RS_PostgreSQL_pqexec", conId, statement, PACKAGE = .PostgreSQLPkgName)
 }
 postgresqlCopyIn <- function(con, filename) {
-    if(!isIdCurrent(con))
+    if(!isPostgresqlIdCurrent(con))
         stop(paste("expired", class(con)))
     conId <- as(con, "integer")
     filename <- as(filename, "character")
     .Call("RS_PostgreSQL_CopyIn", conId, filename, PACKAGE = .PostgreSQLPkgName)
 }
 postgresqlCopyInDataframe <- function(con, dataframe) {
-    if(!isIdCurrent(con))
+    if(!isPostgresqlIdCurrent(con))
         stop(paste("expired", class(con)))
     conId <- as(con, "integer")
     nrow <- nrow(dataframe)
@@ -227,7 +215,7 @@ postgresqlCopyInDataframe <- function(con, dataframe) {
     .Call("RS_PostgreSQL_CopyInDataframe", conId, dataframe, nrow, p , PACKAGE = .PostgreSQLPkgName)
 }
 postgresqlgetResult <- function(con) {
-    if(!isIdCurrent(con))
+    if(!isPostgresqlIdCurrent(con))
         stop(paste("expired", class(con)))
     conId <- as(con, "integer")
     rsId <- .Call("RS_PostgreSQL_getResult", conId, PACKAGE = .PostgreSQLPkgName)
@@ -238,7 +226,7 @@ postgresqlgetResult <- function(con) {
 ## helper function: it exec's *and* retrieves a statement. It should
 ## be named somehting else.
 postgresqlQuickSQL <- function(con, statement) {
-    if(!isIdCurrent(con))
+    if(!isPostgresqlIdCurrent(con))
         stop(paste("expired", class(con)))
     nr <- length(dbListResults(con))
     if (nr > 0) {                   ## are there resultSets pending on con?
@@ -441,7 +429,7 @@ postgresqlFetch <- function(res, n=0, ...) {
 ## and INSERTS, ...  Later on we created a base class dbResult
 ## for non-Select SQL and a derived class resultSet for SELECTS.
 postgresqlResultInfo <- function(obj, what = "", ...) {
-    if(!isIdCurrent(obj))
+    if(!isPostgresqlIdCurrent(obj))
         stop(paste("expired", class(obj), deparse(substitute(obj))))
     id <- as(obj, "integer")
     info <- .Call("RS_PostgreSQL_resultSetInfo", id, PACKAGE = .PostgreSQLPkgName)
@@ -452,7 +440,7 @@ postgresqlResultInfo <- function(obj, what = "", ...) {
 }
 
 postgresqlDescribeResult <- function(obj, verbose = FALSE, ...) {
-    if(!isIdCurrent(obj)){
+    if(!isPostgresqlIdCurrent(obj)){
         print(obj)
         invisible(return(NULL))
     }
@@ -470,7 +458,7 @@ postgresqlDescribeResult <- function(obj, verbose = FALSE, ...) {
 }
 
 postgresqlCloseResult <- function(res, ...) {
-    if(!isIdCurrent(res))
+    if(!isPostgresqlIdCurrent(res))
         return(TRUE)
     rsId <- as(res, "integer")
     .Call("RS_PostgreSQL_closeResultSet", rsId, PACKAGE = .PostgreSQLPkgName)

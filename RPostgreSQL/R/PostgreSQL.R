@@ -120,7 +120,7 @@ setMethod("dbGetQuery",
 
 setMethod("dbGetException", "PostgreSQLConnection",
           def = function(conn, ...){
-              if(!isIdCurrent(conn))
+              if(!isPostgresqlIdCurrent(conn))
                   stop(paste("expired", class(conn)))
               .Call("RS_PostgreSQL_getException", as(conn, "integer"),
                     PACKAGE = .PostgreSQLPkgName)
