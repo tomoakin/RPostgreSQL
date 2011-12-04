@@ -410,7 +410,7 @@ postgresqlFetch <- function(res, n=0, ...) {
     cnt <- dbGetRowCount(res)
     nrec <- length(rel[[1]])
     indx <- seq(from = cnt - nrec + 1, length = nrec)
-    attr(rel, "row.names") <- as.character(indx)
+    attr(rel, "row.names") <- as.integer(indx)
     if(usingR())
         class(rel) <- "data.frame"
     else
