@@ -12,25 +12,10 @@
 
 ##.PostgreSQLRCS <- "$Id: PostgreSQL.R,v 0.1 2008/06/10 14:00:00$"
 .PostgreSQLPkgName <- "RPostgreSQL"
-.PostgreSQLVersion <- "0.2-0"       ##package.description(.PostgreSQLPkgName, fields = "Version")
+.PostgreSQLVersion <- "0.3-0"       ##package.description(.PostgreSQLPkgName, fields = "Version")
 .PostgreSQL.NA.string <- "\\N"      ## on input, PostgreSQL interprets \N as NULL (NA)
 
 setOldClass("data.frame")      ## to appease setMethod's signature warnings...
-
-## ------------------------------------------------------------------
-## Begin DBI extensions:
-##
-## dbBeginTransaction
-##
-setGeneric("dbBeginTransaction",
-           def = function(conn, ...)
-           standardGeneric("dbBeginTransaction"),
-           valueClass = "logical"
-           )
-##
-## End DBI extensions
-## ------------------------------------------------------------------
-
 
 ##
 ## Class: DBIObject
@@ -264,9 +249,6 @@ setMethod("dbRollback", "PostgreSQLConnection",
           }
           )
 
-setMethod("dbBeginTransaction", "PostgreSQLConnection",
-          def = function(conn, ...) postgresqlTransactionStatement(conn, "BEGIN")
-          )
 
 ##
 ## Class: DBIResult

@@ -1,3 +1,57 @@
+2011-12-29  Tomoaki NISHIYAMA  <tomoakin@kenroku.asrc.kanazawa-u.ac.jp>
+
+	Prepare for release. As the last update makes many incompatibilities,
+	the version number is large update.
+	Remove dbBeginTransaction which is not defined in DBI.
+
+	* ChangeLog
+	* DESCRIPTION
+	* NAMESPACE
+	* R/PostgreSQL.R
+	* inst/NEWS
+	* man/dbCommit-methods.Rd 
+
+2011-12-03  Tomoaki NISHIYAMA  <tomoakin@kenroku.asrc.kanazawa-u.ac.jp>
+
+	Remove exported names that are not defined in DBI and may conflict other packages.
+	Remove safe.write, which is not used anymore.
+	Don't use make.db.names, which prevents using natural names.
+	Move dbBuildTableDefinition to postgresqlBuildTableDefinition.
+	Move isIdCurrent to isPostgresqlIdCurrent
+	row.names be integer rather than charactor for sqldf compatibility.
+
+	* NAMESPACE
+	* R/PostgreSQL.R
+	* R/PostgreSQLSupport.R
+	* R/dbObjectId.R
+	* man/safe.write.Rd
+	* man/dbBuildTableDefinition.Rd
+	* man/postgresqlBuildTableDefinition.Rd
+	* man/make.db.names-methods.Rd
+	* man/dbObjectId-class.Rd
+	* man/isIdCurrent.Rd
+	* man/isPostgresqlIdCurrent.Rd	
+	* man/postgresqlSupport.Rd
+
+2011-12-02  Tomoaki NISHIYAMA  <tomoakin@kenroku.asrc.kanazawa-u.ac.jp>
+
+	Add clean: target to clean the libpq subdir on darwin
+	
+	* src/Makevars.in
+
+2011-11-24  Tomoaki NISHIYAMA  <tomoakin@kenroku.asrc.kanazawa-u.ac.jp>
+
+	Use internal libpq for Mac OS X without PostgreSQL installation
+
+	* config.guess
+	* config.sub
+	* configure
+	* configure.in
+	* install-sh
+	* Makevars.in
+	* src/libpq/netdb.h
+	* src/libpq/pwd.h	
+
 2011-11-22  Tomoaki NISHIYAMA  <tomoakin@kenroku.asrc.kanazawa-u.ac.jp>
 
 	Restructuring libpq directory so that the dynamic library for 
@@ -10,6 +64,8 @@
 	* ChangeLog
 	* src/Makevars.win
 	* src/libpq
+	* src/libpq/getaddrinfo.c: MinGW-w64 compatibility
+	* src/libpq/pg_config_os.h.win: MinGW-w64 compatibility
 
 2011-11-16  Tomoaki NISHIYAMA  <tomoakin@kenroku.asrc.kanazawa-u.ac.jp>
 

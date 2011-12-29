@@ -1,11 +1,9 @@
 % $Id: dbCommit-methods.Rd,v 0.1 2008/08/10 18:04:01 psk Exp $
 \name{dbCommit-methods}
 \docType{methods}
-\alias{dbBeginTransaction}
-\alias{dbBeginTransaction-methods}
 \alias{dbCommit-methods}
 \alias{dbRollback-methods}
-\alias{dbBeginTransaction,PostgreSQLConnection-method}
+\alias{PostgreSQLConnection-method}
 \alias{dbCommit,PostgreSQLConnection-method}
 \alias{dbRollback,PostgreSQLConnection-method}
 \title{
@@ -14,7 +12,6 @@
 \description{
   Commits or roll backs the current transaction 
   in an PostgreSQL connection.
-  \code{dbBeginTransaction} starts a PostgreSQL transaction.
   \code{dbCommit} and \code{dbRollback} commit and rollback the
   transaction, respectively.
 

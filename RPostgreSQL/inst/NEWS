@@ -1,10 +1,20 @@
-Version 0.2-1 -- 2010-11-16
+Version 0.3-0 -- 2011-12-29
+
+    o   The bundled libpq source codes are used under darwin as well.
+
+    o   More compatibility to other database drivers under DBI and sqldf.
+        dbBeginTransaction, safe.write, make.db.names are removed.
+        dbBuildTableDefinition is renamed to postgresqlBuildTableDefinition.
+        isIdCurrent is renamed to isPostgresqlIdCurrent.
+        row.names is now integer.
+
+Version 0.2-1 -- 2011-11-16
 
     o   libpq source codes are bundled for Windows.
 	In other envirionment, this code is not used and existence of libpq as 
 	specified by PG_HOME is still required.
 
-Version 0.2-0 -- 2010-10-04
+Version 0.2-0 -- 2011-10-04
 
     o   Error check for dbWriteTable
 
