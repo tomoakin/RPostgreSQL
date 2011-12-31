@@ -113,4 +113,25 @@ AC_CHECK_FILE(["${PG_INCDIR}/libpq-fe.h"],
 # Now substitute these two variable in src/Makevars.in to create src/Makevars
 AC_SUBST(PKG_CPPFLAGS)
 AC_SUBST(PKG_LIBS)
+
+ENABLE_LIBPQ=
+if test $R_OS_TYPE == "darwin" ; then
+ENABLE_LIBPQ='
+
+PKG_CPPFLAGS=-Ilibpq
+PKG_LIBS=libpq/libpq.a
+
+.PHONY: all
+all:  $(SHLIB)
+$(SHLIB): libpq/libpq.5.dylib
+
+libpq/libpq.5.dylib:
+	(cd libpq; $(MAKE) CC="$(CC)" CFLAGS="$(CFLAGS)" -f Makefile.darwin)
+
+clean:
+	(cd libpq; $(MAKE) -f Makefile.darwin clean)
+'
+fi
+
+AC_SUBST(ENABLE_LIBPQ)
 AC_OUTPUT(src/Makevars)

@@ -1,3 +1,14 @@
+2011-12-31  Tomoaki NISHIYAMA  <tomoakin@kenroku.asrc.kanazawa-u.ac.jp>
+
+	Move conditionals from Makevars.in to configure.in and
+	configure so that the GNU extension is not used.
+
+	* ChangeLog
+	* DESCRIPTION
+	* configure
+	* configure.in
+	* src/Makevars.in
+
 2011-12-29  Tomoaki NISHIYAMA  <tomoakin@kenroku.asrc.kanazawa-u.ac.jp>
 
 	Prepare for release. As the last update makes many incompatibilities,

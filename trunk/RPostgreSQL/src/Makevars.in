@@ -2,20 +2,4 @@ PKG_CPPFLAGS=@PKG_CPPFLAGS@
 PKG_LIBS=@PKG_LIBS@
 R_OS_TYPE=@R_OS_TYPE@
 
-ifeq ($(R_OS_TYPE),darwin)
-#overwrite everything to use internal source
-PKG_CPPFLAGS=-Ilibpq
-PKG_LIBS=libpq/libpq.a
-
-.PHONY: all
-all:  $(SHLIB)
-$(SHLIB): libpq/libpq.5.dylib
-
-libpq/libpq.5.dylib:
-	(cd libpq; $(MAKE) CC="$(CC)" CFLAGS="$(CFLAGS)" -f Makefile.darwin)
-
-clean:
-	(cd libpq; $(MAKE) -f Makefile.darwin clean)
-endif
-
-
+@ENABLE_LIBPQ@
