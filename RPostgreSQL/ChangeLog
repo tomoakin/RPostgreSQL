@@ -1,3 +1,17 @@
+2012-01-10  Tomoaki NISHIYAMA  <tomoakin@kenroku.asrc.kanazawa-u.ac.jp>
+
+	Windows support for r-devel.
+	Make libpq.a with ar directly from $(OBJ) not via dll.
+	Thus, install.libs.R is no more required.
+
+	* ChangeLog
+	* DESCRIPTION
+	* src/Makevars.win
+	* src/install.libs.R: delete
+	* src/libpq/Makefile.global.win64
+	* src/libpq/Makefile.win
+	* src/libpq/Makefile.shlib
+
 2011-12-31  Tomoaki NISHIYAMA  <tomoakin@kenroku.asrc.kanazawa-u.ac.jp>
 
 	Move conditionals from Makevars.in to configure.in and

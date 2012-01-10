@@ -51,7 +51,7 @@ endif
 vpathsearch = `for f in $(addsuffix /$(1),$(subst :, ,. $(VPATH))); do test -r $$f && echo $$f && break; done`
 
 # Saved arguments from configure
-configure_args =  '--host=x86_64-w64-mingw32' '--without-zlib' 'host_alias=x86_64-w64-mingw32'
+# configure_args =  '--host=x86_64-w64-mingw32' '--without-zlib' 'host_alias=x86_64-w64-mingw32'
 
 
 ##########################################################################
@@ -201,7 +201,8 @@ PTHREAD_LIBS		=
 
 # Compilers
 
-CPP = x86_64-w64-mingw32-gcc -E
+#CPP = x86_64-w64-mingw32-gcc -E
+# hope this is set appropriately by the system
 CPPFLAGS =  -I./src/include/port/win32 -DEXEC_BACKEND 
 
 ifdef PGXS
@@ -213,7 +214,14 @@ override CPPFLAGS := -I$(top_builddir)/src/include $(CPPFLAGS)
 endif
 endif # not PGXS
 
-CC = x86_64-w64-mingw32-gcc
+#CC = x86_64-w64-mingw32-gcc
+ifeq ($(CC),gcc)
+CC=gcc -m64
+endif
+ifeq "$(CC)" "x86_64-w64-mingw32-gcc "
+CC=x86_64-w64-mingw32-gcc
+endif
+# hope this variable is set appropriately by the system
 GCC = yes
 SUN_STUDIO_CC = no
 CFLAGS = -O2 -Wall -Wmissing-prototypes -Wpointer-arith -Wdeclaration-after-statement -Wendif-labels -Wformat-security -fno-strict-aliasing -fwrapv
@@ -230,14 +238,23 @@ ZIC =
 
 # Linking
 
+ifeq "$(CC)" "x86_64-w64-mingw32-gcc"
 AR = x86_64-w64-mingw32-ar
+endif
+# hope this variable is set appropriately by the system
+ifeq "$(CC)" "x86_64-w64-mingw32-gcc"
 DLLTOOL = x86_64-w64-mingw32-dlltool
 DLLWRAP = x86_64-w64-mingw32-dllwrap
+else
+DLLTOOL = dlltool -m64
+DLLWRAP = dllwrap -m64
+endif
 LIBS = -lwsock32 -lm 
 LDAP_LIBS_FE = 
 LDAP_LIBS_BE = 
 OSSP_UUID_LIBS = 
-LD = c:/rtools/mingw64/x86_64-w64-mingw32/bin/ld.exe
+#LD = c:/rtools/mingw64/x86_64-w64-mingw32/bin/ld.exe
+# hope this variable is set appropriately by the system
 with_gnu_ld = yes
 ld_R_works = 
 
@@ -257,8 +274,14 @@ LDFLAGS_EX =
 LDFLAGS_SL += 
 LDREL = -r
 LDOUT = -o
+
+ifeq "$(CC)" "x86_64-w64-mingw32-gcc"
 RANLIB = x86_64-w64-mingw32-ranlib
 WINDRES = x86_64-w64-mingw32-windres
+else
+RANLIB = ranlib
+WINDRES = windres -F pe-x86-64
+endif
 X = .exe
 
 # Perl
@@ -305,9 +328,15 @@ MKDIR_P = /bin/mkdir -p
 
 missing		= $(SHELL) $(top_srcdir)/config/missing
 
+ifeq "$(CC)" "x86_64-w64-mingw32-gcc"
 STRIP		= x86_64-w64-mingw32-strip
 STRIP_STATIC_LIB = x86_64-w64-mingw32-strip -x
 STRIP_SHARED_LIB = x86_64-w64-mingw32-strip --strip-unneeded
+else
+STRIP		= strip
+STRIP_STATIC_LIB = strip -x
+STRIP_SHARED_LIB = strip --strip-unneeded
+endif
 
 # Documentation
 
