@@ -409,11 +409,22 @@ else
 DLL_DEFFILE = lib$(NAME)dll.def
 endif
 
+ifeq "$(WIN)"  "64"
+$(shlib): $(OBJS) $(DLL_DEFFILE) 
+	$(LD) -shared --dll -o $@ $(OBJS) $(DLL_DEFFILE)
+ifeq "$(AR)" "x86_64-w64-mingw32-ar"
+$(stlib): $(OBJS)
+	$(AR) rcs $@ $(OBJS)
+else
+$(stlib): $(OBJS)
+	$(AR) rcs --target pe-x86-64 $@ $(OBJS)
+endif
+else
 $(shlib): $(OBJS) $(DLL_DEFFILE) 
 	$(DLLWRAP) -o $@ --dllname $(shlib) $(DLLWRAP_FLAGS) --def $(DLL_DEFFILE) $(OBJS) $(LDFLAGS) $(LDFLAGS_SL) $(SHLIB_LINK)
-
-$(stlib): $(shlib) $(DLL_DEFFILE) 
-	$(DLLTOOL) --dllname $(shlib) $(DLLTOOL_LIBFLAGS) --def $(DLL_DEFFILE) --output-lib $@
+$(stlib): $(OBJS)
+	$(AR) rcs $@ $(OBJS)
+endif
 
 endif # PORTNAME == cygwin || PORTNAME == win32
 
