@@ -1,3 +1,14 @@
+Version 0.3-2 -- 2012-01-10
+
+    o   Adapt to the new windows toolchain.
+
+    o   Do not make libpq.dll on windows but just make libpq.a and link it,
+        so that libpq.dll need not copied anymore.
+
+Version 0.3-1 -- 2011-12-31
+
+    o   Remove GNU make dependency.
+
 Version 0.3-0 -- 2011-12-29
 
     o   The bundled libpq source codes are used under darwin as well.
