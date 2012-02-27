@@ -1172,7 +1172,7 @@ RS_DBI_getFieldDescriptions(RS_DBI_fields * flds)
 
 /* given a type id return its human-readable name.
  * We define an RS_DBI_dataTypeTable */
-char *
+const char *
 RS_DBI_getTypeName(Sint t, const struct data_types table[])
 {
     int i;
@@ -1185,7 +1185,7 @@ RS_DBI_getTypeName(Sint t, const struct data_types table[])
     }
     sprintf(buf, "unknown (%ld)", (long) t);
     RS_DBI_errorMessage(buf, RS_DBI_WARNING);
-    return (char *) 0;          /* for -Wall */
+    return "UNKNOWN";
 }
 
 /* Translate R/S identifiers (and only R/S names!!!) into

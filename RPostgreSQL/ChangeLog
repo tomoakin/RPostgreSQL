@@ -1,3 +1,12 @@
+2012-01-10  Tomoaki NISHIYAMA  <tomoakin@staff.asrc.kanazawa-u.ac.jp>
+
+	Suppress dbColumnInfo Segmentation fault. RS_DBI_getTypeName() 
+	return "UNKNOWN" instead of NULL pointer.
+
+	* src/RS-DBI.h
+	* src/RS-DBI.c
+	* tests/unknowntypes.R
+
 2012-01-10  Tomoaki NISHIYAMA  <tomoakin@kenroku.asrc.kanazawa-u.ac.jp>
 
 	Windows support for r-devel.

@@ -234,7 +234,7 @@ extern "C" {
     };
 
     /* return the primitive type name for a primitive type id */
-    char *RS_DBI_getTypeName(Sint typeCode, const struct data_types table[]);
+    const char *RS_DBI_getTypeName(Sint typeCode, const struct data_types table[]);
     /* same, but callable from S/R and vectorized */
     s_object *RS_DBI_SclassNames(s_object * types);
 
