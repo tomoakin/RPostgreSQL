@@ -43,12 +43,14 @@ drv <- dbDriver("PostgreSQL")
 con <- dbConnect(drv, dbname="postgres")
 dbGetQuery(con, "select count(*) from sales")
 
-dbBeginTransaction(con)
+dbGetQuery(con, "BEGIN TRANSACTION")
 rs <- dbSendQuery(con, 
       "Delete * from sales as p where p.cost>10")
 if(dbGetInfo(rs, what = "rowsAffected") > 250){
   warning("Rolling back transaction")
   dbRollback(con)
+}else{
+  dbCommit(con)
 }
 
 dbGetQuery(con, "select count(*) from sales")
