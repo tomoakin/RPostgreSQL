@@ -239,21 +239,14 @@ postgresqlgetResult <- function(con) {
 postgresqlQuickSQL <- function(con, statement) {
     if(!isPostgresqlIdCurrent(con))
         stop(paste("expired", class(con)))
-    nr <- length(dbListResults(con))
-    if (nr > 0) {                   ## are there resultSets pending on con?
-        new.con <- dbConnect(con)   ## yep, create a clone connection
-        on.exit(dbDisconnect(new.con))
-        rs <- try(dbSendQuery(new.con, statement))
-        if (inherits(rs, ErrorClass)){
-            warning("Could not create execute", statement)
-            return(NULL)
-        }
-    } else {
-        rs <- try(dbSendQuery(con, statement))
-        if (inherits(rs, ErrorClass)){
-            warning("Could not create execute", statement)
-            return(NULL)
-        }
+    rsList <- dbListResults(con)
+    if (length(rsList)>0){  # clear results
+        dbClearResult(rsList[[1]])
+    }
+    rs <- try(dbSendQuery(con, statement))
+    if (inherits(rs, ErrorClass)){
+        warning("Could not create execute", statement)
+        return(NULL)
     }
     if(dbHasCompleted(rs)){
         dbClearResult(rs)            ## no records to fetch, we're done
@@ -509,13 +502,7 @@ postgresqlImportFile <- function(con, name, value, field.types = NULL, overwrite
     if(overwrite && append)
         stop("overwrite and append cannot both be TRUE")
 
-    ## Do we need to clone the connection (ie., if it is in use)?
-    if(length(dbListResults(con))!=0){
-        new.con <- dbConnect(con)              ## there's pending work, so clone
-        on.exit(dbDisconnect(new.con))
-    }
-    else
-        new.con <- con
+    new.con <- con
 
     if(dbExistsTable(con,name)){
         if(overwrite){
@@ -617,13 +604,7 @@ postgresqlWriteTable <- function(con, name, value, field.types, row.names = TRUE
     if(i>0) ## did we add a row.names value?  If so, it's a text field.
         ## MODIFIED -- Sameer
         field.types[i] <- dbDataType(dbObj=con, field.types[row.names])
-    ## Do we need to clone the connection (ie., if it is in use)?
-    if(length(dbListResults(con))!=0){
-        new.con <- dbConnect(con)              ## there's pending work, so clone
-        on.exit(dbDisconnect(new.con))
-    } else {
-        new.con <- con
-    }
+    new.con <- con
 
     if(dbExistsTable(con,name)){
         if(overwrite){
