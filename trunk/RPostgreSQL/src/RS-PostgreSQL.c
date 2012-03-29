@@ -22,7 +22,7 @@ struct data_types RS_PostgreSQL_dataTypes[] = {
     {"DECIMAL", 1700},      /* ALSO KNOWN  AS NUMERIC */
     {"FLOAT8", 701},        /* DOUBLE PRECISION */
     {"FLOAT", 700},         /* ALSO CALLED FLOAT4 (SINGLE PRECISION) */
-    {"INTEGER", 23},        /*ALSO KNOWN AS INT 4 */
+    {"INTEGER", 23},        /* ALSO KNOWN AS INT4 */
     {"SMALLINT", 21},       /* ALSO KNOWN AS INT2 */
     {"MONEY", 790},         /* MONEY (8 bytes) */
     
@@ -261,7 +261,7 @@ RS_PostgreSQL_newConnection(Mgr_Handle * mgrHandle, s_object * con_params)
     conParams->tty = RS_DBI_copyString(PQtty(my_connection));
     conParams->options = RS_DBI_copyString(PQoptions(my_connection));
 
-    conHandle = RS_DBI_allocConnection(mgrHandle, (Sint) 1);
+    conHandle = RS_DBI_allocConnection(mgrHandle, (Sint) 1); /* The second argument (1) specifies the number of result sets allocated */
     con = RS_DBI_getConnection(conHandle);
     if (!con) {
         PQfinish(my_connection);
