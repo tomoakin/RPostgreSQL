@@ -11,14 +11,24 @@
    which is used in conjunction with COPY table from STDIN */
 
 /*
- * Copies all content of the file specified with filename to the conHandle which
- * has opened connection previously issued the COPY table from STDIN query
- * the data is read from file sent to the database with PQputCopyData
- * in chunks of COPY_IN_BUFSIZE.
+ * RS_PostgreSQL_CopyIn copies all content of the file specified with filename 
+ * to the conHandle which has opened connection previously issued the COPY 
+ * table from STDIN query the data is read from file sent to the database with
+ * PQputCopyData in chunks of COPY_IN_BUFSIZE.
  * The copy ends when 0 byte could be read from the file and then the
  * PQputCopyEnd is called to complete the copying.
  */
 
+
+/*
+ * RS_PostgreSQL_getResult is the implementation of postgresqlgetResult()
+ *
+ * RS_PostgreSQL_getResult will be called after CopyIn
+ * for cheching the result of CopyIn
+ *
+ *     postgresqlCopyInDataframe(new.con, value)
+ *     rs<-postgresqlgetResult(new.con)
+ */
 
 s_object *
 RS_PostgreSQL_getResult(Con_Handle * conHandle)
