@@ -753,7 +753,7 @@ RS_DBI_SclassNames(s_object * type)
     Sint *typeCodes;
     Sint n;
     int i;
-    char *s;
+    const char *s;
 
     if (type == S_NULL_ENTRY) {
         RS_DBI_errorMessage("internal error in RS_DBI_SclassNames: input S types must be nonNULL", RS_DBI_ERROR);
