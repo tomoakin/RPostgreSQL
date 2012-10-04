@@ -1,3 +1,11 @@
+2012-10-04  Tomoaki NISHIYAMA  <tomoakin@staff.asrc.kanazawa-u.ac.jp>
+
+	Bug fix for GC related errro as reported as issue 42.
+
+	* src/RS-DBI.c
+	* src/RS-PostgreSQL.c 
+	* tests/dbColumnInfo.R
+
 2012-01-10  Tomoaki NISHIYAMA  <tomoakin@staff.asrc.kanazawa-u.ac.jp>
 
 	Suppress dbColumnInfo Segmentation fault. RS_DBI_getTypeName() 

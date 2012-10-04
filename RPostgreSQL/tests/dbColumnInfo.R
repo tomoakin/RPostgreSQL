@@ -33,6 +33,8 @@ if (Sys.getenv("POSTGRES_USER") != "" & Sys.getenv("POSTGRES_HOST") != "" & Sys.
     res <- dbGetQuery(con, "INSERT INTO aa VALUES(3, 2, NULL)" )
     res <- dbSendQuery(con, "select pk, v1, v2, v1+v2 from aa")
     cat("dbColumnInfo\n")
+    gctorture()
+    print(dbColumnInfo(res))
     print(dbColumnInfo(res))
     cat("SELECT result\n")
     df <- fetch(res, n=-1)
