@@ -261,7 +261,7 @@ RS_PostgreSQL_newConnection(Mgr_Handle * mgrHandle, s_object * con_params)
     conParams->tty = RS_DBI_copyString(PQtty(my_connection));
     conParams->options = RS_DBI_copyString(PQoptions(my_connection));
 
-    conHandle = RS_DBI_allocConnection(mgrHandle, (Sint) 1); /* The second argument (1) specifies the number of result sets allocated */
+    PROTECT(conHandle = RS_DBI_allocConnection(mgrHandle, (Sint) 1)); /* The second argument (1) specifies the number of result sets allocated */
     con = RS_DBI_getConnection(conHandle);
     if (!con) {
         PQfinish(my_connection);
@@ -271,7 +271,7 @@ RS_PostgreSQL_newConnection(Mgr_Handle * mgrHandle, s_object * con_params)
     }
     con->drvConnection = (void *) my_connection;
     con->conParams = (void *) conParams;
-
+    UNPROTECT(1);
     return conHandle;
 }
 
@@ -396,7 +396,7 @@ RS_PostgreSQL_exec(Con_Handle * conHandle, s_object * statement)
     }
 
     /* we now create the wrapper and copy values */
-    rsHandle = RS_DBI_allocResultSet(conHandle);
+    PROTECT(rsHandle = RS_DBI_allocResultSet(conHandle));
     result = RS_DBI_getResultSet(rsHandle);
     result->statement = RS_DBI_copyString(dyn_statement);
     result->drvResultSet = (void *) my_result;
@@ -420,6 +420,7 @@ RS_PostgreSQL_exec(Con_Handle * conHandle, s_object * statement)
         result->fields = RS_PostgreSQL_createDataMappings(rsHandle);
     }
     free(dyn_statement);
+    UNPROTECT(1);
     return rsHandle;
 }
 
@@ -618,18 +619,8 @@ RS_PostgreSQL_fetch(s_object * rsHandle, s_object * max_rec)
     num_fields = flds->num_fields;
     MEM_PROTECT(output = NEW_LIST((Sint) num_fields));
     RS_DBI_allocOutput(output, flds, num_rec, 0);
-#ifndef USING_R
-    if (IS_LIST(output)) {
-        output = AS_LIST(output);
-    }
-    else {
-        RS_DBI_errorMessage("internal error: could not alloc output list", RS_DBI_ERROR);
-    }
-#endif
     fld_Sclass = flds->Sclass;
 /*    fld_nullOk = flds->nullOk; set but not used */
-
-
 
     /* actual fetching.... */
     my_result = (PGresult *) result->drvResultSet;
@@ -649,14 +640,6 @@ RS_PostgreSQL_fetch(s_object * rsHandle, s_object * max_rec)
             if (expand) {       /* do we extend or return the records fetched so far */
                 num_rec = 2 * num_rec;
                 RS_DBI_allocOutput(output, flds, num_rec, expand);
-#ifndef USING_R
-                if (IS_LIST(output)) {
-                    output = AS_LIST(output);
-                }
-                else {
-                    RS_DBI_errorMessage("internal error: could not alloc output list", RS_DBI_ERROR);
-                }
-#endif
             }
             else
                 break;          /* okay, no more fetching for now */
@@ -813,15 +796,7 @@ RS_PostgreSQL_getException(s_object * conHandle)
     if (!con->drvConnection) {
         RS_DBI_errorMessage("internal error: corrupt connection handle", RS_DBI_ERROR);
     }
-    output = RS_DBI_createNamedList(exDesc, exType, exLen, n);
-#ifndef USING_R
-    if (IS_LIST(output)) {
-        output = AS_LIST(output);
-    }
-    else {
-        RS_DBI_errorMessage("internal error: could not allocate named list", RS_DBI_ERROR);
-    }
-#endif
+    PROTECT(output = RS_DBI_createNamedList(exDesc, exType, exLen, n));
 
     my_connection = (PGconn *) con->drvConnection;
 
@@ -837,6 +812,7 @@ RS_PostgreSQL_getException(s_object * conHandle)
     else {
         SET_LST_CHR_EL(output, 1, 0, C_S_CPY(PQerrorMessage(my_connection)));
     }
+    UNPROTECT(1);
     return output;
 }
 
@@ -890,15 +866,7 @@ RS_PostgreSQL_managerInfo(Mgr_Handle * mgrHandle)
     max_con = (Sint) mgr->length;
     mgrLen[1] = num_con;
 
-    output = RS_DBI_createNamedList(mgrDesc, mgrType, mgrLen, n);
-#ifndef USING_R
-    if (IS_LIST(output)) {
-        output = AS_LIST(output);
-    }
-    else {
-        RS_DBI_errorMessage("internal error: could not alloc named list", RS_DBI_ERROR);
-    }
-#endif
+    PROTECT(output = RS_DBI_createNamedList(mgrDesc, mgrType, mgrLen, n));
     j = (Sint) 0;
     if (mgr->drvName) {
         SET_LST_CHR_EL(output, j++, 0, C_S_CPY(mgr->drvName));
@@ -920,7 +888,7 @@ RS_PostgreSQL_managerInfo(Mgr_Handle * mgrHandle)
     LST_INT_EL(output, j++, 0) = mgr->length;
     LST_INT_EL(output, j++, 0) = mgr->num_con;
     LST_INT_EL(output, j++, 0) = mgr->counter;
-
+    UNPROTECT(1);
     return output;
 }
 
@@ -945,15 +913,7 @@ RS_PostgreSQL_connectionInfo(Con_Handle * conHandle)
     con = RS_DBI_getConnection(conHandle);
     conLen[6 /*7 */ ] = con->num_res;   /* num of open resultSets */
     my_con = (PGconn *) con->drvConnection;
-    output = RS_DBI_createNamedList(conDesc, conType, conLen, n);
-#ifndef USING_R
-    if (IS_LIST(output)) {
-        output = AS_LIST(output);
-    }
-    else {
-        RS_DBI_errorMessage("internal error: could not alloc named list", RS_DBI_ERROR);
-    }
-#endif
+    PROTECT(output = RS_DBI_createNamedList(conDesc, conType, conLen, n));
     conParams = (RS_PostgreSQL_conParams *) con->conParams;
 
     SET_LST_CHR_EL(output, 0, 0, C_S_CPY(conParams->host));
@@ -997,7 +957,7 @@ RS_PostgreSQL_connectionInfo(Con_Handle * conHandle)
     for (i = 0; i < con->num_res; i++) {
         LST_INT_EL(output, 6, i) = (Sint) res[i];
     }
-
+    UNPROTECT(1);
     return output;
 }
 
@@ -1189,9 +1149,6 @@ RS_PostgreSQL_dbApply(s_object * rsHandle,      /* resultset handle */
     int row_max;                /* NOTE: added this.... fetch the maximum number of rows in the resultset */
 
     s_object *data, *cur_rec, *out_list, *group_names, *val;
-#ifndef USING_R
-    s_object *raw_obj, *raw_container;
-#endif
     /*  unsigned long  *lens = (unsigned long *)0; NOTE: not being used */
     Stype *fld_Sclass;
     Sint i, j, null_item, expand, completed;
@@ -1363,33 +1320,10 @@ RS_PostgreSQL_dbApply(s_object * rsHandle,      /* resultset handle */
                 LST_NUM_EL(cur_rec, j, 0) = LST_NUM_EL(data, j, i);
                 break;
 
-#ifndef USING_R
-            case SINGLE_TYPE:
-                if (null_item) {
-                    NA_SET(&(LST_FLT_EL(data, j, i)), SINGLE_TYPE);
-                }
-                else {
-                    LST_FLT_EL(data, j, i) = (float) atof(PQgetvalue(my_result, row_counter, j));       /* NOTE: changed */
-                }
-                LST_FLT_EL(cur_rec, j, 0) = LST_FLT_EL(data, j, i);
-                break;
-
-            case RAW_TYPE:     /* these are blob's */
-                raw_obj = NEW_RAW((Sint) PQfsize(my_result, j));        /* NOTE: changed */
-                memcpy(RAW_DATA(raw_obj), PQgetvalue(my_result, row_counter, j), PQfsize(my_result, j));        /* NOTE: changed */
-                raw_container = LST_EL(data, j);        /* get list of raw objects */
-                SET_ELEMENT(raw_container, (Sint) i, raw_obj);
-                SET_ELEMENT(data, (Sint) j, raw_container);
-                break;
-#endif
 
             default:           /* error, but we'll try the field as character (!) */
                 if (null_item) {
-#ifdef USING_R
                     SET_LST_CHR_EL(data, j, i, NA_STRING);
-#else
-                    NA_CHR_SET(LST_CHR_EL(data, j, i));
-#endif
                 }
                 else {
                     char warn[64];
@@ -1493,9 +1427,6 @@ RS_PostgreSQL_dbApply(s_object * rsHandle,      /* resultset handle */
     result->completed = (int) completed;
 
     SET_NAMES(out_list, group_names);   /* do I need to PROTECT? */
-#ifndef USING_R
-    out_list = AS_LIST(out_list);       /* for S4/Splus[56]'s sake */
-#endif
 
     MEM_UNPROTECT(np);
     return out_list;
@@ -1527,14 +1458,6 @@ check_groupEvents(s_object * data, Stype fld_Sclass[], Sint irow, Sint jcol)
         }
         break;
 
-#ifndef USING_R
-    case SINGLE_TYPE:
-        if (LST_FLT_EL(data, jcol, irow) != LST_FLT_EL(data, jcol, irow - 1)) {
-            return (END_GROUP | BEGIN_GROUP);
-        }
-        break;
-#endif
-
     case CHARACTER_TYPE:
         if (strcmp(LST_CHR_EL(data, jcol, irow), LST_CHR_EL(data, jcol, irow - 1))) {
             return (END_GROUP | BEGIN_GROUP);
@@ -1563,11 +1486,6 @@ add_group(s_object * group_names, s_object * data, Stype * fld_Sclass, Sint grou
     case INTEGER_TYPE:
         (void) sprintf(buff, "%ld", (long) LST_INT_EL(data, group_field, i));
         break;
-#ifndef USING_R
-    case SINGLE_TYPE:
-        (void) sprintf(buff, "%f", (double) LST_FLT_EL(data, group_field, i));
-        break;
-#endif
     case NUMERIC_TYPE:
         (void) sprintf(buff, "%f", (double) LST_NUM_EL(data, group_field, i));
         break;

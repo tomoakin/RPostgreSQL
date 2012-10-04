@@ -679,15 +679,7 @@ RS_DBI_copyfields(RS_DBI_fields * flds)
     for (j = 0; j < n; j++) {
         lengths[j] = (Sint) num_fields;
     }
-    S_fields = RS_DBI_createNamedList(desc, types, lengths, n);
-#ifndef USING_R
-    if (IS_LIST(S_fields)) {
-        S_fields = AS_LIST(S_fields);
-    }
-    else {
-        RS_DBI_errorMessage("internal error in RS_DBI_copyfields: could not alloc named list", RS_DBI_ERROR);
-    }
-#endif
+    PROTECT(S_fields = RS_DBI_createNamedList(desc, types, lengths, n));
     /* copy contentes from flds into an R/S list */
     for (i = 0; i < num_fields; i++) {
         SET_LST_CHR_EL(S_fields, 0, i, C_S_CPY(flds->name[i]));
@@ -699,7 +691,7 @@ RS_DBI_copyfields(RS_DBI_fields * flds)
         LST_INT_EL(S_fields, 6, i) = (Sint) flds->isVarLength[i];
         LST_INT_EL(S_fields, 7, i) = (Sint) flds->nullOk[i];
     }
-
+    UNPROTECT(1);
     return S_fields;
 }
 
@@ -837,7 +829,7 @@ RS_DBI_getConnection(Con_Handle * conHandle)
         RS_DBI_errorMessage("internal error in RS_DBI_getConnection: corrupt connection handle", RS_DBI_ERROR);
     }
     if (!mgr->connections[indx]) {
-        RS_DBI_errorMessage("internal error in RS_DBI_getConnection: corrupt connection  object", RS_DBI_ERROR);
+        RS_DBI_errorMessage("internal error in RS_DBI_getConnection: corrupt connection object", RS_DBI_ERROR);
     }
     return mgr->connections[indx];
 }
@@ -1013,15 +1005,7 @@ RS_DBI_managerInfo(Mgr_Handle * mgrHandle)
     num_con = (Sint) mgr->num_con;
     mgrLen[0] = num_con;
 
-    output = RS_DBI_createNamedList(mgrDesc, mgrType, mgrLen, n);
-#ifndef USING_R
-    if (IS_LIST(output)) {
-        output = AS_LIST(output);
-    }
-    else {
-        RS_DBI_errorMessage("internal error: could not alloc named list", RS_DBI_ERROR);
-    }
-#endif
+    PROTECT(output = RS_DBI_createNamedList(mgrDesc, mgrType, mgrLen, n));
     for (i = 0; i < num_con; i++) {
         LST_INT_EL(output, 0, i) = (Sint) mgr->connectionIds[i];
     }
@@ -1031,7 +1015,7 @@ RS_DBI_managerInfo(Mgr_Handle * mgrHandle)
     LST_INT_EL(output, 4, 0) = (Sint) mgr->num_con;
     LST_INT_EL(output, 5, 0) = (Sint) mgr->counter;
     SET_LST_CHR_EL(output, 6, 0, C_S_CPY("NA"));        /* client versions? */
-
+    UNPROTECT(1);
     return output;
 }
 
@@ -1059,15 +1043,7 @@ RS_DBI_connectionInfo(Con_Handle * conHandle)
     con = RS_DBI_getConnection(conHandle);
     conLen[6] = con->num_res;   /* number of resultSets opened *//* NOTE: changed from 7 to 6 */
 
-    output = RS_DBI_createNamedList(conDesc, conType, conLen, n);
-#ifndef USING_R
-    if (IS_LIST(output)) {
-        output = AS_LIST(output);
-    }
-    else {
-        RS_DBI_errorMessage("internal error in RS_DBI_connectionInfo: could not alloc named list", RS_DBI_ERROR);
-    }
-#endif
+    PROTECT(output = RS_DBI_createNamedList(conDesc, conType, conLen, n));
     /* dummy */
     SET_LST_CHR_EL(output, 0, 0, C_S_CPY("NA"));        /* host */
     SET_LST_CHR_EL(output, 1, 0, C_S_CPY("NA"));        /* dbname */
@@ -1081,6 +1057,7 @@ RS_DBI_connectionInfo(Con_Handle * conHandle)
     for (i = 0; i < con->num_res; i++) {
         LST_INT_EL(output, 6, (Sint) i) = con->resultSetIds[i];
     }
+    UNPROTECT(1);
     return output;
 }
 
@@ -1100,28 +1077,20 @@ RS_DBI_resultSetInfo(Res_Handle * rsHandle)
 
     result = RS_DBI_getResultSet(rsHandle);
     if (result->fields) {
-        flds = RS_DBI_copyfields(result->fields);
+        PROTECT(flds = RS_DBI_copyfields(result->fields));
     }
     else {
-        flds = S_NULL_ENTRY;
+        PROTECT(flds = S_NULL_ENTRY);
     }
 
-    output = RS_DBI_createNamedList(rsDesc, rsType, rsLen, n);
-#ifndef USING_R
-    if (IS_LIST(output)) {
-        output = AS_LIST(output);
-    }
-    else {
-        RS_DBI_errorMessage("internal error in RS_DBI_resultSetInfo: could not alloc named list", RS_DBI_ERROR);
-    }
-#endif
+    PROTECT(output = RS_DBI_createNamedList(rsDesc, rsType, rsLen, n));
     SET_LST_CHR_EL(output, 0, 0, C_S_CPY(result->statement));
     LST_INT_EL(output, 1, 0) = result->isSelect;
     LST_INT_EL(output, 2, 0) = result->rowsAffected;
     LST_INT_EL(output, 3, 0) = result->rowCount;
     LST_INT_EL(output, 4, 0) = result->completed;
     SET_ELEMENT(LST_EL(output, 5), (Sint) 0, flds);
-
+    UNPROTECT(2);
     return output;
 }
 
@@ -1259,16 +1228,6 @@ RS_na_set(void *ptr, Stype type)
         d = (double *) ptr;
         *d = NA_REAL;
         break;
-#if 0
-/* this is apparently wrong code and currently NA_SET with STRING_TYPE is not used in the code*/
-    case STRING_TYPE:
-        {
-          char *c;
-          c = (char *) ptr;
-          c = (char *) CHR_EL(NA_STRING, 0);      /*NOTE: modified the RHS by adding cating to (char*) */
-          break;
-        }
-#endif
     }
 }
 int

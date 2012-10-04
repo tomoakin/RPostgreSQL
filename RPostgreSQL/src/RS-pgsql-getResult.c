@@ -78,13 +78,14 @@ RS_PostgreSQL_getResult(Con_Handle * conHandle)
     }
 
     /* we now create the wrapper and copy values */
-    rsHandle = RS_DBI_allocResultSet(conHandle);
+    PROTECT(rsHandle = RS_DBI_allocResultSet(conHandle));
     result = RS_DBI_getResultSet(rsHandle);
     result->drvResultSet = (void *) my_result;
     result->rowCount = (Sint) 0;
     result->isSelect = 0;
     result->rowsAffected = 0;
     result->completed = 1;
+    UNPROTECT(1);
     return rsHandle;
 }
 
