@@ -6,14 +6,12 @@ Things yet to be completed:
 
 2. Add commands for prepared statements.
 
-3. Try to suppress automatic clone connection.
+3. More explicit encoding support.
 
-4. More explicit encoding support.
-
-5. 'Scale' is not calculated in dbGetInfo(result_set)
+4. 'Scale' is not calculated in dbGetInfo(result_set)
    Try to write an SQL query to get the value or hardcode
    the appropriate details in the code.For more details
    refer to : "RS_PostgreSQL_createDataMappings".
 
-6. Check the working of DBI extension "dbApply".
+5. Check the working of DBI extension "dbApply".
 
