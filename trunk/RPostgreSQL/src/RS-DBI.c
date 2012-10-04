@@ -755,12 +755,10 @@ RS_DBI_SclassNames(s_object * type)
     int i;
     const char *s;
 
-    if (type == S_NULL_ENTRY) {
-        RS_DBI_errorMessage("internal error in RS_DBI_SclassNames: input S types must be nonNULL", RS_DBI_ERROR);
-    }
+    PROTECT(type = AS_INTEGER(type));
     n = LENGTH(type);
     typeCodes = INTEGER_DATA(type);
-    MEM_PROTECT(typeNames = NEW_CHARACTER(n));
+    PROTECT(typeNames = NEW_CHARACTER(n));
     for (i = 0; i < n; i++) {
         s = RS_DBI_getTypeName(typeCodes[i], RS_dataTypeTable);
         if (!s) {
@@ -768,7 +766,7 @@ RS_DBI_SclassNames(s_object * type)
         }
         SET_CHR_EL(typeNames, i, C_S_CPY(s));
     }
-    MEM_UNPROTECT(1);
+    UNPROTECT(2);
     return typeNames;
 }
 
@@ -1147,15 +1145,7 @@ RS_DBI_getFieldDescriptions(RS_DBI_fields * flds)
     for (j = 0; j < n; j++) {
         lengths[j] = (Sint) num_fields;
     }
-    S_fields = RS_DBI_createNamedList(desc, types, lengths, n);
-#ifndef USING_R
-    if (IS_LIST(S_fields)) {
-        S_fields = AS_LIST(S_fields);
-    }
-    else {
-        RS_DBI_errorMessage("internal error in RS_DBI_getFieldDescription: could not alloc named list", RS_DBI_ERROR);
-    }
-#endif
+    PROTECT(S_fields = RS_DBI_createNamedList(desc, types, lengths, n));
     /* copy contentes from flds into an R/S list */
     for (i = 0; i < (Sint) num_fields; i++) {
         SET_LST_CHR_EL(S_fields, 0, i, C_S_CPY(flds->name[i]));
@@ -1166,7 +1156,7 @@ RS_DBI_getFieldDescriptions(RS_DBI_fields * flds)
         LST_INT_EL(S_fields, 5, i) = (Sint) flds->scale[i];
         LST_INT_EL(S_fields, 6, i) = (Sint) flds->nullOk[i];
     }
-
+    UNPROTECT(1);
     return (S_fields);
 }
 
