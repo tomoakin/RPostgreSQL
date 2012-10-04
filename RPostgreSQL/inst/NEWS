@@ -1,3 +1,9 @@
+Version 0.3-3 -- 2012-10-
+
+    o   Do not implicitly make new connections, which interfere with transaction.
+
+    o   Change the notation of the LICENSE
+
 Version 0.3-2 -- 2012-01-10
 
     o   Adapt to the new windows toolchain.
