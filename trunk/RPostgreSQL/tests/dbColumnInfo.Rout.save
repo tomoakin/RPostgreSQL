@@ -1,8 +1,8 @@
 
-R version 2.13.1 (2011-07-08)
-Copyright (C) 2011 The R Foundation for Statistical Computing
+R version 2.15.1 (2012-06-22) -- "Roasted Marshmallows"
+Copyright (C) 2012 The R Foundation for Statistical Computing
 ISBN 3-900051-07-0
-Platform: x86_64-pc-linux-gnu (64-bit)
+Platform: x86_64-unknown-linux-gnu (64-bit)
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
 You are welcome to redistribute it under certain conditions.
@@ -51,6 +51,8 @@ Type 'q()' to quit R.
 +     res <- dbGetQuery(con, "INSERT INTO aa VALUES(3, 2, NULL)" )
 +     res <- dbSendQuery(con, "select pk, v1, v2, v1+v2 from aa")
 +     cat("dbColumnInfo\n")
++     gctorture()
++     print(dbColumnInfo(res))
 +     print(dbColumnInfo(res))
 +     cat("SELECT result\n")
 +     df <- fetch(res, n=-1)
@@ -63,3 +65,6 @@ Type 'q()' to quit R.
 +     dbDisconnect(con)
 + }
 > 
+> proc.time()
+   user  system elapsed 
+  0.127   0.016   0.132 
