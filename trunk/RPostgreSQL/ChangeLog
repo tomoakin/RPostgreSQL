@@ -1,4 +1,4 @@
-2012-10-04  Tomoaki NISHIYAMA  <tomoakin@staff.asrc.kanazawa-u.ac.jp>
+2012-10-04  Tomoaki NISHIYAMA  <tomoakin@staff.kanazawa-u.ac.jp>
 
 	Bug fix for GC related errro as reported as issue 42.
 
@@ -6,7 +6,39 @@
 	* src/RS-PostgreSQL.c 
 	* tests/dbColumnInfo.R
 
-2012-01-10  Tomoaki NISHIYAMA  <tomoakin@staff.asrc.kanazawa-u.ac.jp>
+2012-09-18  Tomoaki NISHIYAMA  <tomoakin@staff.kanazawa-u.ac.jp>
+
+	Keep consistency of const modifier to const char*
+
+	* src/RS-DBI.c
+
+2012-09-18  Tomoaki NISHIYAMA  <tomoakin@staff.kanazawa-u.ac.jp>
+
+	Suppress message when $R_OS_TYPE is unset
+
+	* configure
+	* configure.in
+
+	
+2012-04-06  Tomoaki NISHIYAMA  <tomoakin@staff.kanazawa-u.ac.jp>
+
+	For issue 39: use a single equal sign (=) in test string comparison
+
+	* configure
+	* configure.in
+
+2012-03-28  Tomoaki NISHIYAMA  <tomoakin@staff.kanazawa-u.ac.jp>
+
+	Avoid connection cloning.
+	Ensure that BEGIN transaction is meaningfull
+
+	* R/PostgreSQLSupport.R
+	* tests/openSendQuery.R
+	* tests/dbTransactionTests.R
+	* tests/openSendQuery.R	
+	* man/dbCommit-methods.Rd
+
+2012-02-27  Tomoaki NISHIYAMA  <tomoakin@staff.kanazawa-u.ac.jp>
 
 	Suppress dbColumnInfo Segmentation fault. RS_DBI_getTypeName() 
 	return "UNKNOWN" instead of NULL pointer.
@@ -15,7 +47,7 @@
 	* src/RS-DBI.c
 	* tests/unknowntypes.R
 
-2012-01-10  Tomoaki NISHIYAMA  <tomoakin@kenroku.asrc.kanazawa-u.ac.jp>
+2012-01-10  Tomoaki NISHIYAMA  <tomoakin@kenroku.kanazawa-u.ac.jp>
 
 	Windows support for r-devel.
 	Make libpq.a with ar directly from $(OBJ) not via dll.
@@ -29,7 +61,7 @@
 	* src/libpq/Makefile.win
 	* src/libpq/Makefile.shlib
 
-2011-12-31  Tomoaki NISHIYAMA  <tomoakin@kenroku.asrc.kanazawa-u.ac.jp>
+2011-12-31  Tomoaki NISHIYAMA  <tomoakin@kenroku.kanazawa-u.ac.jp>
 
 	Move conditionals from Makevars.in to configure.in and
 	configure so that the GNU extension is not used.
@@ -40,7 +72,7 @@
 	* configure.in
 	* src/Makevars.in
 
-2011-12-29  Tomoaki NISHIYAMA  <tomoakin@kenroku.asrc.kanazawa-u.ac.jp>
+2011-12-29  Tomoaki NISHIYAMA  <tomoakin@kenroku.kanazawa-u.ac.jp>
 
 	Prepare for release. As the last update makes many incompatibilities,
 	the version number is large update.
@@ -53,7 +85,7 @@
 	* inst/NEWS
 	* man/dbCommit-methods.Rd 
 
-2011-12-03  Tomoaki NISHIYAMA  <tomoakin@kenroku.asrc.kanazawa-u.ac.jp>
+2011-12-03  Tomoaki NISHIYAMA  <tomoakin@kenroku.kanazawa-u.ac.jp>
 
 	Remove exported names that are not defined in DBI and may conflict other packages.
 	Remove safe.write, which is not used anymore.
@@ -75,13 +107,13 @@
 	* man/isPostgresqlIdCurrent.Rd	
 	* man/postgresqlSupport.Rd
 
-2011-12-02  Tomoaki NISHIYAMA  <tomoakin@kenroku.asrc.kanazawa-u.ac.jp>
+2011-12-02  Tomoaki NISHIYAMA  <tomoakin@kenroku.kanazawa-u.ac.jp>
 
 	Add clean: target to clean the libpq subdir on darwin
 	
 	* src/Makevars.in
 
-2011-11-24  Tomoaki NISHIYAMA  <tomoakin@kenroku.asrc.kanazawa-u.ac.jp>
+2011-11-24  Tomoaki NISHIYAMA  <tomoakin@kenroku.kanazawa-u.ac.jp>
 
 	Use internal libpq for Mac OS X without PostgreSQL installation
 
@@ -94,7 +126,7 @@
 	* src/libpq/netdb.h
 	* src/libpq/pwd.h	
 
-2011-11-22  Tomoaki NISHIYAMA  <tomoakin@kenroku.asrc.kanazawa-u.ac.jp>
+2011-11-22  Tomoaki NISHIYAMA  <tomoakin@kenroku.kanazawa-u.ac.jp>
 
 	Restructuring libpq directory so that the dynamic library for 
 	Mac OS X / darwin can be made with make -f Makefile.darwin in that
@@ -109,7 +141,7 @@
 	* src/libpq/getaddrinfo.c: MinGW-w64 compatibility
 	* src/libpq/pg_config_os.h.win: MinGW-w64 compatibility
 
-2011-11-16  Tomoaki NISHIYAMA  <tomoakin@kenroku.asrc.kanazawa-u.ac.jp>
+2011-11-16  Tomoaki NISHIYAMA  <tomoakin@kenroku.kanazawa-u.ac.jp>
 
 	add LICENSE file
 
@@ -117,14 +149,14 @@
 	* inst/NEWS: Change the release date.
 	* LICENSE
 
-2011-11-15  Tomoaki NISHIYAMA  <tomoakin@kenroku.asrc.kanazawa-u.ac.jp>
+2011-11-15  Tomoaki NISHIYAMA  <tomoakin@kenroku.kanazawa-u.ac.jp>
 
 	Edit DESCRIPTION for LICENSE format, Copyright notice, and
 	requirements for installation.
 
 	* DESCRIPTION
 
-2011-11-14  Tomoaki NISHIYAMA  <tomoakin@kenroku.asrc.kanazawa-u.ac.jp>
+2011-11-14  Tomoaki NISHIYAMA  <tomoakin@kenroku.kanazawa-u.ac.jp>
 
 	Remove make 3.80 dependency, so that the library can be compiled with
 	Rtools214 without newer MinGW/MSYS installation. 
@@ -135,7 +167,7 @@
 	* src/libpq/Makefile.global.win64: remove recursion support
 	* src/libpq/Makefile.shlib: remove '| $(SHLIB_PREREQS)'
 
-2011-11-12  Tomoaki NISHIYAMA  <tomoakin@kenroku.asrc.kanazawa-u.ac.jp>
+2011-11-12  Tomoaki NISHIYAMA  <tomoakin@kenroku.kanazawa-u.ac.jp>
 
 	Bundle libpq source for compilation on windows.
 
@@ -150,7 +182,7 @@
 	* src/install.libs.R: derived from R-2.14.0/src/library/tools/R
 		copy libpq/libpq.dll to the destination same as RPostgreSQL.dll.  
 
-2011-10-03  Tomoaki NISHIYAMA  <tomoakin@kenroku.asrc.kanazawa-u.ac.jp>
+2011-10-03  Tomoaki NISHIYAMA  <tomoakin@kenroku.kanazawa-u.ac.jp>
 
 	Use try() not to abort on error to write spacial/kanji characters.
 	For control characters use print again, but not for kanji special
@@ -160,7 +192,7 @@
 	* DESCRIPTION: Change maintainer name & address
 	* tests/dbWriteTabletypes.R: use try()
 	
-2011-10-02  Tomoaki NISHIYAMA  <tomoakin@kenroku.asrc.kanazawa-u.ac.jp>
+2011-10-02  Tomoaki NISHIYAMA  <tomoakin@kenroku.kanazawa-u.ac.jp>
 
 	Avoid using raw UTF-8 string and conversion by print() for the test.
 
@@ -172,7 +204,7 @@
 	Added $Id$ to all .R .c .h files and removed $Date$ from them.
 	Removed declared-but-unused variables.
 
-2011-09-26  Tomoaki NISHIYAMA  <tomoakin@kenroku.asrc.kanazawa-u.ac.jp>
+2011-09-26  Tomoaki NISHIYAMA  <tomoakin@kenroku.kanazawa-u.ac.jp>
 
 	Raise the version number to 0.2-0
 
@@ -185,7 +217,7 @@
 	* tests/*Rout.save: Updated six reference output files to match
 	current output, differences mostly in whitespace or formatting
 
-2011-09-25  Tomoaki NISHIYAMA  <tomoakin@kenroku.asrc.kanazawa-u.ac.jp>
+2011-09-25  Tomoaki NISHIYAMA  <tomoakin@kenroku.kanazawa-u.ac.jp>
 
 	Type conversion: integer is mapped to integer in postgresql;
 
@@ -193,7 +225,7 @@
 	* tests/dbWriteTabletypes.R: testcode that R integer stored to
 	PostgreSQL gets back as integer in R.
 
-2011-09-25  Tomoaki NISHIYAMA  <tomoakin@kenroku.asrc.kanazawa-u.ac.jp>
+2011-09-25  Tomoaki NISHIYAMA  <tomoakin@kenroku.kanazawa-u.ac.jp>
 
 	dbListFields see only the current_schema unless the schema is
 	specified
@@ -201,7 +233,7 @@
 	* R/PostgreSQL.R: dbListFields are changed as above
 	* tests/dbListFields.R: testcase
 
-2011-09-24  Tomoaki NISHIYAMA  <tomoakin@kenroku.asrc.kanazawa-u.ac.jp>
+2011-09-24  Tomoaki NISHIYAMA  <tomoakin@kenroku.kanazawa-u.ac.jp>
 
 	Remove warning on enum, array, macaddr and inet; they are just kept as
 	string, though.
@@ -209,7 +241,7 @@
 	* src/RS-PostgreSQL.c: code change
 	* man/dbSendQuery-methods.Rd: mannual
 
-2011-08-26  Tomoaki NISHIYAMA  <tomoakin@kenroku.asrc.kanazawa-u.ac.jp>
+2011-08-26  Tomoaki NISHIYAMA  <tomoakin@kenroku.kanazawa-u.ac.jp>
 
 	dbWriteTable does escape strings, without a temporary file
 
@@ -226,7 +258,7 @@
 
 	* DESCRIPTION
 
-2011-03-07  Tomoaki NISHIYAMA  <tomoakin@kenroku.asrc.kanazawa-u.ac.jp>
+2011-03-07  Tomoaki NISHIYAMA  <tomoakin@kenroku.kanazawa-u.ac.jp>
 
 	dbSendQuery when the return value is not to be used.
 	Use dbGetQeury instead.
@@ -237,7 +269,7 @@
 	* tests/dbColumnInfo.R
 	* tests/dbtemptable.R
 
-2011-03-07  Tomoaki NISHIYAMA  <tomoakin@kenroku.asrc.kanazawa-u.ac.jp>
+2011-03-07  Tomoaki NISHIYAMA  <tomoakin@kenroku.kanazawa-u.ac.jp>
 
 	Support for writing Date and POSIXct class as date and timestamp with
 	time zone
@@ -251,13 +283,13 @@
 	* man/postgresqlSupport.Rd: explict that one or more identifiers
 	can be passed to postgresqlQuoteId
 
-2011-03-06  Tomoaki NISHIYAMA  <tomoakin@kenroku.asrc.kanazawa-u.ac.jp>
+2011-03-06  Tomoaki NISHIYAMA  <tomoakin@kenroku.kanazawa-u.ac.jp>
 
 	More handling schema.
 
 	* R/PostgreSQL.R: dbRemoveTable handle c("schema", "table").
 
-2011-03-05  Tomoaki NISHIYAMA  <tomoakin@kenroku.asrc.kanazawa-u.ac.jp>
+2011-03-05  Tomoaki NISHIYAMA  <tomoakin@kenroku.kanazawa-u.ac.jp>
 
 	Handling of schema:
 	postgresqlTableRef generates "schema"."table"
@@ -272,7 +304,7 @@
 	* tests/dbWriteTableSchema.R: tests dbWritetable to c("public",
 	"rockdata")
 
-2010-11-13  Tomoaki NISHIYAMA  <tomoakin@kenroku.asrc.kanazawa-u.ac.jp>
+2010-11-13  Tomoaki NISHIYAMA  <tomoakin@kenroku.kanazawa-u.ac.jp>
 
 	Consistency of tablename argument of dbExistsTable and dbWriteTable.
 
@@ -280,7 +312,7 @@
 	name.
 	* tests/dbExistsqc.R: test code
 
-2010-11-02  Tomoaki NISHIYAMA  <tomoakin@kenroku.asrc.kanazawa-u.ac.jp>
+2010-11-02  Tomoaki NISHIYAMA  <tomoakin@kenroku.kanazawa-u.ac.jp>
 
 	Get results after CopyIn so that error is raised when
 	incompatible table exists for dbWriteTable(append=TRUE)
@@ -297,7 +329,7 @@
 
 	* DESCRIPTION: Release 0.1-7
 
-2010-10-14  Tomoaki NISHIYAMA  <tomoakin@kenroku.asrc.kanazawa-u.ac.jp>
+2010-10-14  Tomoaki NISHIYAMA  <tomoakin@kenroku.kanazawa-u.ac.jp>
 
 	* src/RS-PostgreSQL.c: nullOk column in dbColumnInfo to have NA
 	unless the backend has clear statement
@@ -306,7 +338,7 @@
 
 	* src/RS-PostgreSQL.c: Correct segfault from issue ticket #24
 
-2010-10-13  Tomoaki NISHIYAMA  <tomoakin@kenroku.asrc.kanazawa-u.ac.jp>
+2010-10-13  Tomoaki NISHIYAMA  <tomoakin@kenroku.kanazawa-u.ac.jp>
 
 	postgresqlEscapeStrings and postgresqlQuoteId to escape and quote
 	strings and identifiers.  This is used in dbWriteTable, dbExitsTable,
@@ -331,7 +363,7 @@
 
 	* ChangeLog: Moved from inst/ChangeLog; now C-x 4 a inserts filenames
 
-2010-10-05  Tomoaki NISHIYAMA  <tomoakin@kenroku.asrc.kanazawa-u.ac.jp>
+2010-10-05  Tomoaki NISHIYAMA  <tomoakin@kenroku.kanazawa-u.ac.jp>
 
 	dbWriteTable copies tha data via the network connection
 
