@@ -1,4 +1,6 @@
-Version 0.3-3 -- 2012-10-
+Version 0.3-3 -- 2012-10-05
+
+    o   Bugfix on dbColumnInfo and others reproducible by gctorture(TRUE)
 
     o   Do not implicitly make new connections, which interfere with transaction.
 
