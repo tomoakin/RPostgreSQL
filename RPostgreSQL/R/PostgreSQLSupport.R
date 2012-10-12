@@ -422,7 +422,7 @@ postgresqlFetch <- function(res, n=0, ...) {
             ## TODO: Details about time zone has been dropped.
             ## Will try do improve it in the future
             #rel[,i] <- as.POSIXct(rel[,i],"%Y-%m-%d %H:%M:%S")  # second arg. is tz, so this was wrong
-            rel[,i] <- as.POSIXct(rel[,i])
+            rel[,i] <- as.POSIXct(sub('([+-]..)$', '\\100', sub(':(..)$','\\1' ,rel[,i])), format="%Y-%m-%d %H:%M:%OS%z")
         }
     }
 
