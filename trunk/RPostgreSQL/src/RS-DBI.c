@@ -45,7 +45,7 @@ RS_DBI_allocManager(const char *drvName, Sint max_con, Sint fetch_default_rec, S
     Sint mgr_id = (Sint) getpid();
     int i;
 
-    mgrHandle = RS_DBI_asMgrHandle(mgr_id);
+    PROTECT(mgrHandle = RS_DBI_asMgrHandle(mgr_id));
 
     if (!dbManager) {           /* alloc for the first time */
         counter = 0;            /* connections handled so far */
@@ -54,6 +54,7 @@ RS_DBI_allocManager(const char *drvName, Sint max_con, Sint fetch_default_rec, S
     else {                      /* we're re-entering */
         if (dbManager->connections) {   /* and mgr is valid */
             if (!force_realloc) {
+                UNPROTECT(1);
                 return mgrHandle;
             }
             else {
@@ -93,7 +94,7 @@ RS_DBI_allocManager(const char *drvName, Sint max_con, Sint fetch_default_rec, S
     }
 
     dbManager = mgr;
-
+    UNPROTECT(1);
     return mgrHandle;
 }
 

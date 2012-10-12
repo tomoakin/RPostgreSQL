@@ -443,7 +443,7 @@ RS_PostgreSQL_createDataMappings(Res_Handle * rsHandle)
     con = RS_DBI_getConnection(rsHandle);
     num_fields = PQnfields(my_result);
 
-    flds = RS_DBI_allocFields(num_fields);
+    PROTECT(flds = RS_DBI_allocFields(num_fields));
 
     char buff[1000];            /* Buffer to hold the sql query to check whether the given column is nullable */
     PGconn *conn;
@@ -576,6 +576,7 @@ RS_PostgreSQL_createDataMappings(Res_Handle * rsHandle)
             break;
         }
     }
+    UNPROTECT(1);
     return flds;
 }
 
@@ -587,13 +588,8 @@ RS_PostgreSQL_fetch(s_object * rsHandle, s_object * max_rec)
     RS_DBI_fields *flds;
     PGresult *my_result;
     s_object *output, *s_tmp;
-#ifndef USING_R
-    s_object *raw_obj, *raw_container;
-#endif
-    /* unsigned long  *lens;  */
     int i, j, null_item, expand;
     Sint completed;
-    /* Sint * fld_nullOk set but not used */
     Stype *fld_Sclass;
     Sint num_rec;
     int num_fields;
@@ -620,8 +616,6 @@ RS_PostgreSQL_fetch(s_object * rsHandle, s_object * max_rec)
     MEM_PROTECT(output = NEW_LIST((Sint) num_fields));
     RS_DBI_allocOutput(output, flds, num_rec, 0);
     fld_Sclass = flds->Sclass;
-/*    fld_nullOk = flds->nullOk; set but not used */
-
     /* actual fetching.... */
     my_result = (PGresult *) result->drvResultSet;
 
@@ -700,11 +694,7 @@ RS_PostgreSQL_fetch(s_object * rsHandle, s_object * max_rec)
 
             case CHARACTER_TYPE:
                 if (null_item) {
-#ifdef USING_R
                     SET_LST_CHR_EL(output, j, i, NA_STRING);
-#else
-                    NA_CHR_SET(LST_CHR_EL(output, j, i));
-#endif
                 }
                 else {
                     SET_LST_CHR_EL(output, j, i, C_S_CPY(PQgetvalue(my_result, k, j)));
@@ -720,31 +710,9 @@ RS_PostgreSQL_fetch(s_object * rsHandle, s_object * max_rec)
                 }
                 break;
 
-#ifndef USING_R
-            case SINGLE_TYPE:
-                if (null_item) {
-                    NA_SET(&(LST_FLT_EL(output, j, i)), SINGLE_TYPE);
-                }
-                else {
-                    LST_FLT_EL(output, j, i) = (float) atof(PQgetvalue(my_result, k, j));
-                }
-                break;
-
-            case RAW_TYPE:     /* these are blob's */
-                raw_obj = NEW_RAW((Sint) PQgetlength(my_result, k, j));
-                memcpy(RAW_DATA(raw_obj), PQgetvalue(my_result, k, j), PQgetlength(my_result, k, j));
-                raw_container = LST_EL(output, j);
-                SET_ELEMENT(raw_container, (Sint) i, raw_obj);
-                SET_ELEMENT(output, (Sint) j, raw_container);
-                break;
-#endif
             default:
                 if (null_item) {
-#ifdef USING_R
                     SET_LST_CHR_EL(output, j, i, NA_STRING);
-#else
-                    NA_CHR_SET(LST_CHR_EL(output, j, i));
-#endif
                 }
                 else {
                     char warn[64];
