@@ -19,7 +19,6 @@
 	* configure
 	* configure.in
 
-	
 2012-04-06  Tomoaki NISHIYAMA  <tomoakin@staff.kanazawa-u.ac.jp>
 
 	For issue 39: use a single equal sign (=) in test string comparison

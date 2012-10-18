@@ -79,6 +79,9 @@ if ((Sys.getenv("POSTGRES_USER") != "") &
     cat('testing Australlia/South')
     dbTypeTests(con, "timestamp", tz="Australia/South")
     dbTypeTests(con, "timestamp with time zone", tz="Australia/South")
+    cat('testing America/New_York')
+    dbTypeTests(con, "timestamp", tz="America/New_York")
+    dbTypeTests(con, "timestamp with time zone", tz="America/New_York")
 
     dbDisconnect(con)
 }

@@ -36,6 +36,8 @@
  }
 \item{options}{Command-line options to be sent to the server
  }
+\item{forceISOdate}{logical if the communication of date (time stamp) from PostgreSQL is forced to ISO style at conection.} 
+ }
 }
 }
 \section{Side Effects}{
@@ -65,6 +67,10 @@ drv <- dbDriver("PostgreSQL")
 # open the connection using user, passsword, etc., as
 con <- dbConnect(drv, dbname = "postgres")
 
+df <- dbGetQuery(con, statement = paste(
+                      "SELECT itemCode, itemCost, itemProfit",
+                      "FROM sales",
+                      "SORT BY itemName"));
 # Run an SQL statement by creating first a resultSet object
 rs <- dbSendQuery(con, statement = paste(
                       "SELECT itemCode, itemCost, itemProfit",

@@ -41,6 +41,7 @@ if ((Sys.getenv("POSTGRES_USER") != "") &
     stopifnot(require(RPostgreSQL))
 
     ## Force a timezone to make the tests comparable at different locations
+    Sys.setenv("PGDATESTYLE"="German")
     Sys.setenv("TZ"="UTC")
 
     ## load the PostgresSQL driver
