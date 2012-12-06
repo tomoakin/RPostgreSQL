@@ -191,12 +191,16 @@ postgresqlTransactionStatement <- function(con, statement) {
 ## dbResult object if the SQL operation does not produce
 ## output, otherwise it produces a resultSet that can
 ## be used for fetching rows.
-postgresqlExecStatement <- function(con, statement) {
+postgresqlExecStatement <- function(con, statement, params, ...) {
     if(!isPostgresqlIdCurrent(con))
         stop(paste("expired", class(con)))
     conId <- as(con, "integer")
     statement <- as(statement, "character")
-    rsId <- .Call("RS_PostgreSQL_exec", conId, statement, PACKAGE = .PostgreSQLPkgName)
+    if(missing(params)){
+        rsId <- .Call("RS_PostgreSQL_exec", conId, statement, PACKAGE = .PostgreSQLPkgName)
+    }else{
+        rsId <- .External("RS_PostgreSQL_pqexecparams", conId, statement, as(params, "character"), ..., PACKAGE = .PostgreSQLPkgName)
+    }
     new("PostgreSQLResult", Id = rsId)
 }
 
@@ -214,6 +218,14 @@ postgresqlpqExec <- function(con, statement) {
     statement <- as(statement, "character")
     .Call("RS_PostgreSQL_pqexec", conId, statement, PACKAGE = .PostgreSQLPkgName)
 }
+postgresqlpqExecParams <- function(con, statement, ...) {
+    if(!isPostgresqlIdCurrent(con))
+        stop(paste("expired", class(con)))
+    conId <- as(con, "integer")
+    statement <- as(statement, "character")
+    .External("RS_PostgreSQL_pqexecparams", conId, statement, ..., PACKAGE = .PostgreSQLPkgName)
+}
+
 postgresqlCopyIn <- function(con, filename) {
     if(!isPostgresqlIdCurrent(con))
         stop(paste("expired", class(con)))
@@ -240,14 +252,14 @@ postgresqlgetResult <- function(con) {
 
 ## helper function: it exec's *and* retrieves a statement. It should
 ## be named somehting else.
-postgresqlQuickSQL <- function(con, statement) {
+postgresqlQuickSQL <- function(con, statement, ...) {
     if(!isPostgresqlIdCurrent(con))
         stop(paste("expired", class(con)))
     rsList <- dbListResults(con)
     if (length(rsList)>0){  # clear results
         dbClearResult(rsList[[1]])
     }
-    rs <- try(dbSendQuery(con, statement))
+    rs <- try(dbSendQuery(con, statement, ...))
     if (inherits(rs, ErrorClass)){
         warning("Could not create execute", statement)
         return(NULL)
