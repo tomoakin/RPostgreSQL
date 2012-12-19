@@ -867,54 +867,44 @@ RS_PostgreSQL_connectionInfo(Con_Handle * conHandle)
     RS_PostgreSQL_conParams *conParams;
     RS_DBI_connection *con;
     s_object *output;
-    Sint i, n = 7 /*8 */ , *res, nres;
-    char *conDesc[] = { "host", "user", "dbname",
+    Sint i, n = 8, *res, nres;
+    int sv, major, minor_revision, minor, revision_num;
+    char *conDesc[] = { "host", "port", "user", "dbname",
         "serverVersion", "protocolVersion",
         "backendPId", "rsId"
     };
     Stype conType[] = { CHARACTER_TYPE, CHARACTER_TYPE, CHARACTER_TYPE,
-        /* CHARACTER_TYPE, */ CHARACTER_TYPE, INTEGER_TYPE,
+        CHARACTER_TYPE, CHARACTER_TYPE, INTEGER_TYPE,
         INTEGER_TYPE, INTEGER_TYPE
     };
-    Sint conLen[] = { 1, 1, 1 /*, 1 */ , 1, 1, 1, 1 };
+    Sint conLen[] = { 1, 1, 1, 1, 1, 1, 1, -1 };
 
     con = RS_DBI_getConnection(conHandle);
-    conLen[6 /*7 */ ] = con->num_res;   /* num of open resultSets */
-    my_con = (PGconn *) con->drvConnection;
+    conLen[7] = con->num_res;   
     PROTECT(output = RS_DBI_createNamedList(conDesc, conType, conLen, n));
     conParams = (RS_PostgreSQL_conParams *) con->conParams;
 
     SET_LST_CHR_EL(output, 0, 0, C_S_CPY(conParams->host));
-    SET_LST_CHR_EL(output, 1, 0, C_S_CPY(conParams->user));
-    SET_LST_CHR_EL(output, 2, 0, C_S_CPY(conParams->dbname));
+    SET_LST_CHR_EL(output, 1, 0, C_S_CPY(conParams->port));
+    SET_LST_CHR_EL(output, 2, 0, C_S_CPY(conParams->user));
+    SET_LST_CHR_EL(output, 3, 0, C_S_CPY(conParams->dbname));
 
-    /* PQserverVersion: Returns an integer representing the backend version.
-     * Syntax: int PQserverVersion(const PGconn *conn);
-     */
-    /*Long int is taken because in some Operating sys int is 2 bytes which will not be enough for     * server version number
-     */
-    long int sv = PQserverVersion(my_con);
+    my_con = (PGconn *) con->drvConnection;
+    sv = PQserverVersion(my_con);
 
-    int major = (int) sv / 10000;
-    int minor = (int) (sv % 10000) / 100;
-    int revision_num = (int) (sv % 10000) % 100;
+    major = sv / 10000;
+    minor_revision = sv % 10000;
+    minor = minor_revision / 100;
+    revision_num = minor_revision % 100;
 
-    char buf1[50];
+    {
+        char buf1[50];
+        sprintf(buf1, "%d.%d.%d", major, minor, revision_num);
+        SET_LST_CHR_EL(output, 4, 0, C_S_CPY(buf1));
+    }
 
-    sprintf(buf1, "%d.%d.%d", major, minor, revision_num);
-
-    SET_LST_CHR_EL(output, 3, 0, C_S_CPY(buf1));
-
-    /* PQprotocolVersion: Interrogates the frontend/backend protocol being used.
-     * int PQprotocolVersion(const PGconn *conn);
-     */
-    LST_INT_EL(output, 4 /*5 */ , 0) = (Sint) PQprotocolVersion(my_con);
-
-    /* PQbackendPID: Returns the process ID (PID) of the backend server process handling     * this connection.
-     * Syntax: int PQbackendPID(const PGconn *conn);
-     */
-
-    LST_INT_EL(output, 5 /*6 */ , 0) = (Sint) PQbackendPID(my_con);
+    LST_INT_EL(output, 5, 0) = (Sint) PQprotocolVersion(my_con);
+    LST_INT_EL(output, 6, 0) = (Sint) PQbackendPID(my_con);
 
     res = (Sint *) S_alloc((long) con->length, (int) sizeof(Sint));
     nres = RS_DBI_listEntries(con->resultSetIds, con->length, res);
@@ -923,7 +913,7 @@ RS_PostgreSQL_connectionInfo(Con_Handle * conHandle)
     }
 
     for (i = 0; i < con->num_res; i++) {
-        LST_INT_EL(output, 6, i) = (Sint) res[i];
+        LST_INT_EL(output, 7, i) = (Sint) res[i];
     }
     UNPROTECT(1);
     return output;
