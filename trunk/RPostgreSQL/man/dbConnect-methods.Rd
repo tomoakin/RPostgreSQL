@@ -36,7 +36,7 @@
  }
 \item{options}{Command-line options to be sent to the server
  }
-\item{forceISOdate}{logical if the communication of date (time stamp) from PostgreSQL is forced to ISO style at conection.} 
+\item{forceISOdate}{logical if the communication of date (time stamp) from PostgreSQL is forced to ISO style at conection.
  }
 }
 }
