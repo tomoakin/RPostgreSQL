@@ -1,4 +1,8 @@
-Version 0.3-4 -- 2012
+Version 0.4 -- 2013-03-27
+
+    o   Initial implementation of prepared statement
+
+    o   Use system libpq library when available on OS X (darwin)
 
     o   Force ISO datestyle for PostgreSQL-R communication by default
 

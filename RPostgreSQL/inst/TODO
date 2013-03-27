@@ -5,6 +5,7 @@ Things yet to be completed:
    table for supporting complex data types are desired.
 
 2. Add commands for prepared statements.
+    This is partly done. But not thoroughly tested yet.
 
 3. More explicit encoding support.
 
