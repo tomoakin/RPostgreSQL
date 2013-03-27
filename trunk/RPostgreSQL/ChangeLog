@@ -1,8 +1,17 @@
 2013-03-27  Tomoaki NISHIYAMA  <tomoakin@staff.kanazawa-u.ac.jp>
 
+	Document synchronization and testoutputs.
+
+	* man/postgresqlSupport.Rd
+
+2013-03-27  Tomoaki NISHIYAMA  <tomoakin@staff.kanazawa-u.ac.jp>
+
 	Change notation of LICENSE in DESCRIPTION upon request from CRAN
 
 	* LICENSE
+	* inst/NEWS
+	* inst/ANNOUNCEMENTS
+	* inst/TODO
 
 2013-03-27  Tomoaki NISHIYAMA  <tomoakin@staff.kanazawa-u.ac.jp>
 
