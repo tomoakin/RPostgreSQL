@@ -2850,7 +2850,8 @@ case "${host_os}" in
     ;;
 esac
 
-# Check for non-standard programs: pg_configg(1) to configure PostgreSQL builds
+
+# Check for non-standard programs: pg_config(1) to configure PostgreSQL builds
 # Extract the first word of "pg_config", so it can be a program name with args.
 set dummy pg_config; ac_word=$2
 { $as_echo "$as_me:$LINENO: checking for $ac_word" >&5
@@ -2892,6 +2893,8 @@ fi
 
 
 
+# By default, we will not use the accompanied libpq
+ENABLE_LIBPQ=
 
 # If pg_config was found, let's use it
 if test "${PG_CONFIG}" != ""; then
@@ -2973,6 +2976,28 @@ $as_echo "$as_me: Checking lib ${dir}." >&6;}
 	    fi
 	done
     fi
+    if ! test $PG_LIBDIR
+    then
+        if test "$R_OS_TYPE" = "darwin" ; then
+# in case we cannot find any libpq library we will use the accompanied libpq
+# This content would be written into src/Makevars at the end of this script
+            ENABLE_LIBPQ='
+
+PKG_CPPFLAGS=-Ilibpq
+PKG_LIBS=libpq/libpq.a
+
+.PHONY: all
+all:  $(SHLIB)
+$(SHLIB): libpq/libpq.5.dylib
+
+libpq/libpq.5.dylib:
+	(cd libpq; $(MAKE) CC="$(CC)" CFLAGS="$(CFLAGS)" -f Makefile.darwin)
+
+clean:
+	(cd libpq; $(MAKE) -f Makefile.darwin clean)
+'
+        fi
+    fi
 fi
 
 # Expand into arguments
@@ -3006,25 +3031,6 @@ as_val=`eval 'as_val=${'$as_ac_File'}
 # Now substitute these two variable in src/Makevars.in to create src/Makevars
 
 
-
-ENABLE_LIBPQ=
-if test "$R_OS_TYPE" = "darwin" ; then
-ENABLE_LIBPQ='
-
-PKG_CPPFLAGS=-Ilibpq
-PKG_LIBS=libpq/libpq.a
-
-.PHONY: all
-all:  $(SHLIB)
-$(SHLIB): libpq/libpq.5.dylib
-
-libpq/libpq.5.dylib:
-	(cd libpq; $(MAKE) CC="$(CC)" CFLAGS="$(CFLAGS)" -f Makefile.darwin)
-
-clean:
-	(cd libpq; $(MAKE) -f Makefile.darwin clean)
-'
-fi
 
 
 ac_config_files="$ac_config_files src/Makevars"
