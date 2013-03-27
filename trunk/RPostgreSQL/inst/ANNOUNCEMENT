@@ -1,5 +1,5 @@
 
-       RPostgreSQL version 0.2-1
+       RPostgreSQL version 0.4
 
 We are pround to announce the availability of the RPostgreSQL package on CRAN
 and its mirrors.  This package provides an a DBI-compliant interface between
@@ -10,11 +10,7 @@ by Sameer Kumar Prayaga <sameer.bits@gmail.com>.
 
 Some highlights:
 
-  o  dbWriteTable directly writes to network without temporary file.
-
-  o  Initial support for schema.
-
-  o  Building on Windows possible.
+  o  Initial support for prepared statement.
 
 Known bugs/deficiencies:
 
