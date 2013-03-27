@@ -48,16 +48,16 @@
    postgresqlCloseDriver(drv, ...)
 
    ## PostgreSQLConnection-related
-   postgresqlNewConnection(drv,user,password,host,dbname,port,tty,options)
+   postgresqlNewConnection(drv, user, password, host, dbname, port, tty, options, forceISOdate = TRUE)
    postgresqlCloneConnection(con, ...)
    postgresqlConnectionInfo(obj, what, ...)
    postgresqlDescribeConnection(obj, verbose = FALSE, ...)
    postgresqlCloseConnection(con, ...)
 
    ## PostgreSQLResult-related
-   postgresqlExecStatement(con, statement)
+   postgresqlExecStatement(con, statement, params, ...)
    postgresqlFetch(res, n=0, ...)
-   postgresqlQuickSQL(con, statement)
+   postgresqlQuickSQL(con, statement, ...)
    postgresqlResultInfo(obj, what, ...)
    postgresqlDescribeResult(obj, verbose = FALSE, ...)
    postgresqlCloseResult(res, ...)
@@ -144,12 +144,20 @@ Ignored (formerly, this specified where to send server debug output)
 \item{options}{
 Command-line options to be sent to the server
 }
+\item{forceISOdate}{
+   logical indicating whether "set datestyle to ISO"
+   is issued upon connection. Although this is made as an option, the
+   conversion needs to be ISO style for proper conversion of the date datatype.
+}
 \item{force}{
    logical indicating whether to close a connection that has open
    result sets.  The default is \code{FALSE}.
 }
 \item{statement}{
    character string holding one (and only one) SQL statement.
+}
+\item{params}{
+   actual values that is written as parameters in the statement.
 }
 \item{n}{
    number of rows to fetch from the given result set. A value of -1
