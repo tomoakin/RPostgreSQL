@@ -237,12 +237,6 @@ RS_PostgreSQL_newConnection(Mgr_Handle * mgrHandle, s_object * con_params)
 
     my_connection = PQsetdbLogin(host, port, options, tty, dbname, user, password);
 
-    if (PQstatus(my_connection) != CONNECTION_OK) {
-        char buf[1000];
-	sprintf(buf, "could not connect %s@%s on dbname \"%s\"\n", PQuser(my_connection), host?host:"local", PQdb(my_connection));
-        RS_DBI_errorMessage(buf, RS_DBI_ERROR);
-    }
-
     conParams = RS_postgresql_allocConParams();
 
     /* save actual connection parameters */
@@ -261,16 +255,27 @@ RS_PostgreSQL_newConnection(Mgr_Handle * mgrHandle, s_object * con_params)
     conParams->tty = RS_DBI_copyString(PQtty(my_connection));
     conParams->options = RS_DBI_copyString(PQoptions(my_connection));
 
+    if (PQstatus(my_connection) != CONNECTION_OK) {
+        char buf[1000];
+	sprintf(buf, "could not connect %s@%s on dbname \"%s\"\n", PQuser(my_connection), host?host:"local", PQdb(my_connection));
+        PQfinish(my_connection);
+        my_connection = NULL;
+        RS_DBI_errorMessage(buf, RS_DBI_ERROR);
+    }
+
     PROTECT(conHandle = RS_DBI_allocConnection(mgrHandle, (Sint) 1)); /* The second argument (1) specifies the number of result sets allocated */
     con = RS_DBI_getConnection(conHandle);
-    if (!con) {
+    if (my_connection && !con) {
         PQfinish(my_connection);
+        my_connection = NULL;
         RS_PostgreSQL_freeConParams(conParams);
         conParams = (RS_PostgreSQL_conParams *) NULL;
         RS_DBI_errorMessage("could not alloc space for connection object", RS_DBI_ERROR);
     }
-    con->drvConnection = (void *) my_connection;
-    con->conParams = (void *) conParams;
+    if(con){
+        con->drvConnection = (void *) my_connection;
+        con->conParams = (void *) conParams;
+    }
     UNPROTECT(1);
     return conHandle;
 }
