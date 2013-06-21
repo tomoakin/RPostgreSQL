@@ -32,12 +32,17 @@ if (Sys.getenv("POSTGRES_USER") != "" & Sys.getenv("POSTGRES_HOST") != "" & Sys.
         dbRemoveTable(con, "rockdata")
     }
 
-    dbWriteTable(con, "rockdata", rock)
+    dbWriteTable(con, "rockdata", rock[1:5,])
 
     ## run a simple query and show the query result
     res <- dbGetQuery(con, "select * from rockdata limit 10")
     print(res)
 
+    dbWriteTable(con, "rockdata", rock[6:15,], append=T)
+
+    ## run a simple query and show the query result
+    res <- dbGetQuery(con, "select * from rockdata limit 10")
+    print(res)
 
     ## cleanup
     if (dbExistsTable(con, "rockdata")) {
