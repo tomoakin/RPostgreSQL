@@ -588,11 +588,6 @@ postgresqlImportFile <- function(con, name, value, field.types = NULL, overwrite
 ## it with the values of the data.frame "value"
 ## TODO: This function should execute its sql as a single transaction,
 ##       and allow converter functions.
-## TODO: In the unlikely event that value has a field called "row_names"
-##       we could inadvertently overwrite it (here the user should set
-##       row.names=F)  I'm (very) reluctantly adding the code re: row.names,
-##       because I'm not 100% comfortable using data.frames as the basic
-##       data for relations.
 postgresqlWriteTable <- function(con, name, value, field.types, row.names = TRUE,
                                  overwrite = FALSE, append = FALSE, ..., allow.keywords = FALSE) {
     if(overwrite && append)
@@ -649,7 +644,7 @@ postgresqlWriteTable <- function(con, name, value, field.types, row.names = TRUE
     })
     oldenc <- dbGetQuery(new.con, "SHOW client_encoding")
     postgresqlpqExec(new.con, "SET CLIENT_ENCODING TO 'UTF8'")
-    sql4 <- paste("COPY", postgresqlTableRef(name), "FROM STDIN")
+    sql4 <- paste("COPY", postgresqlTableRef(name),"(",paste(postgresqlQuoteId(names(value)),collapse=","),") FROM STDIN")
     postgresqlpqExec(new.con, sql4)
     postgresqlCopyInDataframe(new.con, value)
     rs<-postgresqlgetResult(new.con)
