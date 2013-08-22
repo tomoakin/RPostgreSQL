@@ -1,3 +1,13 @@
+2013-08-22  Tomoaki NISHIYAMA  <tomoakin@staff.kanazawa-u.ac.jp>
+
+	Memory leak detected by valgrind.
+
+	* src/RS-PostgreSQL.c
+	* src/RS-pgsql-copy.c
+	* src/RS-pgsql-getResult.c
+	* src/RS-pgsql-pqexec.c
+	* src/RS-pgsql-pqexecparams.c
+
 2013-03-27  Tomoaki NISHIYAMA  <tomoakin@staff.kanazawa-u.ac.jp>
 
 	Document synchronization and testoutputs.

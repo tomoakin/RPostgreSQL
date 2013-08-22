@@ -42,7 +42,10 @@ for f in RPostgreSQL/tests/*.R
 do
     echo ""
     echo "==== Running $f"
-    R --slave < $f
+if $skip_valgrind 
+then R --slave < $f
+else R -d "valgrind --tool=memcheck --leak-check=full" --slave < $f
+fi
 done
 
 echo "Done"

@@ -64,10 +64,9 @@ RS_PostgreSQL_pqexec(Con_Handle * conHandle, s_object * statement)
         omsg = PQerrorMessage(my_connection);
         len = strlen(omsg);
         free(dyn_statement);
-        errMsg = malloc(len + 80); /* 80 should be larger than the length of "could not ..."*/
+        errMsg = R_alloc(len + 80, 1); /* 80 should be larger than the length of "could not ..."*/
         snprintf(errMsg, len + 80,  "could not run statement: %s", omsg);
         RS_DBI_errorMessage(errMsg, RS_DBI_ERROR);
-        free(errMsg);
     }
 
 
@@ -79,23 +78,20 @@ RS_PostgreSQL_pqexec(Con_Handle * conHandle, s_object * statement)
     }
 
     if (strcmp(PQresultErrorMessage(my_result), "") != 0) {
-
         free(dyn_statement);
         char *errResultMsg;
         const char *omsg;
         size_t len;
         omsg = PQerrorMessage(my_connection);
         len = strlen(omsg);
-        errResultMsg = malloc(len + 80); /* 80 should be larger than the length of "could not ..."*/
+        errResultMsg = R_alloc(len + 80, 1); /* 80 should be larger than the length of "could not ..."*/
         snprintf(errResultMsg, len + 80, "could not Retrieve the result : %s", omsg);
-        RS_DBI_errorMessage(errResultMsg, RS_DBI_ERROR);
-        free(errResultMsg);
-
-        /*  Frees the storage associated with a PGresult.
-         *  void PQclear(PGresult *res);   */
         PQclear(my_result);
+        RS_DBI_errorMessage(errResultMsg, RS_DBI_ERROR);
     }
 
+    /*  Frees the storage associated with a PGresult.*/
+    PQclear(my_result);
     free(dyn_statement);
     PROTECT(retval = allocVector(LGLSXP, 1));
     LOGICAL(retval)[0] = is_select;
