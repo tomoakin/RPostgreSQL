@@ -224,13 +224,9 @@ chkpqcopydataerr(PGconn *my_connection, int pqretcode)
         char * rserrmsg;
         char * format = "PQputCopyData failed: %s";
         size_t len = strlen(pqerrmsg) + strlen(format) + 1;
-        rserrmsg = malloc(len);
-        if(rserrmsg){
-             snprintf(rserrmsg, len, format, pqerrmsg);
-             RS_DBI_errorMessage(rserrmsg, RS_DBI_ERROR);
-        }else{
-             RS_DBI_errorMessage("malloc failed while reporting error in PQputCopyData", RS_DBI_ERROR);
-        }
+        rserrmsg = R_alloc(len, 1);
+        snprintf(rserrmsg, len, format, pqerrmsg);
+        RS_DBI_errorMessage(rserrmsg, RS_DBI_ERROR);
     }
 }
 

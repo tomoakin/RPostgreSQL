@@ -362,10 +362,9 @@ RS_PostgreSQL_exec(Con_Handle * conHandle, s_object * statement)
         omsg = PQerrorMessage(my_connection);
         len = strlen(omsg);
         free(dyn_statement);
-        errMsg = malloc(len + 80); /* 80 should be larger than the length of "could not ..."*/
+        errMsg = R_alloc(len + 80, 1); /* 80 should be larger than the length of "could not ..."*/
         snprintf(errMsg, len + 80,  "could not run statement: %s", omsg);
         RS_DBI_errorMessage(errMsg, RS_DBI_ERROR);
-        free(errMsg);
     }
 
 
@@ -388,16 +387,12 @@ RS_PostgreSQL_exec(Con_Handle * conHandle, s_object * statement)
         size_t len;
         omsg = PQerrorMessage(my_connection);
         len = strlen(omsg);
-        errResultMsg = malloc(len + 80); /* 80 should be larger than the length of "could not ..."*/
+        errResultMsg = R_alloc(len + 80, 1); /* 80 should be larger than the length of "could not ..."*/
         snprintf(errResultMsg, len + 80, "could not Retrieve the result : %s", omsg);
-        RS_DBI_errorMessage(errResultMsg, RS_DBI_ERROR);
-        free(errResultMsg);
-
         /*  Frees the storage associated with a PGresult.
          *  void PQclear(PGresult *res);   */
-
         PQclear(my_result);
-
+        RS_DBI_errorMessage(errResultMsg, RS_DBI_ERROR);
     }
 
     /* we now create the wrapper and copy values */
@@ -448,7 +443,7 @@ RS_PostgreSQL_createDataMappings(Res_Handle * rsHandle)
     con = RS_DBI_getConnection(rsHandle);
     num_fields = PQnfields(my_result);
 
-    PROTECT(flds = RS_DBI_allocFields(num_fields));
+    flds = RS_DBI_allocFields(num_fields); /* this returns malloced data (not from R) */
 
     char buff[1000];            /* Buffer to hold the sql query to check whether the given column is nullable */
     PGconn *conn;
@@ -581,7 +576,6 @@ RS_PostgreSQL_createDataMappings(Res_Handle * rsHandle)
             break;
         }
     }
-    UNPROTECT(1);
     return flds;
 }
 

@@ -65,22 +65,19 @@ RS_PostgreSQL_getResult(Con_Handle * conHandle)
         size_t len;
         omsg = PQerrorMessage(my_connection);
         len = strlen(omsg);
-        errResultMsg = malloc(len + 80); /* 80 should be larger than the length of "could not ..."*/
+        errResultMsg = R_alloc(len + 80, 1); /* 80 should be larger than the length of "could not ..."*/
         snprintf(errResultMsg, len + 80, "could not Retrieve the result : %s", omsg);
+        PQclear(my_result);
+        my_result = NULL;
         RS_DBI_errorMessage(errResultMsg, RS_DBI_ERROR);
-        free(errResultMsg);
-
         /*  Frees the storage associated with a PGresult.
          *  void PQclear(PGresult *res);   */
-
-        PQclear(my_result);
-
     }
-
+    PQclear(my_result);
     /* we now create the wrapper and copy values */
     PROTECT(rsHandle = RS_DBI_allocResultSet(conHandle));
     result = RS_DBI_getResultSet(rsHandle);
-    result->drvResultSet = (void *) my_result;
+    result->drvResultSet = (void *) NULL;
     result->rowCount = (Sint) 0;
     result->isSelect = 0;
     result->rowsAffected = 0;

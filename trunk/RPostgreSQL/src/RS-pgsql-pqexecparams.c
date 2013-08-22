@@ -40,7 +40,7 @@ RS_PostgreSQL_pqexecparams(SEXP args)
     my_connection = (PGconn *) con->drvConnection;
     dyn_statement = CHR_EL(statement, 0);
     nparams = length(params);
-    pqparams = calloc(nparams, sizeof(char*));
+    pqparams = Calloc(nparams, const char*);
     
     for (R_len_t i = 0; i < nparams; i++){
         pqparams[i] = CHR_EL(params, i);
@@ -57,16 +57,16 @@ RS_PostgreSQL_pqexecparams(SEXP args)
  *                      int resultFormat);
  */
     my_result = PQexecParams(my_connection, dyn_statement, nparams, NULL, pqparams, NULL, NULL, 0);
+    Free(pqparams);
     if (my_result == NULL) {
         char *errMsg;
         const char *omsg;
         size_t len;
         omsg = PQerrorMessage(my_connection);
         len = strlen(omsg);
-        errMsg = malloc(len + 80); /* 80 should be larger than the length of "could not ..."*/
+        errMsg = R_alloc(len + 80, 1); /* 80 should be larger than the length of "could not ..."*/
         snprintf(errMsg, len + 80,  "could not run statement: %s", omsg);
         RS_DBI_errorMessage(errMsg, RS_DBI_ERROR);
-        free(errMsg);
     }
 
 
@@ -84,14 +84,12 @@ RS_PostgreSQL_pqexecparams(SEXP args)
         size_t len;
         omsg = PQerrorMessage(my_connection);
         len = strlen(omsg);
-        errResultMsg = malloc(len + 80); /* 80 should be larger than the length of "could not ..."*/
+        errResultMsg = R_alloc(len + 80, 1); /* 80 should be larger than the length of "could not ..."*/
         snprintf(errResultMsg, len + 80, "could not Retrieve the result : %s", omsg);
-        RS_DBI_errorMessage(errResultMsg, RS_DBI_ERROR);
-        free(errResultMsg);
-
         /*  Frees the storage associated with a PGresult.
          *  void PQclear(PGresult *res);   */
         PQclear(my_result);
+        RS_DBI_errorMessage(errResultMsg, RS_DBI_ERROR);
     }
 
     /* we now create the wrapper and copy values */
@@ -103,8 +101,8 @@ RS_PostgreSQL_pqexecparams(SEXP args)
     result->isSelect = is_select;
 
     /*  Returns the number of rows affected by the SQL command.
- *       *  char *PQcmdTuples(PGresult *res);
- *            */
+     *  char *PQcmdTuples(PGresult *res);
+     */
 
     if (!is_select) {
         result->rowsAffected = (Sint) atoi(PQcmdTuples(my_result));
