@@ -6,7 +6,7 @@
 # This file draws heavily on configure.in files from littler, RMySQL, and RdbiPgSQL
 
 # Set the name and version -- the version set here will propagate to other files from here
-AC_INIT(RPostgreSQL, 0.2)
+AC_INIT(RPostgreSQL, 0.5)
 
 # Checks for common programs using default macros
 AC_PROG_CC
@@ -42,6 +42,7 @@ else
     then
 	for dir in \
 	/usr/include \
+	/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.8.sdk/usr/include \
 	/usr/include/pgsql \
 	/usr/include/postgresql \
 	/usr/local/include \

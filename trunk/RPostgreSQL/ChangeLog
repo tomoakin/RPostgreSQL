@@ -1,3 +1,11 @@
+2013-10-27  Tomoaki NISHIYAMA  <tomoakin@staff.kanazawa-u.ac.jp>
+
+	Strange path support for OS X 10.9 Marvericks
+
+	* configure.in
+	* configure
+	* src/RS-PostgreSQL.c: keep declaration on the top of a block.
+
 2013-08-22  Tomoaki NISHIYAMA  <tomoakin@staff.kanazawa-u.ac.jp>
 
 	Memory leak detected by valgrind.

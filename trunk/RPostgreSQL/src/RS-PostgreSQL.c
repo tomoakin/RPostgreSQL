@@ -380,8 +380,6 @@ RS_PostgreSQL_exec(Con_Handle * conHandle, s_object * statement)
     /* char *PQresultErrorMessage(const PGresult *res); */
 
     if (strcmp(PQresultErrorMessage(my_result), "") != 0) {
-
-        free(dyn_statement);
         char *errResultMsg;
         const char *omsg;
         size_t len;
@@ -392,6 +390,7 @@ RS_PostgreSQL_exec(Con_Handle * conHandle, s_object * statement)
         /*  Frees the storage associated with a PGresult.
          *  void PQclear(PGresult *res);   */
         PQclear(my_result);
+        free(dyn_statement);
         RS_DBI_errorMessage(errResultMsg, RS_DBI_ERROR);
     }
 
