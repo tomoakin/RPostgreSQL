@@ -16,3 +16,4 @@ Things yet to be completed:
 
 5. Check the working of DBI extension "dbApply".
 
+6. Binary data transfer to store IEEE754 floating point data without loss of precision.
