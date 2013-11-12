@@ -1,3 +1,12 @@
+Version 0.5 -- 2013-10-12
+
+    o   postgresqlWriteTable: send column names at COPY
+
+    o   System library header search path for OS X 10.9 (Mavericks)
+
+    o   Memory leak was reduced
+    o   Close the socket on failure
+
 Version 0.4 -- 2013-03-27
 
     o   Initial implementation of prepared statement
