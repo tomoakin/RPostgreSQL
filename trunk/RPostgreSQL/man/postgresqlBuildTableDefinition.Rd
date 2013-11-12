@@ -7,7 +7,8 @@
    input data.frame
 }
 \usage{
-postgresqlBuildTableDefinition(dbObj, name, obj, field.types = NULL, row.names = TRUE, ...)
+postgresqlBuildTableDefinition(dbObj, name, obj, field.types = NULL, 
+                               row.names = TRUE, ...)
 }
 \arguments{
   \item{dbObj}{any DBI object (used only to dispatch according to the 
