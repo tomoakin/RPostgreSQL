@@ -3,6 +3,8 @@
 	Prepare for release
 
 	* inst/NEWS
+	* man/postgresqlBuildTableDefinition.Rd: line length
+	* man/postgresqlSupport.Rd: line length
 
 2013-10-27  Tomoaki NISHIYAMA  <tomoakin@staff.kanazawa-u.ac.jp>
 
