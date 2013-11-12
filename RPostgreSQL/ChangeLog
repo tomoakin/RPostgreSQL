@@ -1,3 +1,9 @@
+2013-11-12  Tomoaki NISHIYAMA  <tomoakin@staff.kanazawa-u.ac.jp>
+
+	Prepare for release
+
+	* inst/NEWS
+
 2013-10-27  Tomoaki NISHIYAMA  <tomoakin@staff.kanazawa-u.ac.jp>
 
 	Strange path support for OS X 10.9 Marvericks
@@ -15,6 +21,17 @@
 	* src/RS-pgsql-getResult.c
 	* src/RS-pgsql-pqexec.c
 	* src/RS-pgsql-pqexecparams.c
+
+2013-06-21  Tomoaki NISHIYAMA  <tomoakin@staff.kanazawa-u.ac.jp>
+
+        * postgresqlWriteTable: send column names at COPY; 
+	* dbWriteTableTest.R: test for append=T
+
+2013-06-12  Tomoaki NISHIYAMA  <tomoakin@staff.kanazawa-u.ac.jp>
+
+	Close the socket on failure of opening connection
+
+	* src/RS-PostgreSQL.c
 
 2013-03-27  Tomoaki NISHIYAMA  <tomoakin@staff.kanazawa-u.ac.jp>
 
