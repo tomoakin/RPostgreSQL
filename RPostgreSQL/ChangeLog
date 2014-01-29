@@ -1,3 +1,13 @@
+2014-01-29  Tomoaki NISHIYAMA  <tomoakin@staff.kanazawa-u.ac.jp>
+
+	Initial support for Bytea data type.
+
+	* ChangeLog
+	* src/RS-PQescape.c
+	* R/PostgreSQLSupport.R
+	* NAMESPACE
+	* tests/bytea.R
+
 2013-11-12  Tomoaki NISHIYAMA  <tomoakin@staff.kanazawa-u.ac.jp>
 
 	Prepare for release

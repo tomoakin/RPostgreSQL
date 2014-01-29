@@ -86,6 +86,8 @@ export(
   postgresqlReadTable,
   postgresqlWriteTable,
   postgresqlEscapeStrings,
+  postgresqlEscapeBytea,
+  postgresqlUnescapeBytea,
   postgresqlDataType,
   postgresqlQuoteId,
   postgresqlTableRef
