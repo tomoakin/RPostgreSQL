@@ -210,7 +210,17 @@ postgresqlEscapeStrings <- function(con, preescapedstring) {
     escapedstring <- .Call("RS_PostgreSQL_escape", conId, preescapedstring, PACKAGE = .PostgreSQLPkgName)
     return(escapedstring)
 }
-
+postgresqlEscapeBytea <- function(con, raw_data) {
+    conId <- as(con, "integer")
+    raw_data <- as(raw_data, "raw")
+    escapedstring <- .Call("RS_PostgreSQL_escape_bytea", conId, raw_data, PACKAGE = .PostgreSQLPkgName)
+    return(escapedstring)
+}
+postgresqlUnescapeBytea <- function(escapedbytea) {
+    escapedbytea <- as(escapedbytea, "character")
+    raw_data <- .Call("RS_PostgreSQL_unescape_bytea", escapedbytea, PACKAGE = .PostgreSQLPkgName)
+    return(raw_data)
+}
 postgresqlpqExec <- function(con, statement) {
     if(!isPostgresqlIdCurrent(con))
         stop(paste("expired", class(con)))
