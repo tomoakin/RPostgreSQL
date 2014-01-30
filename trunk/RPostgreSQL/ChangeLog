@@ -1,3 +1,19 @@
+2014-01-30  Tomoaki NISHIYAMA  <tomoakin@staff.kanazawa-u.ac.jp>
+
+	Support hex conversion for unescaping.
+	Prevent segfault on unknown type to dbWriteTable.
+	Add minimal description of the escapebytea and unescapebytea.
+
+	* ChangeLog
+	* man/postgresqlSupport.Rd
+	* src/RS-PQescape.c
+	* src/RS-pgsql-copy.c 
+	* R/PostgreSQLSupport.R: separate message body from heading
+	* tests/bytea.R: remove E prefix for postgresql version 9, though this
+	cause warning on 8.X.
+	* DESCRIPTION: forward the version to 0.5-1
+	* R/PostgreSQL.R: forward the version to 0.5-1
+
 2014-01-29  Tomoaki NISHIYAMA  <tomoakin@staff.kanazawa-u.ac.jp>
 
 	Initial support for Bytea data type.

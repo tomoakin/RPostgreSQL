@@ -133,10 +133,26 @@ static Rboolean isna(SEXP x, int indx)
 
 /* a version of EncodeElement with different escaping of char strings */
 static const char
-*EncodeElementS(SEXP x, int indx,
+*EncodeElementSconn(PGconn* my_connection, SEXP x, int indx,
                 R_StringBuffer *buff, char cdec)
 {
+    buff->data[0]='\0';
     switch(TYPEOF(x)) {
+       case RAWSXP:{
+            const unsigned char*rawdata;
+            unsigned char* escapedstring;
+            int len;
+            size_t escaped_length;
+            len = LENGTH(x);
+            rawdata=RAW(x);
+            escapedstring = PQescapeByteaConn(my_connection, rawdata, len, &escaped_length);
+            memcpy(buff->data, escapedstring, escaped_length);
+            buff->data[escaped_length]='\0';
+            free(escapedstring);
+            return buff->data;
+
+            
+       }
        case STRSXP:
        {
 	    const char *s = translateCharUTF8(STRING_ELT(x, indx));
@@ -211,9 +227,9 @@ static const char
             return buff->data;
         }
         default:
-            return NULL; 
+            return buff->data; 
     }
-    return NULL; 
+    return buff->data; 
 }
 
 static inline void
@@ -280,15 +296,15 @@ RS_PostgreSQL_CopyInDataframe(Con_Handle * conHandle, SEXP x, SEXP nrow, SEXP nc
 		    if(!isNull(levels[j])) {
 			/* We cannot assume factors have integer levels */
 			if(TYPEOF(xj) == INTSXP){
-                            tmp = EncodeElementS(levels[j], INTEGER(xj)[i] - 1,
+                            tmp = EncodeElementSconn(my_connection, levels[j], INTEGER(xj)[i] - 1,
                                                  &rstrbuf, cdec);
 			}else if(TYPEOF(xj) == REALSXP){
-                            tmp = EncodeElementS(levels[j], REAL(xj)[i] - 1,
+                            tmp = EncodeElementSconn(my_connection, levels[j], REAL(xj)[i] - 1,
                                                  &rstrbuf, cdec);
 			}else
 			    error("column %s claims to be a factor but does not have numeric codes", j+1);
 		    } else {
-			tmp = EncodeElementS(xj, i, 
+			tmp = EncodeElementSconn(my_connection, xj, i, 
 					     &rstrbuf, cdec);
 		    }
 		}
