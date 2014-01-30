@@ -271,7 +271,7 @@ postgresqlQuickSQL <- function(con, statement, ...) {
     }
     rs <- try(dbSendQuery(con, statement, ...))
     if (inherits(rs, ErrorClass)){
-        warning("Could not create execute", statement)
+        warning("Could not create execute: ", statement)
         return(NULL)
     }
     if(dbHasCompleted(rs)){

@@ -23,6 +23,8 @@
 \alias{postgresqlCopyInDataframe}
 \alias{postgresqlgetResult}
 \alias{postgresqlEscapeStrings}
+\alias{postgresqlEscapeBytea}
+\alias{postgresqlUnescapeBytea}
 \alias{postgresqlQuoteId}
 \alias{postgresqlTableRef}
 \alias{postgresqlImportFile}
@@ -73,6 +75,8 @@
    postgresqlCopyIn(con, filename)
    postgresqlgetResult(con)
    postgresqlEscapeStrings(con, preescapedstring)
+   postgresqlEscapeBytea(con, raw_data)
+   postgresqlUnescapeBytea(escapedbytea)
    postgresqlQuoteId(identifiers)
    postgresqlTableRef(identifiers)
    postgresqlImportFile(con, name, value, field.types, overwrite=FALSE,
@@ -214,6 +218,8 @@ Command-line options to be sent to the server
    to modify column names to make them legal PostgreSQL identifiers.
    }
 \item{preescapedstring}{character string to be escaped}
+\item{raw_data}{RAW data to be escaped}
+\item{escapedbytea}{'escaped' or hex encoded binary data as character}
 \item{identifiers}{one or more character strings to be used as identfier in SQL statement}
 \item{filename}{character string indicating the file which contains the data to be copied to the PostgreSQL backend}
 \item{\dots}{
@@ -288,6 +294,16 @@ Command-line options to be sent to the server
    \code{postgresqlEscapeStrings} returns a character string which is escaped properly
    so that it can be surrounded with a single quote and used as literal in SQL.
    The escape procedure is dependent on the character encoding of the connection.
+
+   \code{postgresqlEscapeBytea} returns a character string which represents the
+   raw data proper escape so that it can be surrounded 
+   with a single quote and used as literal in SQL. Note that on 8.X connection E prefix
+   should exist before the first quote. However this changes the behaviour in 9.0, where
+   the E should not exist.
+
+   \code{postgresqlUnescapeBytea} returns a raw data specified by the character string.
+   The character string should contain the 'escaped' bytea or hex encoded bytea
+   that was output from the database server.
 
    \code{postgresqlQuoteId} returns a character string which is quoted as identifier. Returns vector on vector arguemnt.
 

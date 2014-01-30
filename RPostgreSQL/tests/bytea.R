@@ -29,7 +29,7 @@ if ((Sys.getenv("POSTGRES_USER") != "") &
     sample.object <- list("one","two");
     ser <- serialize(sample.object,NULL,ascii=F);
     postgresqlEscapeBytea(con, ser)
-    iq <- sprintf("INSERT INTO byteatable values('%s',E'%s');","name1", postgresqlEscapeBytea(con, ser))
+    iq <- sprintf("INSERT INTO byteatable values('%s', '%s');","name1", postgresqlEscapeBytea(con, ser))
     dbGetQuery(con, iq)
     rows<-dbGetQuery(con, "SELECT * from byteatable")
     ser2<-postgresqlUnescapeBytea(rows[[2]])

@@ -60,7 +60,14 @@ RS_PostgreSQL_escape_bytea(SEXP conHandle, SEXP raw_data)
     return output;
 }
 
-
+static inline unsigned char
+hex2n(unsigned char h)
+{
+  if (h >= '0' && h <= '9') return h-'0';
+  if (h >= 'a' && h <= 'f') return h-'a' + 10;
+  if (h >= 'A' && h <= 'F') return h-'A' + 10;
+  return h;
+}
 /* 
  * Adapter function to PQunescapeBytea()
  * This function should properly unescape the charactor representation
@@ -71,12 +78,30 @@ RS_PostgreSQL_unescape_bytea(SEXP escapedstring)
 {
     SEXP output;
     size_t raw_length;
+    const unsigned char* strbuffer;
     unsigned char* rawbuffer;
-    rawbuffer = PQunescapeBytea(CHAR(STRING_ELT(escapedstring, 0)),  &raw_length);
-    output = allocVector(RAWSXP, raw_length);
-    memcpy(RAW(output), rawbuffer, raw_length);
-    free(rawbuffer);
-    return output;
+    strbuffer = CHAR(STRING_ELT(escapedstring, 0));
+    if(!strbuffer) RS_DBI_errorMessage("strbuffer is NULL!", RS_DBI_ERROR);
+    if (strbuffer[0] == '\\' && strbuffer[1] == 'x'){
+      /* the new hex fomat */
+        int i;
+        size_t enc_length = LENGTH(STRING_ELT(escapedstring, 0));
+        char tmpbuff[1020];
+        raw_length = enc_length / 2 - 1;
+        output = allocVector(RAWSXP, raw_length);
+        rawbuffer = RAW(output);
+        for(i = 0; i < raw_length; i++){
+          rawbuffer[i] = (hex2n(strbuffer[2+ i*2]) << 4) + hex2n(strbuffer[2+i*2+1]);
+        }
+        return output;
+    }else{ /* the old escape format */
+        rawbuffer = PQunescapeBytea(strbuffer,  &raw_length);
+        if(!rawbuffer) RS_DBI_errorMessage("PQunescapeByea Failed", RS_DBI_ERROR);
+        output = allocVector(RAWSXP, raw_length);
+        memcpy(RAW(output), rawbuffer, raw_length);
+        free(rawbuffer);
+        return output;
+    }
 }
 
 

@@ -1,5 +1,5 @@
 Package: RPostgreSQL
-Version: 0.5
+Version: 0.5-1
 Date: $Date$
 Title: R interface to the PostgreSQL database system
 Author: Joe Conway, Dirk Eddelbuettel, Tomoaki Nishiyama, Sameer Kumar Prayaga (during 2008), Neil Tiffin
