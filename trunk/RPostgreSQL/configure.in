@@ -104,8 +104,11 @@ else
 	    fi
 	done
     fi
-    if ! test $PG_LIBDIR
+    if test $PG_LIBDIR && test $PG_INCDIR
     then
+       echo $PG_LIBDIR
+       echo $PG_INCDIR
+    else
         if test "$R_OS_TYPE" = "darwin" ; then
 # in case we cannot find any libpq library we will use the accompanied libpq
 # This content would be written into src/Makevars at the end of this script
