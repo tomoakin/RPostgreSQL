@@ -2,13 +2,14 @@
 #
 # Makefile for src/interfaces/libpq library
 #
-# Portions Copyright (c) 1996-2011, PostgreSQL Global Development Group
+# Portions Copyright (c) 1996-2013, PostgreSQL Global Development Group
 # Portions Copyright (c) 1994, Regents of the University of California
 #
 # src/interfaces/libpq/Makefile
 #
 #-------------------------------------------------------------------------
 
+subdir = ./libpq
 top_builddir = ..
 include Makefile.global.darwin
 
@@ -17,15 +18,14 @@ pg_config.h: pg_config.h.darwin
 	cp pg_config.h.darwin pg_config.h
 pg_config_os.h: pg_config_os.h.darwin
 	cp pg_config_os.h.darwin pg_config_os.h
-pg_config_paths.h: pg_config_paths.h.darwin
-	cp  pg_config_paths.h.darwin pg_config_paths.h
+
 
 # shared library parameters
 NAME= pq
 SO_MAJOR_VERSION= 5
-SO_MINOR_VERSION= 4
+SO_MINOR_VERSION= 6
 
-override CPPFLAGS :=  -DFRONTEND -DUNSAFE_STAT_OK -I$(srcdir) $(CPPFLAGS) 
+override CPPFLAGS :=  -DFRONTEND -DUNSAFE_STAT_OK -I$(srcdir) $(CPPFLAGS) -I$(top_builddir)/src/port -I$(top_srcdir)/src/port
 ifneq ($(PORTNAME), win32)
 override CFLAGS += $(PTHREAD_CFLAGS)
 endif
@@ -38,10 +38,11 @@ LIBS := $(LIBS:-lpgport=)
 # We can't use Makefile variables here because the MSVC build system scrapes
 # OBJS from this file.
 OBJS=	fe-auth.o fe-connect.o fe-exec.o fe-misc.o fe-print.o fe-lobj.o \
-	fe-protocol2.o fe-protocol3.o pqexpbuffer.o pqsignal.o fe-secure.o \
+	fe-protocol2.o fe-protocol3.o pqexpbuffer.o fe-secure.o \
 	libpq-events.o
 # libpgport C files we always use
-OBJS += chklocale.o inet_net_ntop.o noblock.o pgstrcasecmp.o thread.o
+OBJS += chklocale.o inet_net_ntop.o noblock.o pgstrcasecmp.o pqsignal.o \
+	thread.o
 # libpgport C files that are needed if identified by configure
 OBJS += $(filter crypt.o getaddrinfo.o getpeereid.o inet_aton.o open.o snprintf.o strerror.o strlcpy.o win32error.o win32setlocale.o, $(LIBOBJS))
 # backend/libpq
@@ -84,6 +85,7 @@ all: all-lib
 
 # Shared library stuff
 include Makefile.shlib
+backend_src = .
 
 distprep: libpq-dist.rc
 
@@ -93,9 +95,10 @@ libpq.rc libpq-dist.rc: libpq.rc.in
 # Depend on Makefile.global to force rebuild on re-run of configure.
 # (But libpq-dist.rc is shipped in the distribution for shell-less
 # installations and is only updated by distprep.)
+libpq.rc: $(top_builddir)/src/Makefile.global
 
 fe-connect.o: fe-connect.c pg_config_paths.h
-
+fe-misc.o: fe-misc.c pg_config_paths.h
 
 install: all installdirs install-lib
 	$(INSTALL_DATA) $(srcdir)/libpq-fe.h '$(DESTDIR)$(includedir)'
@@ -104,8 +107,11 @@ install: all installdirs install-lib
 	$(INSTALL_DATA) $(srcdir)/pqexpbuffer.h '$(DESTDIR)$(includedir_internal)'
 	$(INSTALL_DATA) $(srcdir)/pg_service.conf.sample '$(DESTDIR)$(datadir)/pg_service.conf.sample'
 
+installcheck:
+	$(MAKE) -C test $@
+
 installdirs: installdirs-lib
-	$(MKDIR_P) '$(DESTDIR)$(includedir)' '$(DESTDIR)$(includedir_internal)'
+	$(MKDIR_P) '$(DESTDIR)$(includedir)' '$(DESTDIR)$(includedir_internal)' '$(DESTDIR)$(datadir)'
 
 uninstall: uninstall-lib
 	rm -f '$(DESTDIR)$(includedir)/libpq-fe.h'
@@ -115,12 +121,16 @@ uninstall: uninstall-lib
 	rm -f '$(DESTDIR)$(datadir)/pg_service.conf.sample'
 
 clean distclean: clean-lib
+	$(MAKE) -C test $@
 	rm -f $(OBJS) pthread.h libpq.rc
-	rm -f libpq.dylib libpq.$(SO_MAJOR_VERSION).dylib libpq.$(SO_MAJOR_VERSION).$(SO_MINOR_VERSION).dylib
 # Might be left over from a Win32 client-only build
-	rm -f pg_config.h
-	rm -f pg_config_os.h
 	rm -f pg_config_paths.h
+	rm -f inet_net_ntop.c noblock.c pgstrcasecmp.c pqsignal.c thread.c
+	rm -f chklocale.c crypt.c getaddrinfo.c getpeereid.c inet_aton.c open.c snprintf.c strerror.c strlcpy.c win32error.c win32setlocale.c
+	rm -f pgsleep.c
+	rm -f md5.c ip.c
+	rm -f encnames.c wchar.c
 
 maintainer-clean: distclean maintainer-clean-lib
+	$(MAKE) -C test $@
 	rm -f libpq-dist.rc

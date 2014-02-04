@@ -3,7 +3,7 @@
  * ip.c
  *	  IPv6-aware network access.
  *
- * Portions Copyright (c) 1996-2011, PostgreSQL Global Development Group
+ * Portions Copyright (c) 1996-2013, PostgreSQL Global Development Group
  * Portions Copyright (c) 1994, Regents of the University of California
  *
  *
@@ -247,11 +247,6 @@ getnameinfo_unix(const struct sockaddr_un * sa, int salen,
 		(node == NULL && service == NULL))
 		return EAI_FAIL;
 
-	/* We don't support those. */
-	if ((node && !(flags & NI_NUMERICHOST))
-		|| (service && !(flags & NI_NUMERICSERV)))
-		return EAI_FAIL;
-
 	if (node)
 	{
 		ret = snprintf(node, nodelen, "%s", "[local]");
@@ -283,14 +278,14 @@ pg_range_sockaddr(const struct sockaddr_storage * addr,
 				  const struct sockaddr_storage * netmask)
 {
 	if (addr->ss_family == AF_INET)
-		return range_sockaddr_AF_INET((struct sockaddr_in *) addr,
-									  (struct sockaddr_in *) netaddr,
-									  (struct sockaddr_in *) netmask);
+		return range_sockaddr_AF_INET((const struct sockaddr_in *) addr,
+									  (const struct sockaddr_in *) netaddr,
+									  (const struct sockaddr_in *) netmask);
 #ifdef HAVE_IPV6
 	else if (addr->ss_family == AF_INET6)
-		return range_sockaddr_AF_INET6((struct sockaddr_in6 *) addr,
-									   (struct sockaddr_in6 *) netaddr,
-									   (struct sockaddr_in6 *) netmask);
+		return range_sockaddr_AF_INET6((const struct sockaddr_in6 *) addr,
+									   (const struct sockaddr_in6 *) netaddr,
+									   (const struct sockaddr_in6 *) netmask);
 #endif
 	else
 		return 0;

@@ -396,7 +396,7 @@ WIN32_STACK_RLIMIT=4194304
 have_win32_dbghelp = yes
 
 # Pull in platform-specific magic
-include Makefile.port
+include Makefile.win32
 
 # Set up rpath if enabled.  By default it will point to our libdir,
 # but individual Makefiles can force other rpath paths if needed.

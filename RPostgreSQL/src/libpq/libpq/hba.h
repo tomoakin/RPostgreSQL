@@ -11,8 +11,9 @@
 #ifndef HBA_H
 #define HBA_H
 
+#include "libpq/pqcomm.h"	/* pgrminclude ignore */	/* needed for NetBSD */
 #include "nodes/pg_list.h"
-#include "libpq/pqcomm.h"
+#include "regex/regex.h"
 
 
 typedef enum UserAuth
@@ -49,12 +50,13 @@ typedef enum ConnType
 	ctHostNoSSL
 } ConnType;
 
-typedef struct
+typedef struct HbaLine
 {
 	int			linenumber;
+	char	   *rawline;
 	ConnType	conntype;
-	char	   *database;
-	char	   *role;
+	List	   *databases;
+	List	   *roles;
 	struct sockaddr_storage addr;
 	struct sockaddr_storage mask;
 	IPCompareMethod ip_cmp_method;
@@ -70,6 +72,7 @@ typedef struct
 	char	   *ldapbindpasswd;
 	char	   *ldapsearchattribute;
 	char	   *ldapbasedn;
+	int			ldapscope;
 	char	   *ldapprefix;
 	char	   *ldapsuffix;
 	bool		clientcert;
@@ -82,12 +85,22 @@ typedef struct
 	int			radiusport;
 } HbaLine;
 
+typedef struct IdentLine
+{
+	int			linenumber;
+
+	char	   *usermap;
+	char	   *ident_user;
+	char	   *pg_role;
+	regex_t		re;
+} IdentLine;
+
 /* kluge to avoid including libpq/libpq-be.h here */
 typedef struct Port hbaPort;
 
 extern bool load_hba(void);
-extern void load_ident(void);
-extern int	hba_getauthmethod(hbaPort *port);
+extern bool load_ident(void);
+extern void hba_getauthmethod(hbaPort *port);
 extern int check_usermap(const char *usermap_name,
 			  const char *pg_role, const char *auth_user,
 			  bool case_sensitive);

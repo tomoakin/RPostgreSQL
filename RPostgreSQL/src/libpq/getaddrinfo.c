@@ -13,7 +13,7 @@
  * use the Windows native routines, but if not, we use our own.
  *
  *
- * Copyright (c) 2003-2011, PostgreSQL Global Development Group
+ * Copyright (c) 2003-2013, PostgreSQL Global Development Group
  *
  * IDENTIFICATION
  *	  src/port/getaddrinfo.c
@@ -328,13 +328,9 @@ gai_strerror(int errcode)
 		case EAI_MEMORY:
 			return "Not enough memory";
 #endif
-#ifdef EAI_NODATA
-#if EAI_NODATA != EAI_NONAME
-#if !defined(WIN64) && !defined(WIN32_ONLY_COMPILER)	/* MSVC/WIN64 duplicate */
+#if defined(EAI_NODATA) && EAI_NODATA != EAI_NONAME		/* MSVC/WIN64 duplicate */
 		case EAI_NODATA:
 			return "No host data of that type was found";
-#endif
-#endif
 #endif
 #ifdef EAI_SERVICE
 		case EAI_SERVICE:
@@ -375,11 +371,6 @@ getnameinfo(const struct sockaddr * sa, int salen,
 
 	/* Invalid arguments. */
 	if (sa == NULL || (node == NULL && service == NULL))
-		return EAI_FAIL;
-
-	/* We don't support those. */
-	if ((node && !(flags & NI_NUMERICHOST))
-		|| (service && !(flags & NI_NUMERICSERV)))
 		return EAI_FAIL;
 
 #ifdef	HAVE_IPV6

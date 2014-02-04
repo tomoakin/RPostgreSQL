@@ -3,7 +3,7 @@
  * fe-exec.c
  *	  functions related to sending a query down to the backend
  *
- * Portions Copyright (c) 1996-2011, PostgreSQL Global Development Group
+ * Portions Copyright (c) 1996-2013, PostgreSQL Global Development Group
  * Portions Copyright (c) 1994, Regents of the University of California
  *
  *
@@ -38,7 +38,8 @@ char	   *const pgresStatus[] = {
 	"PGRES_BAD_RESPONSE",
 	"PGRES_NONFATAL_ERROR",
 	"PGRES_FATAL_ERROR",
-	"PGRES_COPY_BOTH"
+	"PGRES_COPY_BOTH",
+	"PGRES_SINGLE_TUPLE"
 };
 
 /*
@@ -50,6 +51,7 @@ static bool static_std_strings = false;
 
 
 static PGEvent *dupEvents(PGEvent *events, int count);
+static bool pqAddTuple(PGresult *res, PGresAttValue *tup);
 static bool PQsendQueryStart(PGconn *conn);
 static int PQsendQueryGuts(PGconn *conn,
 				const char *command,
@@ -176,6 +178,7 @@ PQmakeEmptyPGresult(PGconn *conn, ExecStatusType status)
 			case PGRES_COPY_OUT:
 			case PGRES_COPY_IN:
 			case PGRES_COPY_BOTH:
+			case PGRES_SINGLE_TUPLE:
 				/* non-error cases */
 				break;
 			default:
@@ -213,7 +216,7 @@ PQmakeEmptyPGresult(PGconn *conn, ExecStatusType status)
  *
  * Set the attributes for a given result.  This function fails if there are
  * already attributes contained in the provided result.  The call is
- * ignored if numAttributes is is zero or attDescs is NULL.  If the
+ * ignored if numAttributes is zero or attDescs is NULL.  If the
  * function fails, it returns zero.  If the function succeeds, it
  * returns a non-zero value.
  */
@@ -276,7 +279,7 @@ PQsetResultAttrs(PGresult *res, int numAttributes, PGresAttDesc *attDescs)
  *	 PG_COPYRES_ATTRS - Copy the source result's attributes
  *
  *	 PG_COPYRES_TUPLES - Copy the source result's tuples.  This implies
- *	 copying the attrs, seeeing how the attrs are needed by the tuples.
+ *	 copying the attrs, seeing how the attrs are needed by the tuples.
  *
  *	 PG_COPYRES_EVENTS - Copy the source result's events.
  *
@@ -693,15 +696,18 @@ PQclear(PGresult *res)
 
 /*
  * Handy subroutine to deallocate any partially constructed async result.
+ *
+ * Any "next" result gets cleared too.
  */
-
 void
 pqClearAsyncResult(PGconn *conn)
 {
 	if (conn->result)
 		PQclear(conn->result);
 	conn->result = NULL;
-	conn->curTuple = NULL;
+	if (conn->next_result)
+		PQclear(conn->next_result);
+	conn->next_result = NULL;
 }
 
 /*
@@ -755,8 +761,6 @@ pqPrepareAsyncResult(PGconn *conn)
 	 * conn->errorMessage.
 	 */
 	res = conn->result;
-	conn->result = NULL;		/* handing over ownership to caller */
-	conn->curTuple = NULL;		/* just in case */
 	if (!res)
 		res = PQmakeEmptyPGresult(conn, PGRES_FATAL_ERROR);
 	else
@@ -769,6 +773,16 @@ pqPrepareAsyncResult(PGconn *conn)
 		appendPQExpBufferStr(&conn->errorMessage,
 							 PQresultErrorMessage(res));
 	}
+
+	/*
+	 * Replace conn->result with next_result, if any.  In the normal case
+	 * there isn't a next result and we're just dropping ownership of the
+	 * current result.	In single-row mode this restores the situation to what
+	 * it was before we created the current single-row result.
+	 */
+	conn->result = conn->next_result;
+	conn->next_result = NULL;
+
 	return res;
 }
 
@@ -832,7 +846,7 @@ pqInternalNotice(const PGNoticeHooks *hooks, const char *fmt,...)
  *	  add a row pointer to the PGresult structure, growing it if necessary
  *	  Returns TRUE if OK, FALSE if not enough memory to add the row
  */
-int
+static bool
 pqAddTuple(PGresult *res, PGresAttValue *tup)
 {
 	if (res->ntups >= res->tupArrSize)
@@ -979,6 +993,114 @@ pqSaveParameterStatus(PGconn *conn, const char *name, const char *value)
 
 
 /*
+ * pqRowProcessor
+ *	  Add the received row to the current async result (conn->result).
+ *	  Returns 1 if OK, 0 if error occurred.
+ *
+ * On error, *errmsgp can be set to an error string to be returned.
+ * If it is left NULL, the error is presumed to be "out of memory".
+ *
+ * In single-row mode, we create a new result holding just the current row,
+ * stashing the previous result in conn->next_result so that it becomes
+ * active again after pqPrepareAsyncResult().  This allows the result metadata
+ * (column descriptions) to be carried forward to each result row.
+ */
+int
+pqRowProcessor(PGconn *conn, const char **errmsgp)
+{
+	PGresult   *res = conn->result;
+	int			nfields = res->numAttributes;
+	const PGdataValue *columns = conn->rowBuf;
+	PGresAttValue *tup;
+	int			i;
+
+	/*
+	 * In single-row mode, make a new PGresult that will hold just this one
+	 * row; the original conn->result is left unchanged so that it can be used
+	 * again as the template for future rows.
+	 */
+	if (conn->singleRowMode)
+	{
+		/* Copy everything that should be in the result at this point */
+		res = PQcopyResult(res,
+						   PG_COPYRES_ATTRS | PG_COPYRES_EVENTS |
+						   PG_COPYRES_NOTICEHOOKS);
+		if (!res)
+			return 0;
+	}
+
+	/*
+	 * Basically we just allocate space in the PGresult for each field and
+	 * copy the data over.
+	 *
+	 * Note: on malloc failure, we return 0 leaving *errmsgp still NULL, which
+	 * caller will take to mean "out of memory".  This is preferable to trying
+	 * to set up such a message here, because evidently there's not enough
+	 * memory for gettext() to do anything.
+	 */
+	tup = (PGresAttValue *)
+		pqResultAlloc(res, nfields * sizeof(PGresAttValue), TRUE);
+	if (tup == NULL)
+		goto fail;
+
+	for (i = 0; i < nfields; i++)
+	{
+		int			clen = columns[i].len;
+
+		if (clen < 0)
+		{
+			/* null field */
+			tup[i].len = NULL_LEN;
+			tup[i].value = res->null_field;
+		}
+		else
+		{
+			bool		isbinary = (res->attDescs[i].format != 0);
+			char	   *val;
+
+			val = (char *) pqResultAlloc(res, clen + 1, isbinary);
+			if (val == NULL)
+				goto fail;
+
+			/* copy and zero-terminate the data (even if it's binary) */
+			memcpy(val, columns[i].value, clen);
+			val[clen] = '\0';
+
+			tup[i].len = clen;
+			tup[i].value = val;
+		}
+	}
+
+	/* And add the tuple to the PGresult's tuple array */
+	if (!pqAddTuple(res, tup))
+		goto fail;
+
+	/*
+	 * Success.  In single-row mode, make the result available to the client
+	 * immediately.
+	 */
+	if (conn->singleRowMode)
+	{
+		/* Change result status to special single-row value */
+		res->resultStatus = PGRES_SINGLE_TUPLE;
+		/* Stash old result for re-use later */
+		conn->next_result = conn->result;
+		conn->result = res;
+		/* And mark the result ready to return */
+		conn->asyncStatus = PGASYNC_READY;
+	}
+
+	return 1;
+
+fail:
+	/* release locally allocated PGresult, if we made one */
+	if (res != conn->result)
+		PQclear(res);
+	return 0;
+}
+
+
+/*
  * PQsendQuery
  *	 Submit a query, but don't wait for it to finish
  *
@@ -991,6 +1113,7 @@ PQsendQuery(PGconn *conn, const char *query)
 	if (!PQsendQueryStart(conn))
 		return 0;
 
+	/* check the argument */
 	if (!query)
 	{
 		printfPQExpBuffer(&conn->errorMessage,
@@ -1048,10 +1171,17 @@ PQsendQueryParams(PGconn *conn,
 	if (!PQsendQueryStart(conn))
 		return 0;
 
+	/* check the arguments */
 	if (!command)
 	{
 		printfPQExpBuffer(&conn->errorMessage,
 						libpq_gettext("command string is a null pointer\n"));
+		return 0;
+	}
+	if (nParams < 0 || nParams > 65535)
+	{
+		printfPQExpBuffer(&conn->errorMessage,
+		libpq_gettext("number of parameters must be between 0 and 65535\n"));
 		return 0;
 	}
 
@@ -1081,17 +1211,23 @@ PQsendPrepare(PGconn *conn,
 	if (!PQsendQueryStart(conn))
 		return 0;
 
+	/* check the arguments */
 	if (!stmtName)
 	{
 		printfPQExpBuffer(&conn->errorMessage,
 						libpq_gettext("statement name is a null pointer\n"));
 		return 0;
 	}
-
 	if (!query)
 	{
 		printfPQExpBuffer(&conn->errorMessage,
 						libpq_gettext("command string is a null pointer\n"));
+		return 0;
+	}
+	if (nParams < 0 || nParams > 65535)
+	{
+		printfPQExpBuffer(&conn->errorMessage,
+		libpq_gettext("number of parameters must be between 0 and 65535\n"));
 		return 0;
 	}
 
@@ -1176,10 +1312,17 @@ PQsendQueryPrepared(PGconn *conn,
 	if (!PQsendQueryStart(conn))
 		return 0;
 
+	/* check the arguments */
 	if (!stmtName)
 	{
 		printfPQExpBuffer(&conn->errorMessage,
 						libpq_gettext("statement name is a null pointer\n"));
+		return 0;
+	}
+	if (nParams < 0 || nParams > 65535)
+	{
+		printfPQExpBuffer(&conn->errorMessage,
+		libpq_gettext("number of parameters must be between 0 and 65535\n"));
 		return 0;
 	}
 
@@ -1223,7 +1366,10 @@ PQsendQueryStart(PGconn *conn)
 
 	/* initialize async result-accumulation state */
 	conn->result = NULL;
-	conn->curTuple = NULL;
+	conn->next_result = NULL;
+
+	/* reset single-row processing mode */
+	conn->singleRowMode = false;
 
 	/* ready to send command message */
 	return true;
@@ -1426,6 +1572,31 @@ pqHandleSendFailure(PGconn *conn)
 	 * state, only NOTICE and NOTIFY messages will be eaten.
 	 */
 	parseInput(conn);
+}
+
+/*
+ * Select row-by-row processing mode
+ */
+int
+PQsetSingleRowMode(PGconn *conn)
+{
+	/*
+	 * Only allow setting the flag when we have launched a query and not yet
+	 * received any results.
+	 */
+	if (!conn)
+		return 0;
+	if (conn->asyncStatus != PGASYNC_BUSY)
+		return 0;
+	if (conn->queryclass != PGQUERY_SIMPLE &&
+		conn->queryclass != PGQUERY_EXTENDED)
+		return 0;
+	if (conn->result)
+		return 0;
+
+	/* OK, set flag */
+	conn->singleRowMode = true;
+	return 1;
 }
 
 /*
@@ -2074,7 +2245,8 @@ PQputCopyEnd(PGconn *conn, const char *errormsg)
 {
 	if (!conn)
 		return -1;
-	if (conn->asyncStatus != PGASYNC_COPY_IN)
+	if (conn->asyncStatus != PGASYNC_COPY_IN &&
+		conn->asyncStatus != PGASYNC_COPY_BOTH)
 	{
 		printfPQExpBuffer(&conn->errorMessage,
 						  libpq_gettext("no COPY in progress\n"));
@@ -2134,7 +2306,10 @@ PQputCopyEnd(PGconn *conn, const char *errormsg)
 	}
 
 	/* Return to active duty */
-	conn->asyncStatus = PGASYNC_BUSY;
+	if (conn->asyncStatus == PGASYNC_COPY_BOTH)
+		conn->asyncStatus = PGASYNC_COPY_OUT;
+	else
+		conn->asyncStatus = PGASYNC_BUSY;
 	resetPQExpBuffer(&conn->errorMessage);
 
 	/* Try to flush data */
@@ -2386,7 +2561,7 @@ PQresultStatus(const PGresult *res)
 char *
 PQresStatus(ExecStatusType status)
 {
-	if (status < 0 || status >= sizeof pgresStatus / sizeof pgresStatus[0])
+	if ((unsigned int) status >= sizeof pgresStatus / sizeof pgresStatus[0])
 		return libpq_gettext("invalid ExecStatusType code");
 	return pgresStatus[status];
 }
