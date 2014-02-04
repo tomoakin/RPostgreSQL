@@ -38,6 +38,10 @@ RS_PostgreSQL_escape(SEXP conHandle, SEXP preescapestring)
  * This function should properly escape the raw argument 
  * appropriately depending on connection.
  * Note the single quote is not attached in the return val.
+ * The returned string could differ depending on the environment.
+ * Especially standard_conforming_strings parameter 
+ * is possibly influencial.
+ * http://www.postgresql.org/docs/9.3/static/sql-syntax-lexical.html#SQL-SYNTAX-STRINGS
  */
 SEXP
 RS_PostgreSQL_escape_bytea(SEXP conHandle, SEXP raw_data)
@@ -46,13 +50,13 @@ RS_PostgreSQL_escape_bytea(SEXP conHandle, SEXP raw_data)
     RS_DBI_connection *con;
     SEXP output;
     size_t length;
-    const char *statement_cstr;
     char *escapedstring;
     size_t escaped_length;
     con = RS_DBI_getConnection(conHandle);
     my_connection = (PGconn *) con->drvConnection;
     length = LENGTH(raw_data);
-    escapedstring = PQescapeByteaConn(my_connection, RAW(raw_data), length, &escaped_length);
+    escapedstring = (char *)PQescapeByteaConn(my_connection, RAW(raw_data), length, &escaped_length);
+    /* explicit cast to make clang silent for difference in signedness*/
     PROTECT(output = allocVector(STRSXP, 1));
     SET_STRING_ELT(output, 0, mkChar(escapedstring));
     free(escapedstring);
@@ -78,7 +82,7 @@ RS_PostgreSQL_unescape_bytea(SEXP escapedstring)
 {
     SEXP output;
     size_t raw_length;
-    const unsigned char* strbuffer;
+    const char* strbuffer;
     unsigned char* rawbuffer;
     strbuffer = CHAR(STRING_ELT(escapedstring, 0));
     if(!strbuffer) RS_DBI_errorMessage("strbuffer is NULL!", RS_DBI_ERROR);
@@ -86,7 +90,6 @@ RS_PostgreSQL_unescape_bytea(SEXP escapedstring)
       /* the new hex fomat */
         int i;
         size_t enc_length = LENGTH(STRING_ELT(escapedstring, 0));
-        char tmpbuff[1020];
         raw_length = enc_length / 2 - 1;
         output = allocVector(RAWSXP, raw_length);
         rawbuffer = RAW(output);
@@ -95,7 +98,8 @@ RS_PostgreSQL_unescape_bytea(SEXP escapedstring)
         }
         return output;
     }else{ /* the old escape format */
-        rawbuffer = PQunescapeBytea(strbuffer,  &raw_length);
+        rawbuffer = PQunescapeBytea((const unsigned char*) strbuffer,  &raw_length);
+        /* explicit cast to suppress warning on signedness by clang */
         if(!rawbuffer) RS_DBI_errorMessage("PQunescapeByea Failed", RS_DBI_ERROR);
         output = allocVector(RAWSXP, raw_length);
         memcpy(RAW(output), rawbuffer, raw_length);
