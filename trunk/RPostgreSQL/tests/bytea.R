@@ -1,6 +1,5 @@
-## Test of data types, based on earlier version in inst/devTests
+## Test of bytea conversion with insert and retrieve to the db.
 ##
-## Dirk Eddelbuettel, 21 Oct 2008
 
 if ((Sys.getenv("POSTGRES_USER") != "") &
     (Sys.getenv("POSTGRES_HOST") != "") &
@@ -11,7 +10,6 @@ if ((Sys.getenv("POSTGRES_USER") != "") &
 
     ## load the PostgresSQL driver
     drv <- dbDriver("PostgreSQL")
-    ## can't print result as it contains process id which changes  print(summary(drv))
 
     ## connect to the default db
     con <- dbConnect(drv,
@@ -24,15 +22,38 @@ if ((Sys.getenv("POSTGRES_USER") != "") &
     if (dbExistsTable(con, "byteatable"))
         dbRemoveTable(con, "byteatable")
 
-    ## Test the numeric mapping
-    dbGetQuery(con,"CREATE TABLE byteatable (name text NOT NULL, val bytea, PRIMARY KEY (name))")
-    sample.object <- list("one","two");
-    ser <- serialize(sample.object,NULL,ascii=F);
-    postgresqlEscapeBytea(con, ser)
-    iq <- sprintf("INSERT INTO byteatable values('%s', '%s');","name1", postgresqlEscapeBytea(con, ser))
+    sample.object <- list("one", "two");
+    ser <- serialize(sample.object, NULL, ascii=F);
+
+    ## Test the store/recovery of binary data
+    dbGetQuery(con, "CREATE TABLE byteatable (name text, val bytea)")
+    dbGetQuery(con, "set standard_conforming_strings to 'on'")
+    print(postgresqlEscapeBytea(con, ser))
+    iq <- sprintf("INSERT INTO byteatable values('%s', '%s');", "name1", postgresqlEscapeBytea(con, ser))
     dbGetQuery(con, iq)
     rows<-dbGetQuery(con, "SELECT * from byteatable")
     ser2<-postgresqlUnescapeBytea(rows[[2]])
+    if (identical(ser, ser2)) {
+        cat("PASS: Identical data was recovered\n")
+    }else{
+        cat("FAIL: The recovered data is not identical\n")
+        ser
+        ser2
+    }
+    dbGetQuery(con, "set standard_conforming_strings to 'off'")
+    dbGetQuery(con, "set escape_string_warning to 'off'")
+    print(postgresqlEscapeBytea(con, ser))
+    iq <- sprintf("INSERT INTO byteatable values('%s', '%s');", "name2", postgresqlEscapeBytea(con, ser))
+    dbGetQuery(con, iq)
+    rows<-dbGetQuery(con, "SELECT * from byteatable where name = 'name2'")
+    ser3<-postgresqlUnescapeBytea(rows[[2]])
+    if (identical(ser, ser3)) {
+        cat("PASS: Identical data was recovered\n")
+    }else{
+        cat("FAIL: The recovered data is not identical\n")
+        ser
+        ser2
+    }
     dbRemoveTable(con, "byteatable")
     dbDisconnect(con)
     dbUnloadDriver(drv)

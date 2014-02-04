@@ -1,3 +1,12 @@
+2014-02-04  Tomoaki NISHIYAMA  <tomoakin@staff.kanazawa-u.ac.jp>
+
+	* ChangeLog
+	* inst/News
+	* src/libpq: update to libpq from postgresql-9.3.2
+	* configure.in: change the condition to use accompanied libpq
+	* configure
+	* test/bytea.R: test both standard_conforming_strings states; add PASS response
+
 2014-01-30  Tomoaki NISHIYAMA  <tomoakin@staff.kanazawa-u.ac.jp>
 
 	Support hex conversion for unescaping.
