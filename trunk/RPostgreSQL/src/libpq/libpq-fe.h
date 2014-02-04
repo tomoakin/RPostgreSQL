@@ -4,7 +4,7 @@
  *	  This file contains definitions for structures and
  *	  externs for functions used by frontend postgres applications.
  *
- * Portions Copyright (c) 1996-2011, PostgreSQL Global Development Group
+ * Portions Copyright (c) 1996-2013, PostgreSQL Global Development Group
  * Portions Copyright (c) 1994, Regents of the University of California
  *
  * src/interfaces/libpq/libpq-fe.h
@@ -38,13 +38,14 @@ extern		"C"
 
 /* Application-visible enum types */
 
+/*
+ * Although it is okay to add to these lists, values which become unused
+ * should never be removed, nor should constants be redefined - that would
+ * break compatibility with existing code.
+ */
+
 typedef enum
 {
-	/*
-	 * Although it is okay to add to this list, values which become unused
-	 * should never be removed, nor should constants be redefined - that would
-	 * break compatibility with existing code.
-	 */
 	CONNECTION_OK,
 	CONNECTION_BAD,
 	/* Non-blocking mode only below here */
@@ -89,7 +90,8 @@ typedef enum
 								 * backend */
 	PGRES_NONFATAL_ERROR,		/* notice or warning message */
 	PGRES_FATAL_ERROR,			/* query failed */
-	PGRES_COPY_BOTH				/* Copy In/Out data transfer in progress */
+	PGRES_COPY_BOTH,			/* Copy In/Out data transfer in progress */
+	PGRES_SINGLE_TUPLE			/* single tuple from larger resultset */
 } ExecStatusType;
 
 typedef enum
@@ -107,6 +109,11 @@ typedef enum
 	PQERRORS_DEFAULT,			/* recommended style */
 	PQERRORS_VERBOSE			/* all the facts, ma'am */
 } PGVerbosity;
+
+/*
+ * PGPing - The ordering of this enum should not be altered because the
+ * values are exposed externally via pg_isready.
+ */
 
 typedef enum
 {
@@ -235,14 +242,14 @@ typedef struct pgresAttDesc
 /* make a new client connection to the backend */
 /* Asynchronous (non-blocking) */
 extern PGconn *PQconnectStart(const char *conninfo);
-extern PGconn *PQconnectStartParams(const char **keywords,
-					 const char **values, int expand_dbname);
+extern PGconn *PQconnectStartParams(const char *const * keywords,
+					 const char *const * values, int expand_dbname);
 extern PostgresPollingStatusType PQconnectPoll(PGconn *conn);
 
 /* Synchronous (blocking) */
 extern PGconn *PQconnectdb(const char *conninfo);
-extern PGconn *PQconnectdbParams(const char **keywords,
-				  const char **values, int expand_dbname);
+extern PGconn *PQconnectdbParams(const char *const * keywords,
+				  const char *const * values, int expand_dbname);
 extern PGconn *PQsetdbLogin(const char *pghost, const char *pgport,
 			 const char *pgoptions, const char *pgtty,
 			 const char *dbName,
@@ -259,6 +266,9 @@ extern PQconninfoOption *PQconndefaults(void);
 
 /* parse connection options in same way as PQconnectdb */
 extern PQconninfoOption *PQconninfoParse(const char *conninfo, char **errmsg);
+
+/* return the connection options used by a live connection */
+extern PQconninfoOption *PQconninfo(PGconn *conn);
 
 /* free the data structure returned by PQconndefaults() or PQconninfoParse() */
 extern void PQconninfoFree(PQconninfoOption *connOptions);
@@ -387,6 +397,7 @@ extern int PQsendQueryPrepared(PGconn *conn,
 					const int *paramLengths,
 					const int *paramFormats,
 					int resultFormat);
+extern int	PQsetSingleRowMode(PGconn *conn);
 extern PGresult *PQgetResult(PGconn *conn);
 
 /* Routines for managing an asynchronous query */
@@ -413,8 +424,8 @@ extern int	PQsetnonblocking(PGconn *conn, int arg);
 extern int	PQisnonblocking(const PGconn *conn);
 extern int	PQisthreadsafe(void);
 extern PGPing PQping(const char *conninfo);
-extern PGPing PQpingParams(const char **keywords,
-			 const char **values, int expand_dbname);
+extern PGPing PQpingParams(const char *const * keywords,
+			 const char *const * values, int expand_dbname);
 
 /* Force the write buffer to be written (or at least try) */
 extern int	PQflush(PGconn *conn);
@@ -504,24 +515,21 @@ extern unsigned char *PQescapeBytea(const unsigned char *from, size_t from_lengt
 
 /* === in fe-print.c === */
 
-extern void
-PQprint(FILE *fout,				/* output stream */
+extern void PQprint(FILE *fout,				/* output stream */
 		const PGresult *res,
 		const PQprintOpt *ps);	/* option structure */
 
 /*
  * really old printing routines
  */
-extern void
-PQdisplayTuples(const PGresult *res,
+extern void PQdisplayTuples(const PGresult *res,
 				FILE *fp,		/* where to send the output */
 				int fillAlign,	/* pad the fields with spaces */
 				const char *fieldSep,	/* field separator */
 				int printHeader,	/* display headers? */
 				int quiet);
 
-extern void
-PQprintTuples(const PGresult *res,
+extern void PQprintTuples(const PGresult *res,
 			  FILE *fout,		/* output stream */
 			  int printAttName, /* print attribute names */
 			  int terseOutput,	/* delimiter bars */
@@ -536,10 +544,13 @@ extern int	lo_close(PGconn *conn, int fd);
 extern int	lo_read(PGconn *conn, int fd, char *buf, size_t len);
 extern int	lo_write(PGconn *conn, int fd, const char *buf, size_t len);
 extern int	lo_lseek(PGconn *conn, int fd, int offset, int whence);
+extern pg_int64 lo_lseek64(PGconn *conn, int fd, pg_int64 offset, int whence);
 extern Oid	lo_creat(PGconn *conn, int mode);
 extern Oid	lo_create(PGconn *conn, Oid lobjId);
 extern int	lo_tell(PGconn *conn, int fd);
+extern pg_int64 lo_tell64(PGconn *conn, int fd);
 extern int	lo_truncate(PGconn *conn, int fd, size_t len);
+extern int	lo_truncate64(PGconn *conn, int fd, pg_int64 len);
 extern int	lo_unlink(PGconn *conn, Oid lobjId);
 extern Oid	lo_import(PGconn *conn, const char *filename);
 extern Oid	lo_import_with_oid(PGconn *conn, const char *filename, Oid lobjId);

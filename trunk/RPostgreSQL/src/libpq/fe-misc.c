@@ -19,7 +19,7 @@
  * routines.
  *
  *
- * Portions Copyright (c) 1996-2011, PostgreSQL Global Development Group
+ * Portions Copyright (c) 1996-2013, PostgreSQL Global Development Group
  * Portions Copyright (c) 1994, Regents of the University of California
  *
  * IDENTIFICATION
@@ -55,7 +55,6 @@
 
 #include "libpq-fe.h"
 #include "libpq-int.h"
-#include "pqsignal.h"
 #include "mb/pg_wchar.h"
 #include "pg_config_paths.h"
 
@@ -214,6 +213,32 @@ pqGetnchar(char *s, size_t len, PGconn *conn)
 		fputnbytes(conn->Pfdebug, s, len);
 		fprintf(conn->Pfdebug, "\n");
 	}
+
+	return 0;
+}
+
+/*
+ * pqSkipnchar:
+ *	skip over len bytes in input buffer.
+ *
+ * Note: this is primarily useful for its debug output, which should
+ * be exactly the same as for pqGetnchar.  We assume the data in question
+ * will actually be used, but just isn't getting copied anywhere as yet.
+ */
+int
+pqSkipnchar(size_t len, PGconn *conn)
+{
+	if (len > (size_t) (conn->inEnd - conn->inCursor))
+		return EOF;
+
+	if (conn->Pfdebug)
+	{
+		fprintf(conn->Pfdebug, "From backend (%lu)> ", (unsigned long) len);
+		fputnbytes(conn->Pfdebug, conn->inBuffer + conn->inCursor, len);
+		fprintf(conn->Pfdebug, "\n");
+	}
+
+	conn->inCursor += len;
 
 	return 0;
 }
@@ -754,11 +779,8 @@ retry4:
 	 * has been set already.
 	 */
 definitelyFailed:
+	pqDropConnection(conn);
 	conn->status = CONNECTION_BAD;		/* No more connection to backend */
-	pqsecure_close(conn);
-	closesocket(conn->sock);
-	conn->sock = -1;
-
 	return -1;
 }
 

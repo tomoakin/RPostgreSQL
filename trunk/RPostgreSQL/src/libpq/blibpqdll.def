@@ -161,6 +161,11 @@ EXPORTS
     _PQping                    @ 158
     _PQpingParams              @ 159
     _PQlibVersion              @ 160
+    _PQsetSingleRowMode        @ 161
+    _lo_lseek64                @ 162
+    _lo_tell64                 @ 163
+    _lo_truncate64             @ 164
+    _PQconninfo                @ 165
 
 ; Aliases for MS compatible names
     PQconnectdb               = _PQconnectdb
@@ -323,3 +328,8 @@ EXPORTS
     PQping                    = _PQping
     PQpingParams              = _PQpingParams
     PQlibVersion              = _PQlibVersion
+    PQsetSingleRowMode        = _PQsetSingleRowMode
+    lo_lseek64                = _lo_lseek64
+    lo_tell64                 = _lo_tell64
+    lo_truncate64             = _lo_truncate64
+    PQconninfo                = _PQconninfo
