@@ -1,3 +1,10 @@
+version 0.5-1 --2014-02-04
+
+    o   Conversion routine for raw in R and bytea in PostgreSQL
+
+    o   Use accompanied libpq when either of libpq and header is not found on darwin
+
+
 Version 0.5 -- 2013-10-12
 
     o   postgresqlWriteTable: send column names at COPY
