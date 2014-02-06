@@ -8,6 +8,8 @@
 # Set the name and version -- the version set here will propagate to other files from here
 AC_INIT(RPostgreSQL, 0.5)
 
+AC_CONFIG_AUX_DIR(src)
+
 # Checks for common programs using default macros
 AC_PROG_CC
 
