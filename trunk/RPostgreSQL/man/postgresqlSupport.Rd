@@ -50,8 +50,8 @@
    postgresqlCloseDriver(drv, ...)
 
    ## PostgreSQLConnection-related
-   postgresqlNewConnection(drv, user, password, host, dbname, port, tty, 
-                           options, forceISOdate = TRUE)
+   postgresqlNewConnection(drv, user, password, host, dbname, port, 
+			tty, options, forceISOdate = TRUE)
    postgresqlCloneConnection(con, ...)
    postgresqlConnectionInfo(obj, what, ...)
    postgresqlDescribeConnection(obj, verbose = FALSE, ...)
