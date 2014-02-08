@@ -1,3 +1,25 @@
+2014-02-08  Tomoaki NISHIYAMA  <tomoakin@staff.kanazawa-u.ac.jp>
+
+	Update tests docs for CRAN submission.
+	A bug in postgresqlNewConnection() was identified and fixed during the
+	test rewrite.
+
+	* inst/ANNOUNCEMENT
+	* inst/NEWS
+	* man/dbConnect-methods.Rd: explanation of the parameters.
+	* R/PostgreSQLSupport.R: newConnection do not emit error on NULL
+	argument but convert to empty string which is a valid value.
+	* src/RS-PostgreSQL.c: RS_PostgreSQL_newConnection() don't checkk for
+	empty string.
+	* tests: Write more appropriate comments. Tell when the test is
+	skipped.
+
+2014-02-06  Tomoaki NISHIYAMA  <tomoakin@staff.kanazawa-u.ac.jp>
+
+	* config.sub, config.guess, install-sh move to src subdirectory
+	* man/postgresqlBuildTableDefinition.Rd: Shorten usage line
+	* man/postgresqlSupport.Rd: Shorten usage line
+
 2014-02-04  Tomoaki NISHIYAMA  <tomoakin@staff.kanazawa-u.ac.jp>
 
 	* ChangeLog
@@ -5,7 +27,7 @@
 	* src/libpq: update to libpq from postgresql-9.3.2
 	* configure.in: change the condition to use accompanied libpq
 	* configure
-	* test/bytea.R: test both standard_conforming_strings states; add PASS response
+	* tests/bytea.R: test both standard_conforming_strings states; add PASS response
 
 2014-01-30  Tomoaki NISHIYAMA  <tomoakin@staff.kanazawa-u.ac.jp>
 

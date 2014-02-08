@@ -1,5 +1,5 @@
 
-       RPostgreSQL version 0.4
+       RPostgreSQL version 0.5
 
 We are pround to announce the availability of the RPostgreSQL package on CRAN
 and its mirrors.  This package provides an a DBI-compliant interface between
@@ -10,7 +10,7 @@ by Sameer Kumar Prayaga <sameer.bits@gmail.com>.
 
 Some highlights:
 
-  o  Initial support for prepared statement.
+  o  Binary data store in PostgreSQL bytea datatype.
 
 Known bugs/deficiencies:
 

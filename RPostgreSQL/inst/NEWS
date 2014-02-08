@@ -1,4 +1,6 @@
-version 0.5-1 --2014-02-04
+version 0.5-1 --2014-02-08
+
+    o   Remove segmentationfault when NULL is passed as host argument.
 
     o   Conversion routine for raw in R and bytea in PostgreSQL
 

@@ -15,8 +15,7 @@ Type 'demo()' for some demos, 'help()' for on-line help, or
 'help.start()' for an HTML browser interface to help.
 Type 'q()' to quit R.
 
-> 
-> ## dbWriteTable test
+> ## dbWriteTable test with append=T
 > ##
 > ## Assumes that
 > ##  a) PostgreSQL is running, and
@@ -69,8 +68,31 @@ Type 'q()' to quit R.
 + 
 +     ## and disconnect
 +     dbDisconnect(con)
++ }else{
++     cat("Skip.\n")
 + }
+Loading required package: RPostgreSQL
+Loading required package: DBI
+  row.names area    peri     shape perm
+1         1 4990 2791.90 0.0903296  6.3
+2         2 7002 3892.60 0.1486220  6.3
+3         3 7558 3930.66 0.1833120  6.3
+4         4 7352 3869.32 0.1170630  6.3
+5         5 7943 3948.54 0.1224170 17.1
+   row.names area    peri     shape  perm
+1          1 4990 2791.90 0.0903296   6.3
+2          2 7002 3892.60 0.1486220   6.3
+3          3 7558 3930.66 0.1833120   6.3
+4          4 7352 3869.32 0.1170630   6.3
+5          5 7943 3948.54 0.1224170  17.1
+6          6 7979 4010.15 0.1670450  17.1
+7          7 9333 4345.75 0.1896510  17.1
+8          8 8209 4344.75 0.1641270  17.1
+9          9 8393 3682.04 0.2036540 119.0
+10        10 6425 3098.65 0.1623940 119.0
+[1] "Removing rockdata\n"
+[1] TRUE
 > 
 > proc.time()
    user  system elapsed 
-  0.170   0.018   0.175 
+  0.469   0.040   0.587 

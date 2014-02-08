@@ -22,19 +22,19 @@
 \item{conn}{
   an \code{PostgreSQLConnection} object as produced by \code{dbConnect}.
   }
-\item{host}{Name or the numeric IPaddress of the host to connect to. If address is specified, it should be in the standard IPv4 address format, e.g., 172.28.40.9 or if your machine supports IPv6, you can also use those addresses. The default is to connect to localhost.
+\item{host}{Name or the numeric IPaddress of the host to connect to. If address is specified, it should be in the standard IPv4 address format, e.g., 172.28.40.9 or if your machine supports IPv6, you can also use those addresses. The default is to connect to localhost by a UNIX domain socket.
  }
-\item{dbname}{The database name. Defaults to 'template1' i.e if this argument is not specified, it is taken as dbname="template1".
+\item{dbname}{The database name. Defaults to "", which is interpreted as PostgreSQL default.
  }
 \item{user}{PostgreSQL user name to connect as. Defaults to be the same as the operating system name of the user running the application.
  }
 \item{password}{Password to be used if the server demands password authentication.
  }
-\item{port}{Port number to connect to at the server host, or socket file name extension for Unix-domain connections.
+\item{port}{Port number to connect to at the server host.
  }
 \item{tty}{Ignored (formerly, this specified where to send server debug output).
  }
-\item{options}{Command-line options to be sent to the server
+\item{options}{Command-line options to be sent to the server.
  }
 \item{forceISOdate}{logical if the communication of date (time stamp) from PostgreSQL is forced to ISO style at conection.
  }

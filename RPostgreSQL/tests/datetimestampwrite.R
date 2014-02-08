@@ -77,4 +77,6 @@ if ((Sys.getenv("POSTGRES_USER") != "") &
     dbUnloadDriver(drv)
 
     cat("DONE\n")
+}else{
+    cat("Skip.\n")
 }

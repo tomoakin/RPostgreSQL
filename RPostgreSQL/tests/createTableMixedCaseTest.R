@@ -1,4 +1,3 @@
-
 ## createTableMixedCaseTest test
 ##
 ##
@@ -81,4 +80,6 @@ if (Sys.getenv("POSTGRES_USER") != "" & Sys.getenv("POSTGRES_HOST") != "" & Sys.
     res <- dbGetQuery(con, "drop table \"Foo2\"")
     ## and disconnect
     dbDisconnect(con)
+}else{
+    cat("Skip.\n")
 }

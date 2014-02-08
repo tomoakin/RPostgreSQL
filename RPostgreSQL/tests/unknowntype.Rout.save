@@ -1,7 +1,6 @@
 
-R version 2.15.2 (2012-10-26) -- "Trick or Treat"
-Copyright (C) 2012 The R Foundation for Statistical Computing
-ISBN 3-900051-07-0
+R version 3.0.0 (2013-04-03) -- "Masked Marvel"
+Copyright (C) 2013 The R Foundation for Statistical Computing
 Platform: x86_64-unknown-linux-gnu (64-bit)
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
@@ -16,11 +15,11 @@ Type 'demo()' for some demos, 'help()' for on-line help, or
 'help.start()' for an HTML browser interface to help.
 Type 'q()' to quit R.
 
-> 
-> ## selectWhereZero test
+> ## unknowntype test
 > ##
-> ## test for the 'Issue 1' on the Google Code issue log
-> ## this was reported in June and fixed by Joe Conway (svr committ r100)
+> ## test for
+> ## Issue 5 comment #12
+> ## on the Google Code issue log
 > ##
 > ## Assumes that
 > ##  a) PostgreSQL is running, and
@@ -56,6 +55,7 @@ Type 'q()' to quit R.
 +     ## run a simple query and show the query result
 +     res <- dbGetQuery(con, "create table tmpirisdata (ra REAL[])")
 +     res <- dbSendQuery(con, "select ra from tmpirisdata")
++     cat("Note connection handle will change every time\n")
 +     print(res)
 +     type <- dbColumnInfo(res)
 +     print(type)
@@ -71,8 +71,22 @@ Type 'q()' to quit R.
 +     ## and disconnect
 +     dbDisconnect(con)
 +     cat("PASS:  reached to the end of the test code without segmentation fault\n")
++ }else{
++     cat("Skip.\n")
 + }
+Loading required package: RPostgreSQL
+Loading required package: DBI
+Note connection handle will change every time
+<PostgreSQLResult:(24570,0,4)> 
+  name    Sclass    type len precision scale nullOK
+1   ra character UNKNOWN  -1        -1    -1   TRUE
+data frame with 0 columns and 0 rows
+[1] "Removing tmpirisdata\n"
+PASS:  reached to the end of the test code without segmentation fault
+Warning message:
+In postgresqlDescribeFields(res, ...) :
+  RS-DBI driver warning: (unknown (1021))
 > 
 > proc.time()
    user  system elapsed 
-  0.126   0.024   0.134 
+  0.401   0.033   0.485 

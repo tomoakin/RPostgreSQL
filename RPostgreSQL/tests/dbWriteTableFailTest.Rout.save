@@ -1,7 +1,6 @@
 
-R version 2.15.2 (2012-10-26) -- "Trick or Treat"
-Copyright (C) 2012 The R Foundation for Statistical Computing
-ISBN 3-900051-07-0
+R version 3.0.0 (2013-04-03) -- "Masked Marvel"
+Copyright (C) 2013 The R Foundation for Statistical Computing
 Platform: x86_64-unknown-linux-gnu (64-bit)
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
@@ -16,8 +15,7 @@ Type 'demo()' for some demos, 'help()' for on-line help, or
 'help.start()' for an HTML browser interface to help.
 Type 'q()' to quit R.
 
-> 
-> ## dbWriteTable test
+> ## dbWriteTable fail test
 > ##
 > ## Assumes that
 > ##  a) PostgreSQL is running, and
@@ -85,8 +83,26 @@ Type 'q()' to quit R.
 + 
 +     ## and disconnect
 +     dbDisconnect(con)
++ }else{
++     cat("Skip.\n")
 + }
+Loading required package: RPostgreSQL
+Loading required package: DBI
+create incompatible table rockdata
+write table to rockdata with append=TRUE
+Error in postgresqlpqExec(new.con, sql4) : 
+  RS-DBI driver: (could not Retrieve the result : ERROR:  column "row.names" of relation "rockdata" does not exist
+)
+write table to rockdata
+[1] FALSE
+PASS as the return value is false
+data frame with 0 columns and 0 rows
+[1] "Removing rockdata\n"
+[1] TRUE
+Warning message:
+In postgresqlWriteTable(conn, name, value, ...) :
+  table rockdata exists in database: aborting assignTable
 > 
 > proc.time()
    user  system elapsed 
-  0.139   0.018   0.141 
+  0.453   0.028   0.565 

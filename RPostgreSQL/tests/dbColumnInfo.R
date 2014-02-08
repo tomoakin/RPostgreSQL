@@ -1,5 +1,7 @@
-
-## dbWriteTable test
+## dbColumnInfo test
+## This test confirms that dbColumnInfo() will not cause segfault under gctorture()
+## Initial report was sporadic segfault (Issue 42)
+## and it was found reproducile under gctorture()
 ##
 ## Assumes that
 ##  a) PostgreSQL is running, and
@@ -32,6 +34,7 @@ if (Sys.getenv("POSTGRES_USER") != "" & Sys.getenv("POSTGRES_HOST") != "" & Sys.
     ## run a simple query and show the query result
     res <- dbGetQuery(con, "INSERT INTO aa VALUES(3, 2, NULL)" )
     res <- dbSendQuery(con, "select pk, v1, v2, v1+v2 from aa")
+    cat("This would take a while due to gctorture()\n")
     cat("dbColumnInfo\n")
     gctorture()
     print(dbColumnInfo(res))
@@ -45,4 +48,6 @@ if (Sys.getenv("POSTGRES_USER") != "" & Sys.getenv("POSTGRES_HOST") != "" & Sys.
     dbRemoveTable(con, "aa")
     ## and disconnect
     dbDisconnect(con)
+}else{
+    cat("Skip.\n")
 }

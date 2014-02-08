@@ -1,5 +1,4 @@
-
-## dbWriteTable test
+## Transaction test using two connections
 ##
 ## Assumes that
 ##  a) PostgreSQL is running, and
@@ -90,4 +89,6 @@ if (Sys.getenv("POSTGRES_USER") != "" & Sys.getenv("POSTGRES_HOST") != "" & Sys.
     ## and disconnect
     dbDisconnect(con2)
     dbDisconnect(con1)
+}else{
+    cat("Skip.\n")
 }

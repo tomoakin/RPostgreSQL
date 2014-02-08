@@ -1,4 +1,3 @@
-
 ## dbExistsq test with schema name: reported as Issue 28 at
 ## http://code.google.com/p/rpostgresql/issues/detail?id=28
 ##
@@ -90,4 +89,6 @@ if (Sys.getenv("POSTGRES_USER") != "" & Sys.getenv("POSTGRES_HOST") != "" & Sys.
 
     ## and disconnect
     dbDisconnect(con)
+}else{
+    cat("Skip.\n")
 }
