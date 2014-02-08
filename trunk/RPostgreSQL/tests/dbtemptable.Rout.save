@@ -1,8 +1,7 @@
 
-R version 2.13.1 (2011-07-08)
-Copyright (C) 2011 The R Foundation for Statistical Computing
-ISBN 3-900051-07-0
-Platform: x86_64-pc-linux-gnu (64-bit)
+R version 3.0.0 (2013-04-03) -- "Masked Marvel"
+Copyright (C) 2013 The R Foundation for Statistical Computing
+Platform: x86_64-unknown-linux-gnu (64-bit)
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
 You are welcome to redistribute it under certain conditions.
@@ -16,8 +15,7 @@ Type 'demo()' for some demos, 'help()' for on-line help, or
 'help.start()' for an HTML browser interface to help.
 Type 'q()' to quit R.
 
-> 
-> ## dbWriteTable test
+> ## dbtemplate test
 > ##
 > ## Assumes that
 > ##  a) PostgreSQL is running, and
@@ -61,5 +59,15 @@ Type 'q()' to quit R.
 +     ## and disconnect
 +     dbDisconnect(con)
 +     cat("PASS -- ended without segmentation fault\n")
++ }else{
++     cat("Skip.\n")
 + }
+Loading required package: RPostgreSQL
+Loading required package: DBI
+  name
+1  bar
+PASS -- ended without segmentation fault
 > 
+> proc.time()
+   user  system elapsed 
+  0.372   0.037   0.465 

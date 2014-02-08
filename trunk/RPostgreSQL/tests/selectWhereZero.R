@@ -1,15 +1,11 @@
-
 ## selectWhereZero test
 ##
-## test for the 'Issue 1' on the Google Code issue log
-## this was reported in June and fixed by Joe Conway (svr committ r100)
-##
-## Assumes that
-##  a) PostgreSQL is running, and
-##  b) the current user can connect
-## both of which are not viable for release but suitable while we test
-##
-## Dirk Eddelbuettel, 03 Oct 2009
+## test for the 'Issue 6' on the Google Code issue log
+## Buffer overflow when numeric condition is given for a character variable
+## Issue 19 is also on this test script.
+## 
+## This test script appeared at r111 by dirk.eddelbuettel on Oct 9, 2009
+## 
 
 ## only run this if this env.var is set correctly
 if (Sys.getenv("POSTGRES_USER") != "" & Sys.getenv("POSTGRES_HOST") != "" & Sys.getenv("POSTGRES_DATABASE") != "") {
@@ -38,6 +34,8 @@ if (Sys.getenv("POSTGRES_USER") != "" & Sys.getenv("POSTGRES_HOST") != "" & Sys.
     dbWriteTable(con, "tmpirisdata", iris)
 
     ## run a simple query and show the query result
+    cat("Testing if erroneous SQL cause normal error without segmentation fault.\n")
+
     res <- dbGetQuery(con, "select * from tmpirisdata where \"Species\"=0")
     print(res)
 
@@ -50,4 +48,7 @@ if (Sys.getenv("POSTGRES_USER") != "" & Sys.getenv("POSTGRES_HOST") != "" & Sys.
     ## and disconnect
     dbDisconnect(con)
     cat("PASS:  reached to the end of the test code without segmentation fault\n")
+    ## this test is success if we reach here regardless of any other message
+}else{
+    cat("Skip.\n")
 }

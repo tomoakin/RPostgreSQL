@@ -1,5 +1,4 @@
-
-## dbWriteTable test
+## dbWriteTable test with append=T
 ##
 ## Assumes that
 ##  a) PostgreSQL is running, and
@@ -52,4 +51,6 @@ if (Sys.getenv("POSTGRES_USER") != "" & Sys.getenv("POSTGRES_HOST") != "" & Sys.
 
     ## and disconnect
     dbDisconnect(con)
+}else{
+    cat("Skip.\n")
 }

@@ -1,5 +1,4 @@
-
-## dbWriteTable test
+## open send query test
 ##
 ## Assumes that
 ##  a) PostgreSQL is running, and
@@ -63,4 +62,6 @@ if (Sys.getenv("POSTGRES_USER") != "" & Sys.getenv("POSTGRES_HOST") != "" & Sys.
         cat("PASS tmptest disappeared after disconnection\n")
     }
     dbDisconnect(con)
+}else{
+    cat("Skip.\n")
 }

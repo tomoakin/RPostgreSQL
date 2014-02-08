@@ -205,35 +205,19 @@ RS_PostgreSQL_newConnection(Mgr_Handle * mgrHandle, s_object * con_params)
     Con_Handle *conHandle;
     PGconn *my_connection;
 
-    char *user = NULL, *password = NULL, *host = NULL, *dbname = NULL, *port = NULL, *tty = NULL, *options = NULL;
+    const char *user = NULL, *password = NULL, *host = NULL, *dbname = NULL, *port = NULL, *tty = NULL, *options = NULL;
 
     if (!is_validHandle(mgrHandle, MGR_HANDLE_TYPE)) {
         RS_DBI_errorMessage("invalid PostgreSQLManager", RS_DBI_ERROR);
     }
 
-#define IS_EMPTY(s1)   !strcmp((s1), "")
-
-    if (!IS_EMPTY(CHR_EL(con_params, 0))) {
-        user = (char *) CHR_EL(con_params, 0);
-    }
-    if (!IS_EMPTY(CHR_EL(con_params, 1))) {
-        password = (char *) CHR_EL(con_params, 1);
-    }
-    if (!IS_EMPTY(CHR_EL(con_params, 2))) {
-        host = (char *) CHR_EL(con_params, 2);
-    }
-    if (!IS_EMPTY(CHR_EL(con_params, 3))) {
-        dbname = (char *) CHR_EL(con_params, 3);
-    }
-    if (!IS_EMPTY(CHR_EL(con_params, 4))) {
-        port = (char *) CHR_EL(con_params, 4);
-    }
-    if (!IS_EMPTY(CHR_EL(con_params, 5))) {
-        tty = (char *) CHR_EL(con_params, 5);
-    }
-    if (!IS_EMPTY(CHR_EL(con_params, 6))) {
-        options = (char *) CHR_EL(con_params, 6);
-    }
+    user = CHR_EL(con_params, 0);
+    password = CHR_EL(con_params, 1);
+    host = CHR_EL(con_params, 2);
+    dbname = CHR_EL(con_params, 3);
+    port = CHR_EL(con_params, 4);
+    tty = CHR_EL(con_params, 5);
+    options = CHR_EL(con_params, 6);
 
     my_connection = PQsetdbLogin(host, port, options, tty, dbname, user, password);
 

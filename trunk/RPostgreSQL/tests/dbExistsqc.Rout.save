@@ -1,7 +1,6 @@
 
-R version 2.15.2 (2012-10-26) -- "Trick or Treat"
-Copyright (C) 2012 The R Foundation for Statistical Computing
-ISBN 3-900051-07-0
+R version 3.0.0 (2013-04-03) -- "Masked Marvel"
+Copyright (C) 2013 The R Foundation for Statistical Computing
 Platform: x86_64-unknown-linux-gnu (64-bit)
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
@@ -16,7 +15,6 @@ Type 'demo()' for some demos, 'help()' for on-line help, or
 'help.start()' for an HTML browser interface to help.
 Type 'q()' to quit R.
 
-> 
 > ## dbExistsq test with schema name: reported as Issue 28 at
 > ## http://code.google.com/p/rpostgresql/issues/detail?id=28
 > ##
@@ -108,8 +106,25 @@ Type 'q()' to quit R.
 + 
 +     ## and disconnect
 +     dbDisconnect(con)
++ }else{
++     cat("Skip.\n")
 + }
+Loading required package: RPostgreSQL
+Loading required package: DBI
+Does rock.data exist? 
+PASS: true
+create schema testschema and change the search_path
+Does rock.data exist? 
+PASS: false as the search_path changed
+Does testschema."rock.data" exist? 
+PASS: false as the testschema specified
+Does public."rock.data" exist? 
+PASS: true despite search_path change
+write in current schema
+Does rock.data exist? 
+PASS: true
+[1] TRUE
 > 
 > proc.time()
    user  system elapsed 
-  0.142   0.016   0.142 
+  0.535   0.034   0.718 

@@ -1,7 +1,6 @@
 
-R version 2.15.1 (2012-06-22) -- "Roasted Marshmallows"
-Copyright (C) 2012 The R Foundation for Statistical Computing
-ISBN 3-900051-07-0
+R version 3.0.0 (2013-04-03) -- "Masked Marvel"
+Copyright (C) 2013 The R Foundation for Statistical Computing
 Platform: x86_64-unknown-linux-gnu (64-bit)
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
@@ -16,8 +15,10 @@ Type 'demo()' for some demos, 'help()' for on-line help, or
 'help.start()' for an HTML browser interface to help.
 Type 'q()' to quit R.
 
-> 
-> ## dbWriteTable test
+> ## dbColumnInfo test
+> ## This test confirms that dbColumnInfo() will not cause segfault under gctorture()
+> ## Initial report was sporadic segfault (Issue 42)
+> ## and it was found reproducile under gctorture()
 > ##
 > ## Assumes that
 > ##  a) PostgreSQL is running, and
@@ -50,6 +51,7 @@ Type 'q()' to quit R.
 +     ## run a simple query and show the query result
 +     res <- dbGetQuery(con, "INSERT INTO aa VALUES(3, 2, NULL)" )
 +     res <- dbSendQuery(con, "select pk, v1, v2, v1+v2 from aa")
++     cat("This would take a while due to gctorture()\n")
 +     cat("dbColumnInfo\n")
 +     gctorture()
 +     print(dbColumnInfo(res))
@@ -63,8 +65,30 @@ Type 'q()' to quit R.
 +     dbRemoveTable(con, "aa")
 +     ## and disconnect
 +     dbDisconnect(con)
++ }else{
++     cat("Skip.\n")
 + }
+Loading required package: RPostgreSQL
+Loading required package: DBI
+NOTICE:  CREATE TABLE / PRIMARY KEY will create implicit index "aa_pkey" for table "aa"
+This would take a while due to gctorture()
+dbColumnInfo
+      name  Sclass    type len precision scale nullOK
+1       pk integer INTEGER   4        -1    -1  FALSE
+2       v1  double  FLOAT8   8        -1    -1  FALSE
+3       v2  double  FLOAT8   8        -1    -1   TRUE
+4 ?column?  double  FLOAT8   8        -1    -1     NA
+      name  Sclass    type len precision scale nullOK
+1       pk integer INTEGER   4        -1    -1  FALSE
+2       v1  double  FLOAT8   8        -1    -1  FALSE
+3       v2  double  FLOAT8   8        -1    -1   TRUE
+4 ?column?  double  FLOAT8   8        -1    -1     NA
+SELECT result
+  pk v1 v2 ?column?
+1  3  2 NA       NA
+Removing "AA"
+[1] TRUE
 > 
 > proc.time()
    user  system elapsed 
-  0.127   0.016   0.132 
+ 75.272   0.032  75.427 

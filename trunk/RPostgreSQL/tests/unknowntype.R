@@ -1,8 +1,8 @@
-
-## selectWhereZero test
+## unknowntype test
 ##
-## test for the 'Issue 1' on the Google Code issue log
-## this was reported in June and fixed by Joe Conway (svr committ r100)
+## test for
+## Issue 5 comment #12
+## on the Google Code issue log
 ##
 ## Assumes that
 ##  a) PostgreSQL is running, and
@@ -38,6 +38,7 @@ if (Sys.getenv("POSTGRES_USER") != "" & Sys.getenv("POSTGRES_HOST") != "" & Sys.
     ## run a simple query and show the query result
     res <- dbGetQuery(con, "create table tmpirisdata (ra REAL[])")
     res <- dbSendQuery(con, "select ra from tmpirisdata")
+    cat("Note connection handle will change every time\n")
     print(res)
     type <- dbColumnInfo(res)
     print(type)
@@ -53,4 +54,6 @@ if (Sys.getenv("POSTGRES_USER") != "" & Sys.getenv("POSTGRES_HOST") != "" & Sys.
     ## and disconnect
     dbDisconnect(con)
     cat("PASS:  reached to the end of the test code without segmentation fault\n")
+}else{
+    cat("Skip.\n")
 }

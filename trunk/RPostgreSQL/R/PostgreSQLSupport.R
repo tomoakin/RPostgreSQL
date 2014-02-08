@@ -72,25 +72,27 @@ postgresqlDriverInfo <- function(obj, what="", ...) {
         info
 }
 
-## note that dbname may be a database name, an empty string "", or NULL.
-## The distinction between "" and NULL is that "" is interpreted by
-## the PostgreSQL API as the default database (PostgreSQL config specific)
-## while NULL means "no database".
+## All NULL values are changed to empty strings (""). 
+## These are treated as default values.
 postgresqlNewConnection <- function(drv, user = "", password = "",
                                     host = "", dbname = "",
                                     port = "", tty = "", options = "", forceISOdate=TRUE) {
     if(!isPostgresqlIdCurrent(drv))
         stop("expired manager")
     if(is.null(user))
-        stop("user argument cannot be NULL")
+        user=""
     if(is.null(password))
-        stop("password argument cannot be NULL")
+        password=""
+    if(is.null(host))
+        host=""
     if(is.null(dbname))
-        stop("dbname argument cannot be NULL")
+        dbname=""
     if(is.null(port))
-        stop("port argument cannot be NULL")
+        port=""
     if(is.null(tty))
-        stop("tty argument cannot be NULL")
+        tty=""
+    if(is.null(options))
+        options=""
 
     con.params <- as.character(c(user, password, host,
                                  dbname, port,

@@ -28,6 +28,8 @@ if ((Sys.getenv("POSTGRES_USER") != "") &
     ## Test the store/recovery of binary data
     dbGetQuery(con, "CREATE TABLE byteatable (name text, val bytea)")
     dbGetQuery(con, "set standard_conforming_strings to 'on'")
+    cat("Note the encoded string could differ depending on the server.\n")
+    cat("Show encoded string when standard_conforming_strings is on.\n")
     print(postgresqlEscapeBytea(con, ser))
     iq <- sprintf("INSERT INTO byteatable values('%s', '%s');", "name1", postgresqlEscapeBytea(con, ser))
     dbGetQuery(con, iq)
@@ -42,6 +44,7 @@ if ((Sys.getenv("POSTGRES_USER") != "") &
     }
     dbGetQuery(con, "set standard_conforming_strings to 'off'")
     dbGetQuery(con, "set escape_string_warning to 'off'")
+    cat("Show encoded string when standard_conforming_strings is off.\n")
     print(postgresqlEscapeBytea(con, ser))
     iq <- sprintf("INSERT INTO byteatable values('%s', '%s');", "name2", postgresqlEscapeBytea(con, ser))
     dbGetQuery(con, iq)
@@ -58,4 +61,6 @@ if ((Sys.getenv("POSTGRES_USER") != "") &
     dbDisconnect(con)
     dbUnloadDriver(drv)
     cat("DONE\n")
+}else{
+    cat("Skip because envirinmental variables are not set to tell the connection params.\n")
 }

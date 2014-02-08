@@ -1,5 +1,4 @@
-
-## dbWriteTable test
+## dbtemplate test
 ##
 ## Assumes that
 ##  a) PostgreSQL is running, and
@@ -43,4 +42,6 @@ if (Sys.getenv("POSTGRES_USER") != "" & Sys.getenv("POSTGRES_HOST") != "" & Sys.
     ## and disconnect
     dbDisconnect(con)
     cat("PASS -- ended without segmentation fault\n")
+}else{
+    cat("Skip.\n")
 }

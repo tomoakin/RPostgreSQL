@@ -1,7 +1,9 @@
-
 ## dbExists test with schema name: reported as Issue 3 at
 ## http://code.google.com/p/rpostgresql/issues/detail?id=3
 ## and based on an earlier email by Prasenjit Kapat
+##
+## This test is for additional case where the name contains 
+## single quote characters.
 ##
 ## Assumes that
 ##  a) PostgreSQL is running, and
@@ -52,4 +54,6 @@ if (Sys.getenv("POSTGRES_USER") != "" & Sys.getenv("POSTGRES_HOST") != "" & Sys.
 
     ## and disconnect
     dbDisconnect(con)
+}else{
+    cat("Skip.\n")
 }

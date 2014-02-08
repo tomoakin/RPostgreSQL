@@ -1,7 +1,6 @@
 
-R version 2.15.2 (2012-10-26) -- "Trick or Treat"
-Copyright (C) 2012 The R Foundation for Statistical Computing
-ISBN 3-900051-07-0
+R version 3.0.0 (2013-04-03) -- "Masked Marvel"
+Copyright (C) 2013 The R Foundation for Statistical Computing
 Platform: x86_64-unknown-linux-gnu (64-bit)
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
@@ -16,12 +15,37 @@ Type 'demo()' for some demos, 'help()' for on-line help, or
 'help.start()' for an HTML browser interface to help.
 Type 'q()' to quit R.
 
-> 
-> ## Test of date and datetime types, based on earlier version in inst/devTests
+> ## Test of date and datetime types with time zone
 > ##
 > ## Dirk Eddelbuettel, 21 Oct 2008
 > 
-> dbTypeTests <- function(con, dateclass="timestamp without time zone", tz="UTC") {
+> ## only run this if this env.var is set correctly
+> if ((Sys.getenv("POSTGRES_USER") != "") &
++     (Sys.getenv("POSTGRES_HOST") != "") &
++     (Sys.getenv("POSTGRES_DATABASE") != "")) {
++ 
++     ## try to load our module and abort if this fails
++     stopifnot(require(RPostgreSQL))
++ 
++     ## Force a timezone to make the tests comparable at different locations
++     Sys.setenv("TZ"="UTC")
++     tt<-as.POSIXct(c("2008-07-01 23:45:16.123+0930","2000-01-02 13:34:05.678+1030"), format="%Y-%m-%d %H:%M:%OS%z")
++     print(tt)
++ 
++     ## load the PostgresSQL driver
++     drv <- dbDriver("PostgreSQL")
++     ## can't print result as it contains process id which changes  print(summary(drv))
++ 
++     ## connect to the default db
++     con <- dbConnect(drv,
++                      user=Sys.getenv("POSTGRES_USER"),
++                      password=Sys.getenv("POSTGRES_PASSWD"),
++                      host=Sys.getenv("POSTGRES_HOST"),
++                      dbname=Sys.getenv("POSTGRES_DATABASE"),
++                      port=ifelse((p<-Sys.getenv("POSTGRES_PORT"))!="", p, 5432))
++ 
++ 
++ dbTypeTests <- function(con, dateclass="timestamp without time zone", tz="UTC") {
 +     cat("\n\n**** Trying with ", dateclass, "\n")
 + 
 +     if (dbExistsTable(con, "tempostgrestable"))
@@ -62,32 +86,6 @@ Type 'q()' to quit R.
 +     dbRemoveTable(con, "tempostgrestable")
 +     invisible(NULL)
 + }
-> 
-> ## only run this if this env.var is set correctly
-> if ((Sys.getenv("POSTGRES_USER") != "") &
-+     (Sys.getenv("POSTGRES_HOST") != "") &
-+     (Sys.getenv("POSTGRES_DATABASE") != "")) {
-+ 
-+     ## try to load our module and abort if this fails
-+     stopifnot(require(RPostgreSQL))
-+ 
-+     ## Force a timezone to make the tests comparable at different locations
-+     Sys.setenv("TZ"="UTC")
-+     tt<-as.POSIXct(c("2008-07-01 23:45:16.123+0930","2000-01-02 13:34:05.678+1030"), format="%Y-%m-%d %H:%M:%OS%z")
-+     print(tt)
-+ 
-+     ## load the PostgresSQL driver
-+     drv <- dbDriver("PostgreSQL")
-+     ## can't print result as it contains process id which changes  print(summary(drv))
-+ 
-+     ## connect to the default db
-+     con <- dbConnect(drv,
-+                      user=Sys.getenv("POSTGRES_USER"),
-+                      password=Sys.getenv("POSTGRES_PASSWD"),
-+                      host=Sys.getenv("POSTGRES_HOST"),
-+                      dbname=Sys.getenv("POSTGRES_DATABASE"),
-+                      port=ifelse((p<-Sys.getenv("POSTGRES_PORT"))!="", p, 5432))
-+ 
 +     cat('testing UTC')
 +     dbTypeTests(con, "timestamp")
 +     dbTypeTests(con, "timestamp with time zone")
@@ -102,9 +100,87 @@ Type 'q()' to quit R.
 +     dbTypeTests(con, "timestamp with time zone", tz="America/New_York")
 + 
 +     dbDisconnect(con)
++ }else{
++     cat("Skip.\n")
 + }
+Loading required package: RPostgreSQL
+Loading required package: DBI
+[1] "2008-07-01 14:15:16 UTC" "2000-01-02 03:04:05 UTC"
+testing UTC
+
+**** Trying with  timestamp 
+inserted string 1: 2008-07-01 14:15:16.123+00
+inserted string 2: 2000-01-02 03:04:05.678+00
+[1] "2008-07-01 14:15:16 UTC" "2000-01-02 03:04:05 UTC"
+[1] "2008-07-01 14:15:16 UTC" "2000-01-02 03:04:05 UTC"
+PASS
+PASS
+
+
+**** Trying with  timestamp with time zone 
+inserted string 1: 2008-07-01 14:15:16.123+00
+inserted string 2: 2000-01-02 03:04:05.678+00
+[1] "2008-07-01 14:15:16 UTC" "2000-01-02 03:04:05 UTC"
+[1] "2008-07-01 14:15:16 UTC" "2000-01-02 03:04:05 UTC"
+PASS
+PASS
+testing Asia/Tokyo
+
+**** Trying with  timestamp 
+inserted string 1: 2008-07-01 14:15:16.123+00
+inserted string 2: 2000-01-02 03:04:05.678+00
+[1] "2008-07-01 14:15:16 UTC" "2000-01-02 03:04:05 UTC"
+[1] "2008-07-01 14:15:16 UTC" "2000-01-02 03:04:05 UTC"
+PASS
+PASS
+
+
+**** Trying with  timestamp with time zone 
+inserted string 1: 2008-07-01 14:15:16.123+00
+inserted string 2: 2000-01-02 03:04:05.678+00
+[1] "2008-07-01 14:15:16 UTC" "2000-01-02 03:04:05 UTC"
+[1] "2008-07-01 14:15:16 UTC" "2000-01-02 03:04:05 UTC"
+PASS
+PASS
+testing Australlia/South
+
+**** Trying with  timestamp 
+inserted string 1: 2008-07-01 14:15:16.123+00
+inserted string 2: 2000-01-02 03:04:05.678+00
+[1] "2008-07-01 14:15:16 UTC" "2000-01-02 03:04:05 UTC"
+[1] "2008-07-01 14:15:16 UTC" "2000-01-02 03:04:05 UTC"
+PASS
+PASS
+
+
+**** Trying with  timestamp with time zone 
+inserted string 1: 2008-07-01 14:15:16.123+00
+inserted string 2: 2000-01-02 03:04:05.678+00
+[1] "2008-07-01 14:15:16 UTC" "2000-01-02 03:04:05 UTC"
+[1] "2008-07-01 14:15:16 UTC" "2000-01-02 03:04:05 UTC"
+PASS
+PASS
+testing America/New_York
+
+**** Trying with  timestamp 
+inserted string 1: 2008-07-01 14:15:16.123+00
+inserted string 2: 2000-01-02 03:04:05.678+00
+[1] "2008-07-01 14:15:16 UTC" "2000-01-02 03:04:05 UTC"
+[1] "2008-07-01 14:15:16 UTC" "2000-01-02 03:04:05 UTC"
+PASS
+PASS
+
+
+**** Trying with  timestamp with time zone 
+inserted string 1: 2008-07-01 14:15:16.123+00
+inserted string 2: 2000-01-02 03:04:05.678+00
+[1] "2008-07-01 14:15:16 UTC" "2000-01-02 03:04:05 UTC"
+[1] "2008-07-01 14:15:16 UTC" "2000-01-02 03:04:05 UTC"
+PASS
+PASS
+[1] TRUE
 > 
 > 
 > proc.time()
    user  system elapsed 
-  0.131   0.027   0.141 
+  0.744   0.035   0.975 

@@ -1,7 +1,6 @@
 
-R version 2.15.2 (2012-10-26) -- "Trick or Treat"
-Copyright (C) 2012 The R Foundation for Statistical Computing
-ISBN 3-900051-07-0
+R version 3.0.0 (2013-04-03) -- "Masked Marvel"
+Copyright (C) 2013 The R Foundation for Statistical Computing
 Platform: x86_64-unknown-linux-gnu (64-bit)
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
@@ -16,8 +15,7 @@ Type 'demo()' for some demos, 'help()' for on-line help, or
 'help.start()' for an HTML browser interface to help.
 Type 'q()' to quit R.
 
-> 
-> ## dbWriteTable test
+> ## Transaction test using two connections
 > ##
 > ## Assumes that
 > ##  a) PostgreSQL is running, and
@@ -108,8 +106,26 @@ Type 'q()' to quit R.
 +     ## and disconnect
 +     dbDisconnect(con2)
 +     dbDisconnect(con1)
++ }else{
++     cat("Skip.\n")
 + }
+Loading required package: RPostgreSQL
+Loading required package: DBI
+begin transaction in con1
+create table rockdata in con1
+PASS rockdata is visible through con1
+PASS rockdata is invisible through con2
+commit in con1
+PASS rockdata is visible through con2
+remove the table from con1
+PASS rockdata is invisible through con2
+begin transaction in con1
+create table rockdata in con1
+PASS rockdata is visible through con1
+RollBack con1
+PASS rockdata is invisible through con1
+[1] TRUE
 > 
 > proc.time()
    user  system elapsed 
-  0.139   0.020   0.143 
+  0.553   0.039   0.748 

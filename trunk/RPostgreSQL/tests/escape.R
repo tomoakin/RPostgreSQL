@@ -1,8 +1,6 @@
-
-## connectWithNull test
+## escape test
 ##
-## test for the 'Issue 2' on the Google Code issue log
-## reported in April 2009, still open ?
+## this tests for proper escaping of SQL special characters
 ##
 ## Assumes that
 ##  a) PostgreSQL is running, and
@@ -30,11 +28,16 @@ if (Sys.getenv("POSTGRES_USER") != "" & Sys.getenv("POSTGRES_HOST") != "" & Sys.
                      dbname=Sys.getenv("POSTGRES_DATABASE"),
                      port=ifelse((p<-Sys.getenv("POSTGRES_PORT"))!="", p, 5432))
     
+    cat("Note the appropriate string may differ upon server setting and connection state.\n")
     st <- (postgresqlEscapeStrings(con,"aaa"))
     print(st)
     st2 <- (postgresqlEscapeStrings(con,"aa'a"))
     print(st2)
+    st3 <- (postgresqlEscapeStrings(con,"aa\\a"))
+    print(st3)
 
     ## and disconnect
     dbDisconnect(con)
+}else{
+    cat("Skip.\n")
 }

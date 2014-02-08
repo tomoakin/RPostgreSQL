@@ -1,4 +1,4 @@
-## dbWriteTable test
+## dbWriteTable test with various types
 ##
 ## Assumes that
 ##  a) PostgreSQL is running, and
@@ -229,5 +229,7 @@ if (Sys.getenv("POSTGRES_USER") != "" & Sys.getenv("POSTGRES_HOST") != "" & Sys.
     dbUnloadDriver(drv)
 
     cat("DONE\n")
+}else{
+    cat("Skip.\n")
 }
 

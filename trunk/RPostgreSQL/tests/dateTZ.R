@@ -1,7 +1,32 @@
-
-## Test of date and datetime types, based on earlier version in inst/devTests
+## Test of date and datetime types with time zone
 ##
 ## Dirk Eddelbuettel, 21 Oct 2008
+
+## only run this if this env.var is set correctly
+if ((Sys.getenv("POSTGRES_USER") != "") &
+    (Sys.getenv("POSTGRES_HOST") != "") &
+    (Sys.getenv("POSTGRES_DATABASE") != "")) {
+
+    ## try to load our module and abort if this fails
+    stopifnot(require(RPostgreSQL))
+
+    ## Force a timezone to make the tests comparable at different locations
+    Sys.setenv("TZ"="UTC")
+    tt<-as.POSIXct(c("2008-07-01 23:45:16.123+0930","2000-01-02 13:34:05.678+1030"), format="%Y-%m-%d %H:%M:%OS%z")
+    print(tt)
+
+    ## load the PostgresSQL driver
+    drv <- dbDriver("PostgreSQL")
+    ## can't print result as it contains process id which changes  print(summary(drv))
+
+    ## connect to the default db
+    con <- dbConnect(drv,
+                     user=Sys.getenv("POSTGRES_USER"),
+                     password=Sys.getenv("POSTGRES_PASSWD"),
+                     host=Sys.getenv("POSTGRES_HOST"),
+                     dbname=Sys.getenv("POSTGRES_DATABASE"),
+                     port=ifelse((p<-Sys.getenv("POSTGRES_PORT"))!="", p, 5432))
+
 
 dbTypeTests <- function(con, dateclass="timestamp without time zone", tz="UTC") {
     cat("\n\n**** Trying with ", dateclass, "\n")
@@ -44,32 +69,6 @@ dbTypeTests <- function(con, dateclass="timestamp without time zone", tz="UTC") 
     dbRemoveTable(con, "tempostgrestable")
     invisible(NULL)
 }
-
-## only run this if this env.var is set correctly
-if ((Sys.getenv("POSTGRES_USER") != "") &
-    (Sys.getenv("POSTGRES_HOST") != "") &
-    (Sys.getenv("POSTGRES_DATABASE") != "")) {
-
-    ## try to load our module and abort if this fails
-    stopifnot(require(RPostgreSQL))
-
-    ## Force a timezone to make the tests comparable at different locations
-    Sys.setenv("TZ"="UTC")
-    tt<-as.POSIXct(c("2008-07-01 23:45:16.123+0930","2000-01-02 13:34:05.678+1030"), format="%Y-%m-%d %H:%M:%OS%z")
-    print(tt)
-
-    ## load the PostgresSQL driver
-    drv <- dbDriver("PostgreSQL")
-    ## can't print result as it contains process id which changes  print(summary(drv))
-
-    ## connect to the default db
-    con <- dbConnect(drv,
-                     user=Sys.getenv("POSTGRES_USER"),
-                     password=Sys.getenv("POSTGRES_PASSWD"),
-                     host=Sys.getenv("POSTGRES_HOST"),
-                     dbname=Sys.getenv("POSTGRES_DATABASE"),
-                     port=ifelse((p<-Sys.getenv("POSTGRES_PORT"))!="", p, 5432))
-
     cat('testing UTC')
     dbTypeTests(con, "timestamp")
     dbTypeTests(con, "timestamp with time zone")
@@ -84,5 +83,7 @@ if ((Sys.getenv("POSTGRES_USER") != "") &
     dbTypeTests(con, "timestamp with time zone", tz="America/New_York")
 
     dbDisconnect(con)
+}else{
+    cat("Skip.\n")
 }
 

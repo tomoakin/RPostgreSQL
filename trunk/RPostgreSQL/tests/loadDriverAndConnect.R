@@ -1,4 +1,3 @@
-
 ## First rough version of a test script
 ##
 ## Assumes that
@@ -34,4 +33,6 @@ if (Sys.getenv("POSTGRES_USER") != "" & Sys.getenv("POSTGRES_HOST") != "" & Sys.
 
     ## and disconnect
     dbDisconnect(con)
+}else{
+    cat("Skip.\n")
 }

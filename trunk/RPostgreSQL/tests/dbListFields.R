@@ -54,4 +54,6 @@ if (Sys.getenv("POSTGRES_USER") != "" & Sys.getenv("POSTGRES_HOST") != "" & Sys.
     dbGetQuery(con, "DROP SCHEMA testschema")
     ## and disconnect
     dbDisconnect(con)
+}else{
+    cat("Skip.\n")
 }
