@@ -85,4 +85,4 @@ Loading required package: DBI
 > 
 > proc.time()
    user  system elapsed 
-  0.454   0.030   0.561 
+  0.437   0.034   0.532 

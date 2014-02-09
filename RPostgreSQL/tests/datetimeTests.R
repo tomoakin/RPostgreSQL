@@ -26,6 +26,8 @@ if ((Sys.getenv("POSTGRES_USER") != "") &
                      dbname=Sys.getenv("POSTGRES_DATABASE"),
                      port=ifelse((p<-Sys.getenv("POSTGRES_PORT"))!="", p, 5432))
 
+    dbGetQuery(con, "SET TIMEZONE TO 'UTC'")
+
 dbTypeTests <- function(con, dateclass="timestamp without time zone") {
     cat("\n\n**** Trying with ", dateclass, "\n")
 

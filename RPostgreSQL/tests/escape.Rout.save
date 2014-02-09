@@ -50,8 +50,12 @@ Type 'q()' to quit R.
 +     print(st)
 +     st2 <- (postgresqlEscapeStrings(con,"aa'a"))
 +     print(st2)
++     dbGetQuery(con, "set standard_conforming_strings to 'on'")
 +     st3 <- (postgresqlEscapeStrings(con,"aa\\a"))
 +     print(st3)
++     dbGetQuery(con, "set standard_conforming_strings to 'off'")
++     st4 <- (postgresqlEscapeStrings(con,"aa\\a"))
++     print(st4)
 + 
 +     ## and disconnect
 +     dbDisconnect(con)
@@ -63,9 +67,10 @@ Loading required package: DBI
 Note the appropriate string may differ upon server setting and connection state.
 [1] "aaa"
 [1] "aa''a"
+[1] "aa\\a"
 [1] "aa\\\\a"
 [1] TRUE
 > 
 > proc.time()
    user  system elapsed 
-  0.359   0.027   0.375 
+  0.363   0.032   0.385 

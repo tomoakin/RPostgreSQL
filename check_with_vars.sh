@@ -38,6 +38,12 @@ Rscript -e 'packageDescription("RPostgreSQL", fields = c("Package", "Version", "
 
 #R CMD check RPostgreSQL
 
+for f in exttests/*.R
+do
+    echo ""
+    echo "==== Running $f"
+R -d "valgrind --tool=memcheck --leak-check=full" --slave < $f
+done
 for f in RPostgreSQL/tests/*.R
 do
     echo ""

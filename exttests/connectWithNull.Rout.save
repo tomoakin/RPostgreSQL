@@ -119,21 +119,21 @@ Loading required package: RPostgreSQL
 Loading required package: DBI
 Normal connection
 Note connection handle will change every time
-<PostgreSQLConnection:(24160,0)> 
+<PostgreSQLConnection:(15532,0)> 
 connection with user=NULL
-<PostgreSQLConnection:(24160,1)> 
+<PostgreSQLConnection:(15532,1)> 
 connection with password=NULL
-<PostgreSQLConnection:(24160,2)> 
+<PostgreSQLConnection:(15532,2)> 
 connection with host=NULL
-<PostgreSQLConnection:(24160,3)> 
+<PostgreSQLConnection:(15532,3)> 
 connection with dbname=NULL
 Error in postgresqlNewConnection(drv, ...) : 
   RS-DBI driver: (could not connect testuser@localhost on dbname "testuser"
 )
 connection with port=NULL
-<PostgreSQLConnection:(24160,4)> 
+<PostgreSQLConnection:(15532,4)> 
 PASS:  reached to the end of the test code without segmentation fault
 > 
 > proc.time()
    user  system elapsed 
-  0.421   0.031   0.452 
+  0.404   0.046   0.449 

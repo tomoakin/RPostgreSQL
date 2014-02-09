@@ -43,6 +43,8 @@ Type 'q()' to quit R.
 +                      dbname=Sys.getenv("POSTGRES_DATABASE"),
 +                      port=ifelse((p<-Sys.getenv("POSTGRES_PORT"))!="", p, 5432))
 + 
++     dbGetQuery(con, "SET TIMEZONE TO 'UTC'")
++ 
 + dbTypeTests <- function(con, dateclass="timestamp without time zone") {
 +     cat("\n\n**** Trying with ", dateclass, "\n")
 + 
@@ -98,11 +100,11 @@ Time difference of -3103.466 days
 
 **** Trying with  timestamp with time zone 
                    tt zz
-1 2008-07-01 05:15:16  1
-2 2000-01-01 18:04:05  2
+1 2008-07-01 14:15:16  1
+2 2000-01-02 03:04:05  2
   name  Sclass           type len precision scale nullOK
 1   tt POSIXct TIMESTAMPTZOID   8        -1    -1   TRUE
-[1] "2008-07-01 05:15:16 UTC" "2000-01-01 18:04:05 UTC"
+[1] "2008-07-01 14:15:16 UTC" "2000-01-02 03:04:05 UTC"
 [1] "POSIXct" "POSIXt" 
 Time difference of -3103.466 days
 
@@ -120,4 +122,4 @@ Time difference of -3103 days
 > 
 > proc.time()
    user  system elapsed 
-  0.539   0.029   0.694 
+  0.537   0.036   0.768 

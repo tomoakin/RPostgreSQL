@@ -79,4 +79,4 @@ Does public.rockdata exist? [1] FALSE
 > 
 > proc.time()
    user  system elapsed 
-  0.464   0.026   0.555 
+  0.455   0.035   0.536 
