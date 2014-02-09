@@ -264,18 +264,10 @@ Loading required package: DBI
 2 	müß
 [1] "Removing rockdata\n"
 PASS:  could write small umlaut u and ligature sz
-Error in postgresqlgetResult(new.con) : 
-  RS-DBI driver: (could not Retrieve the result : ERROR:  character 0xe6bca2 of encoding "UTF8" has no equivalent in "WIN1252"
-CONTEXT:  COPY rockdata, line 2
-)
-FAIL:  could not write kanji.
-       This might be no problem for you if you don't use multibyte characters.
-       Otherwise, please check for the server encoding.
-       Database encoding is usually set at the time of createdb.
-       You can see for more information on how to setup at 
-       http://www.postgresql.org/docs/9.1/static/multibyte.html
-
+1 	normal
+2 	kanji漢字
 [1] "Removing rockdata\n"
+PASS:  could write kanji
 Read Numeric values
 PASS -- all integer is as expected
 PASS integer value is preservedGOOD -- all numeric values are as expected
@@ -293,4 +285,4 @@ DONE
 > 
 > proc.time()
    user  system elapsed 
-  1.057   0.062   1.558 
+  1.053   0.046   1.580 

@@ -47,8 +47,7 @@ Type 'q()' to quit R.
 +     dbGetQuery(con, "set standard_conforming_strings to 'on'")
 +     cat("Note the encoded string could differ depending on the server.\n")
 +     cat("Show encoded string when standard_conforming_strings is on.\n")
-+ # don't print the variable binary data in automatic test
-+ #    print(postgresqlEscapeBytea(con, ser))
++     print(postgresqlEscapeBytea(con, ser))
 +     iq <- sprintf("INSERT INTO byteatable values('%s', '%s');", "name1", postgresqlEscapeBytea(con, ser))
 +     dbGetQuery(con, iq)
 +     rows<-dbGetQuery(con, "SELECT * from byteatable")
@@ -63,8 +62,7 @@ Type 'q()' to quit R.
 +     dbGetQuery(con, "set standard_conforming_strings to 'off'")
 +     dbGetQuery(con, "set escape_string_warning to 'off'")
 +     cat("Show encoded string when standard_conforming_strings is off.\n")
-+ # don't print the variable binary data in automatic test
-+ #    print(postgresqlEscapeBytea(con, ser))
++     print(postgresqlEscapeBytea(con, ser))
 +     iq <- sprintf("INSERT INTO byteatable values('%s', '%s');", "name2", postgresqlEscapeBytea(con, ser))
 +     dbGetQuery(con, iq)
 +     rows<-dbGetQuery(con, "SELECT * from byteatable where name = 'name2'")
@@ -87,11 +85,13 @@ Loading required package: RPostgreSQL
 Loading required package: DBI
 Note the encoded string could differ depending on the server.
 Show encoded string when standard_conforming_strings is on.
+[1] "X\\012\\000\\000\\000\\002\\000\\003\\000\\000\\000\\002\\003\\000\\000\\000\\000\\023\\000\\000\\000\\002\\000\\000\\000\\020\\000\\000\\000\\001\\000\\004\\000\\011\\000\\000\\000\\003one\\000\\000\\000\\020\\000\\000\\000\\001\\000\\004\\000\\011\\000\\000\\000\\003two"
 PASS: Identical data was recovered
 Show encoded string when standard_conforming_strings is off.
+[1] "X\\\\012\\\\000\\\\000\\\\000\\\\002\\\\000\\\\003\\\\000\\\\000\\\\000\\\\002\\\\003\\\\000\\\\000\\\\000\\\\000\\\\023\\\\000\\\\000\\\\000\\\\002\\\\000\\\\000\\\\000\\\\020\\\\000\\\\000\\\\000\\\\001\\\\000\\\\004\\\\000\\\\011\\\\000\\\\000\\\\000\\\\003one\\\\000\\\\000\\\\000\\\\020\\\\000\\\\000\\\\000\\\\001\\\\000\\\\004\\\\000\\\\011\\\\000\\\\000\\\\000\\\\003two"
 PASS: Identical data was recovered
 DONE
 > 
 > proc.time()
    user  system elapsed 
-  0.429   0.035   0.536 
+  0.420   0.041   0.522 

@@ -105,4 +105,4 @@ In postgresqlWriteTable(conn, name, value, ...) :
 > 
 > proc.time()
    user  system elapsed 
-  0.453   0.028   0.565 
+  0.450   0.024   0.492 

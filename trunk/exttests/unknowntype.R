@@ -1,6 +1,8 @@
-## escape test
+## unknowntype test
 ##
-## this tests for proper escaping of SQL special characters
+## test for
+## Issue 5 comment #12
+## on the Google Code issue log
 ##
 ## Assumes that
 ##  a) PostgreSQL is running, and
@@ -14,34 +16,44 @@ if (Sys.getenv("POSTGRES_USER") != "" & Sys.getenv("POSTGRES_HOST") != "" & Sys.
 
     ## try to load our module and abort if this fails
     stopifnot(require(RPostgreSQL))
-    stopifnot(require(datasets))
 
     ## load the PostgresSQL driver
     drv <- dbDriver("PostgreSQL")
 
-    ## connect to the default db -- replacing any of these with NULL will lead to
-    ## a stop() call and a return to the R prompt rather than a segfault
+    ## connect to the default db
     con <- dbConnect(drv,
                      user=Sys.getenv("POSTGRES_USER"),
                      password=Sys.getenv("POSTGRES_PASSWD"),
                      host=Sys.getenv("POSTGRES_HOST"),
                      dbname=Sys.getenv("POSTGRES_DATABASE"),
                      port=ifelse((p<-Sys.getenv("POSTGRES_PORT"))!="", p, 5432))
-    
-    cat("Note the appropriate string may differ upon server setting and connection state.\n")
-    st <- (postgresqlEscapeStrings(con,"aaa"))
-    print(st)
-    st2 <- (postgresqlEscapeStrings(con,"aa'a"))
-    print(st2)
-    dbGetQuery(con, "set standard_conforming_strings to 'on'")
-    st3 <- (postgresqlEscapeStrings(con,"aa\\a"))
-    print(st3)
-    dbGetQuery(con, "set standard_conforming_strings to 'off'")
-    st4 <- (postgresqlEscapeStrings(con,"aa\\a"))
-    print(st4)
+
+
+    if (dbExistsTable(con, "tmpirisdata")) {
+        print("Removing tmpirisdata\n")
+        dbRemoveTable(con, "tmpirisdata")
+    }
+
+
+    ## run a simple query and show the query result
+    res <- dbGetQuery(con, "create table tmpirisdata (ra REAL[])")
+    res <- dbSendQuery(con, "select ra from tmpirisdata")
+    cat("Note connection handle will change every time\n")
+    print(res)
+    type <- dbColumnInfo(res)
+    print(type)
+    data <- fetch(res, -1)
+    print(data)
+
+    ## cleanup
+    if (dbExistsTable(con, "tmpirisdata")) {
+        print("Removing tmpirisdata\n")
+        dbRemoveTable(con, "tmpirisdata")
+    }
 
     ## and disconnect
     dbDisconnect(con)
+    cat("PASS:  reached to the end of the test code without segmentation fault\n")
 }else{
     cat("Skip.\n")
 }

@@ -16,9 +16,10 @@ Type 'demo()' for some demos, 'help()' for on-line help, or
 Type 'q()' to quit R.
 
 > ## dbColumnInfo test
-> ## This test confirms that dbColumnInfo() will not cause segfault under gctorture()
 > ## Initial report was sporadic segfault (Issue 42)
 > ## and it was found reproducile under gctorture()
+> ## However, test with gctorture() is moved outside the package
+> ## because its execution time is too long.
 > ##
 > ## Assumes that
 > ##  a) PostgreSQL is running, and
@@ -46,15 +47,13 @@ Type 'q()' to quit R.
 + 
 + 
 +     #  create a table
++     dbGetQuery(con, "set client_min_messages to 'WARNING'")
 +     res <- dbGetQuery(con, "CREATE TABLE aa (pk integer primary key, v1 float not null, v2 float)" )
 + 
 +     ## run a simple query and show the query result
 +     res <- dbGetQuery(con, "INSERT INTO aa VALUES(3, 2, NULL)" )
 +     res <- dbSendQuery(con, "select pk, v1, v2, v1+v2 from aa")
-+     cat("This would take a while due to gctorture()\n")
 +     cat("dbColumnInfo\n")
-+     gctorture()
-+     print(dbColumnInfo(res))
 +     print(dbColumnInfo(res))
 +     cat("SELECT result\n")
 +     df <- fetch(res, n=-1)
@@ -70,14 +69,7 @@ Type 'q()' to quit R.
 + }
 Loading required package: RPostgreSQL
 Loading required package: DBI
-NOTICE:  CREATE TABLE / PRIMARY KEY will create implicit index "aa_pkey" for table "aa"
-This would take a while due to gctorture()
 dbColumnInfo
-      name  Sclass    type len precision scale nullOK
-1       pk integer INTEGER   4        -1    -1  FALSE
-2       v1  double  FLOAT8   8        -1    -1  FALSE
-3       v2  double  FLOAT8   8        -1    -1   TRUE
-4 ?column?  double  FLOAT8   8        -1    -1     NA
       name  Sclass    type len precision scale nullOK
 1       pk integer INTEGER   4        -1    -1  FALSE
 2       v1  double  FLOAT8   8        -1    -1  FALSE
@@ -91,4 +83,4 @@ Removing "AA"
 > 
 > proc.time()
    user  system elapsed 
- 75.272   0.032  75.427 
+  0.391   0.039   0.488 

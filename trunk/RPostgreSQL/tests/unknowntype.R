@@ -39,7 +39,8 @@ if (Sys.getenv("POSTGRES_USER") != "" & Sys.getenv("POSTGRES_HOST") != "" & Sys.
     res <- dbGetQuery(con, "create table tmpirisdata (ra REAL[])")
     res <- dbSendQuery(con, "select ra from tmpirisdata")
     cat("Note connection handle will change every time\n")
-    print(res)
+# connection data are variable, so don't print
+#    print(res)
     type <- dbColumnInfo(res)
     print(type)
     data <- fetch(res, -1)

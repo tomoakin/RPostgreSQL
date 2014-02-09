@@ -30,8 +30,7 @@ if ((Sys.getenv("POSTGRES_USER") != "") &
     dbGetQuery(con, "set standard_conforming_strings to 'on'")
     cat("Note the encoded string could differ depending on the server.\n")
     cat("Show encoded string when standard_conforming_strings is on.\n")
-# don't print the variable binary data in automatic test
-#    print(postgresqlEscapeBytea(con, ser))
+    print(postgresqlEscapeBytea(con, ser))
     iq <- sprintf("INSERT INTO byteatable values('%s', '%s');", "name1", postgresqlEscapeBytea(con, ser))
     dbGetQuery(con, iq)
     rows<-dbGetQuery(con, "SELECT * from byteatable")
@@ -46,8 +45,7 @@ if ((Sys.getenv("POSTGRES_USER") != "") &
     dbGetQuery(con, "set standard_conforming_strings to 'off'")
     dbGetQuery(con, "set escape_string_warning to 'off'")
     cat("Show encoded string when standard_conforming_strings is off.\n")
-# don't print the variable binary data in automatic test
-#    print(postgresqlEscapeBytea(con, ser))
+    print(postgresqlEscapeBytea(con, ser))
     iq <- sprintf("INSERT INTO byteatable values('%s', '%s');", "name2", postgresqlEscapeBytea(con, ser))
     dbGetQuery(con, iq)
     rows<-dbGetQuery(con, "SELECT * from byteatable where name = 'name2'")

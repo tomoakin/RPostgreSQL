@@ -128,4 +128,4 @@ PASS rockdata is invisible through con1
 > 
 > proc.time()
    user  system elapsed 
-  0.553   0.039   0.748 
+  0.553   0.032   0.749 

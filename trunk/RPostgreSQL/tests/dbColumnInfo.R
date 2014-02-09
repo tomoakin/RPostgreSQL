@@ -1,7 +1,8 @@
 ## dbColumnInfo test
-## This test confirms that dbColumnInfo() will not cause segfault under gctorture()
 ## Initial report was sporadic segfault (Issue 42)
 ## and it was found reproducile under gctorture()
+## However, test with gctorture() is moved outside the package
+## because its execution time is too long.
 ##
 ## Assumes that
 ##  a) PostgreSQL is running, and
@@ -29,15 +30,13 @@ if (Sys.getenv("POSTGRES_USER") != "" & Sys.getenv("POSTGRES_HOST") != "" & Sys.
 
 
     #  create a table
+    dbGetQuery(con, "set client_min_messages to 'WARNING'")
     res <- dbGetQuery(con, "CREATE TABLE aa (pk integer primary key, v1 float not null, v2 float)" )
 
     ## run a simple query and show the query result
     res <- dbGetQuery(con, "INSERT INTO aa VALUES(3, 2, NULL)" )
     res <- dbSendQuery(con, "select pk, v1, v2, v1+v2 from aa")
-    cat("This would take a while due to gctorture()\n")
     cat("dbColumnInfo\n")
-    gctorture()
-    print(dbColumnInfo(res))
     print(dbColumnInfo(res))
     cat("SELECT result\n")
     df <- fetch(res, n=-1)

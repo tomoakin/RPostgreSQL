@@ -70,4 +70,4 @@ PASS -- ended without segmentation fault
 > 
 > proc.time()
    user  system elapsed 
-  0.372   0.037   0.465 
+  0.394   0.027   0.482 
