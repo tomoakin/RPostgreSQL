@@ -38,7 +38,6 @@ if test "${PG_CONFIG}" != ""; then
 else
 
     # let's look around -- code copied from RdbuiPgSQL but modified to use test -f
-    # added fink standard install location Neil 8/30/2009
     AC_MSG_NOTICE([checking for PostgreSQL header files])
     if ! test $PG_INCDIR
     then
@@ -57,9 +56,6 @@ else
 	/opt/include/postgresql \
 	/opt/local/include \
 	/opt/local/include/postgresql \
-	/opt/local/include/postgresql84 \
-	/sw/opt/postgresql-8.4/include \
-	/Library/PostgresPlus/8.4SS/include \
 	/sw/include/postgresql
 	do
         AC_MSG_NOTICE([Checking include ${dir}.])
@@ -70,7 +66,7 @@ else
 	    fi
 	done
     fi
-
+	
     # likewise, let's look around for libpq.so
     if ! test $PG_LIBDIR
     then
@@ -88,9 +84,6 @@ else
 	/opt/lib/postgresql \
 	/opt/local/lib \
 	/opt/local/lib/postgresql \
-	/opt/local/lib/postgresql84 \
-	/sw/opt/postgresql-8.4/lib \
-	/Library/PostgresPlus/8.4SS/lib \
 	/sw/lib
 	do
         AC_MSG_NOTICE([Checking lib ${dir}.])
@@ -134,8 +127,16 @@ clean:
 fi
 
 # Expand into arguments
+
+#  make sure we use the included libpq-fe.h if it was not previously found
+if ! test $PG_INCDIR ; then
+	AC_MSG_NOTICE([Using internal package libpq-fe.h])
+	PG_INCDIR="src/libpq"
+fi
+
 PKG_CPPFLAGS="-I${PG_INCDIR}"
 PKG_LIBS="-L${PG_LIBDIR} -lpq"
+
 # Test for sanity by looking for libpq-fe.h, no explicit action on found, error on failure
 AC_CHECK_FILE(["${PG_INCDIR}/libpq-fe.h"],
 	,
