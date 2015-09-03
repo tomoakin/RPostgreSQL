@@ -1,5 +1,5 @@
 Package: RPostgreSQL
-Version: 0.5-1
+Version: 0.5-2
 Date: $Date$
 Title: R interface to the PostgreSQL database system
 Author: Joe Conway, Dirk Eddelbuettel, Tomoaki Nishiyama, Sameer Kumar Prayaga (during 2008), Neil Tiffin
@@ -18,7 +18,7 @@ Description: Database interface and PostgreSQL driver for R
  A wiki and issue tracking system for the package are available
  at Google Code at https://code.google.com/p/rpostgresql/ .
 LazyLoad: true
-Depends: R (>= 2.9.0), methods, DBI (>= 0.1-4)
+Depends: R (>= 2.9.0), methods, DBI (>= 0.3)
 License: GPL-2 | file LICENSE
 Copyright: Authors listed above, PostgreSQL Global Development Group, and The Regents of the University of California
 Collate: S4R.R zzz.R PostgreSQLSupport.R dbObjectId.R PostgreSQL.R

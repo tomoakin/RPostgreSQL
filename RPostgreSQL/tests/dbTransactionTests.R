@@ -39,7 +39,7 @@ if (Sys.getenv("POSTGRES_USER") != "" & Sys.getenv("POSTGRES_HOST") != "" & Sys.
     }
 
     cat("begin transaction in con1\n")
-    dbGetQuery(con1, "BEGIN TRANSACTION")
+    dbBegin(con1)
     cat("create table rockdata in con1\n")
     dbWriteTable(con1, "rockdata", rock)
     if (dbExistsTable(con1, "rockdata")) {
@@ -70,7 +70,7 @@ if (Sys.getenv("POSTGRES_USER") != "" & Sys.getenv("POSTGRES_HOST") != "" & Sys.
     }
 
     cat("begin transaction in con1\n")
-    dbGetQuery(con1, "BEGIN TRANSACTION")
+    dbBegin(con1)
     cat("create table rockdata in con1\n")
     dbWriteTable(con1, "rockdata", rock)
     if (dbExistsTable(con1, "rockdata")) {

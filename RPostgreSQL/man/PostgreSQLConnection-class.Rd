@@ -16,6 +16,7 @@ Class \code{"dbObjectId"}, by class "PostgreSQLObject".
 \section{Methods}{
   \describe{
     \item{\link{coerce}}{\code{signature(from = "PostgreSQLConnection", to = "PostgreSQLResult")}: ... }
+    \item{\link[DBI]{dbBegin}}{\code{signature(conn = "PostgreSQLConnection")}: ... }
     \item{\link[DBI]{dbCallProc}}{\code{signature(conn = "PostgreSQLConnection")}: ... }
     \item{\link[DBI]{dbCommit}}{\code{signature(conn = "PostgreSQLConnection")}: ... }
     \item{\link[DBI]{dbConnect}}{\code{signature(drv = "PostgreSQLConnection")}: ... }

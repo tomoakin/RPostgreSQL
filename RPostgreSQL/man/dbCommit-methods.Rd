@@ -1,6 +1,7 @@
 % $Id: dbCommit-methods.Rd,v 0.1 2008/08/10 18:04:01 psk Exp $
 \name{dbCommit-methods}
 \docType{methods}
+\alias{dbBegin-methods}
 \alias{dbCommit-methods}
 \alias{dbRollback-methods}
 \alias{PostgreSQLConnection-method}
@@ -10,8 +11,10 @@
   DBMS Transaction Management
 }
 \description{
-  Commits or roll backs the current transaction 
+  Transaction related commands.
+  Start a transaction, commit or roll back the current transaction 
   in an PostgreSQL connection.
+  \code{dbBegin} starts a transaction.
   \code{dbCommit} and \code{dbRollback} commit and rollback the
   transaction, respectively.
 
@@ -43,7 +46,7 @@ drv <- dbDriver("PostgreSQL")
 con <- dbConnect(drv, dbname="postgres")
 dbGetQuery(con, "select count(*) from sales")
 
-dbGetQuery(con, "BEGIN TRANSACTION")
+dbBegin(con)
 rs <- dbSendQuery(con, 
       "Delete * from sales as p where p.cost>10")
 if(dbGetInfo(rs, what = "rowsAffected") > 250){
