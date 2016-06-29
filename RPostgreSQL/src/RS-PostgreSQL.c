@@ -241,7 +241,8 @@ RS_PostgreSQL_newConnection(Mgr_Handle * mgrHandle, s_object * con_params)
 
     if (PQstatus(my_connection) != CONNECTION_OK) {
         char buf[1000];
-	sprintf(buf, "could not connect %s@%s on dbname \"%s\"\n", PQuser(my_connection), host?host:"local", PQdb(my_connection));
+        sprintf(buf, "could not connect %s@%s on dbname \"%s\": %s", PQuser(my_connection), host?host:"local", PQdb(my_connection), PQerrorMessage(my_connection));
+        buf[strcspn(buf, "\r\n")] = 0;  /* Strip newlines from error message */
         PQfinish(my_connection);
         my_connection = NULL;
         RS_PostgreSQL_freeConParams(conParams); /*free BEFORE emitting err message that do not come back */
