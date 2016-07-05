@@ -2730,17 +2730,26 @@ fi
 ENABLE_LIBPQ=
 
 # If pg_config was found, let's use it
-if test "${PG_CONFIG}" != ""; then
+# Use pg_config for header and linker arguments
 
-    # Use pg_config for header and linker arguments
-    PG_INCDIR=`${PG_CONFIG} --includedir`
-    PG_LIBDIR=`${PG_CONFIG} --libdir`
+if test "${PG_CONFIG}" != "" ; then
+	PG_INCDIR=`${PG_CONFIG} --includedir`
+	PG_LIBDIR=`${PG_CONFIG} --libdir`
+fi
 
-else
 
+# If pg_config wasn't found, or was found but references a directory that doesn't exist,
+# let's look elsewhere
+
+if test "${PG_CONFIG}" == "" || ! test -d "${PG_INCDIR}" || ! test -d "${PG_LIBDIR}" ; then
     # let's look around -- code copied from RdbuiPgSQL but modified to use test -f
     { $as_echo "$as_me:${as_lineno-$LINENO}: checking for PostgreSQL header files" >&5
 $as_echo "$as_me: checking for PostgreSQL header files" >&6;}
+
+    # Unset PG_INCDIR and PG_LIBDIR since at least one doesn't exist
+    PG_INCDIR=
+    PG_LIBDIR=
+
     if ! test $PG_INCDIR
     then
 	for dir in \
@@ -2753,6 +2762,8 @@ $as_echo "$as_me: checking for PostgreSQL header files" >&6;}
 	/usr/local/include/postgresql \
 	/usr/local/pgsql/include \
 	/usr/local/postgresql/include \
+	/usr/local/PostgreSQL/pg95/include \
+	~/Documents/PostgreSQL/pg95/include \
 	/opt/include \
 	/opt/include/pgsql \
 	/opt/include/postgresql \
@@ -2782,6 +2793,8 @@ $as_echo "$as_me: Checking include ${dir}." >&6;}
 	/usr/local/lib/postgresql \
 	/usr/local/pgsql/lib \
 	/usr/local/postgresql/lib \
+	/usr/local/PostgreSQL/pg95/lib \
+	~/Documents/PostgreSQL/pg95/lib \
 	/opt/lib \
 	/opt/lib/pgsql \
 	/opt/lib/postgresql \
