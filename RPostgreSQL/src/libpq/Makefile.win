@@ -18,6 +18,9 @@ else
 include Makefile.global.win32
 endif
 
+include $(R_HOME)/etc/$(R_ARCH)/Makeconf
+WINDRES=$(RESCOMP)
+
 all: pg_config.h pg_config_os.h
 pg_config.h: pg_config.h.win
 	cp pg_config.h.win pg_config.h
