@@ -652,7 +652,7 @@
 #define HAVE__VA_ARGS 1
 
 /* Define to the appropriate snprintf format for 64-bit ints. */
-#define INT64_FORMAT "%lld"
+#define INT64_MODIFIER "ll"
 
 /* Define to build with Kerberos 5 support. (--with-krb5) */
 /* #undef KRB5 */
@@ -747,7 +747,7 @@
 /* #undef TM_IN_SYS_TIME */
 
 /* Define to the appropriate snprintf format for unsigned 64-bit ints. */
-#define UINT64_FORMAT "%llu"
+/* #define UINT64_FORMAT "%llu" */
 
 /* Define to 1 to build with assertion checks. (--enable-cassert) */
 /* #undef USE_ASSERT_CHECKING */
