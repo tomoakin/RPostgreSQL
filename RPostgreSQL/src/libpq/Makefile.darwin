@@ -9,9 +9,15 @@
 #
 #-------------------------------------------------------------------------
 
-subdir = .
-top_builddir = .
+subdir = ./libpq
+top_builddir = ..
 include Makefile.global.darwin
+
+all: pg_config.h pg_config_os.h
+pg_config.h: pg_config.h.darwin
+	cp pg_config.h.darwin pg_config.h
+pg_config_os.h: pg_config_os.h.darwin
+	cp pg_config_os.h.darwin pg_config_os.h
 
 
 # shared library parameters
