@@ -36,7 +36,7 @@
 \references{
   See the Database Interface definition document
   \code{DBI.pdf} in the base directory of this package
-  or \url{http://stat.bell-labs.com/RS-DBI}.
+  or \url{https://cran.r-project.org/package=DBI}.
 }
 \seealso{
   \code{\link{PostgreSQL}},

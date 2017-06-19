@@ -63,7 +63,7 @@ The most important parameters are \code{user}, \code{password},
 }
 \author{David A. James}
 \section{References}{
-See \url{stat.bell-labs.com/RS-DBI} 
+See \url{https://cran.r-project.org/package=DBI}
 for more details on the R/S-Plus database interface.
 
 See the documentation at the PostgreSQL Web site
