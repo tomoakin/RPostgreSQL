@@ -272,11 +272,6 @@ ld_R_works =
 # to rpathdir don't work right.  So we must NOT do LDFLAGS := something,
 # meaning this has to be done first and elsewhere we must only do LDFLAGS +=
 # something.
-ifdef PGXS
-  LDFLAGS = -L$(libdir)
-else
-  LDFLAGS = -L$(top_builddir)/src/port -L$(top_builddir)/src/common
-endif
 LDFLAGS +=   -Wl,-dead_strip_dylibs
 
 LDFLAGS_EX = 
