@@ -3,7 +3,7 @@
  * fe-auth.c
  *	   The front-end (client) authorization routines
  *
- * Portions Copyright (c) 1996-2013, PostgreSQL Global Development Group
+ * Portions Copyright (c) 1996-2016, PostgreSQL Global Development Group
  * Portions Copyright (c) 1994, Regents of the University of California
  *
  * IDENTIFICATION
@@ -42,258 +42,6 @@
 #include "fe-auth.h"
 #include "libpq/md5.h"
 
-
-#ifdef KRB5
-/*
- * MIT Kerberos authentication system - protocol version 5
- */
-
-#include <krb5.h>
-/* Some old versions of Kerberos do not include <com_err.h> in <krb5.h> */
-#if !defined(__COM_ERR_H) && !defined(__COM_ERR_H__)
-#include <com_err.h>
-#endif
-
-/*
- * Heimdal doesn't have a free function for unparsed names. Just pass it to
- * standard free() which should work in these cases.
- */
-#ifndef HAVE_KRB5_FREE_UNPARSED_NAME
-static void
-krb5_free_unparsed_name(krb5_context context, char *val)
-{
-	free(val);
-}
-#endif
-
-/*
- * pg_an_to_ln -- return the local name corresponding to an authentication
- *				  name
- *
- * XXX Assumes that the first aname component is the user name.  This is NOT
- *	   necessarily so, since an aname can actually be something out of your
- *	   worst X.400 nightmare, like
- *		  ORGANIZATION=U. C. Berkeley/NAME=Paul M. Aoki@CS.BERKELEY.EDU
- *	   Note that the MIT an_to_ln code does the same thing if you don't
- *	   provide an aname mapping database...it may be a better idea to use
- *	   krb5_an_to_ln, except that it punts if multiple components are found,
- *	   and we can't afford to punt.
- *
- * For WIN32, convert username to lowercase because the Win32 kerberos library
- * generates tickets with the username as the user entered it instead of as
- * it is entered in the directory.
- */
-static char *
-pg_an_to_ln(char *aname)
-{
-	char	   *p;
-
-	if ((p = strchr(aname, '/')) || (p = strchr(aname, '@')))
-		*p = '\0';
-#ifdef WIN32
-	for (p = aname; *p; p++)
-		*p = pg_tolower((unsigned char) *p);
-#endif
-
-	return aname;
-}
-
-
-/*
- * Various krb5 state which is not connection specific, and a flag to
- * indicate whether we have initialised it yet.
- */
-/*
-static int	pg_krb5_initialised;
-static krb5_context pg_krb5_context;
-static krb5_ccache pg_krb5_ccache;
-static krb5_principal pg_krb5_client;
-static char *pg_krb5_name;
-*/
-
-struct krb5_info
-{
-	int			pg_krb5_initialised;
-	krb5_context pg_krb5_context;
-	krb5_ccache pg_krb5_ccache;
-	krb5_principal pg_krb5_client;
-	char	   *pg_krb5_name;
-};
-
-
-static int
-pg_krb5_init(PQExpBuffer errorMessage, struct krb5_info * info)
-{
-	krb5_error_code retval;
-
-	if (info->pg_krb5_initialised)
-		return STATUS_OK;
-
-	retval = krb5_init_context(&(info->pg_krb5_context));
-	if (retval)
-	{
-		printfPQExpBuffer(errorMessage,
-						  "pg_krb5_init: krb5_init_context: %s\n",
-						  error_message(retval));
-		return STATUS_ERROR;
-	}
-
-	retval = krb5_cc_default(info->pg_krb5_context, &(info->pg_krb5_ccache));
-	if (retval)
-	{
-		printfPQExpBuffer(errorMessage,
-						  "pg_krb5_init: krb5_cc_default: %s\n",
-						  error_message(retval));
-		krb5_free_context(info->pg_krb5_context);
-		return STATUS_ERROR;
-	}
-
-	retval = krb5_cc_get_principal(info->pg_krb5_context, info->pg_krb5_ccache,
-								   &(info->pg_krb5_client));
-	if (retval)
-	{
-		printfPQExpBuffer(errorMessage,
-						  "pg_krb5_init: krb5_cc_get_principal: %s\n",
-						  error_message(retval));
-		krb5_cc_close(info->pg_krb5_context, info->pg_krb5_ccache);
-		krb5_free_context(info->pg_krb5_context);
-		return STATUS_ERROR;
-	}
-
-	retval = krb5_unparse_name(info->pg_krb5_context, info->pg_krb5_client, &(info->pg_krb5_name));
-	if (retval)
-	{
-		printfPQExpBuffer(errorMessage,
-						  "pg_krb5_init: krb5_unparse_name: %s\n",
-						  error_message(retval));
-		krb5_free_principal(info->pg_krb5_context, info->pg_krb5_client);
-		krb5_cc_close(info->pg_krb5_context, info->pg_krb5_ccache);
-		krb5_free_context(info->pg_krb5_context);
-		return STATUS_ERROR;
-	}
-
-	info->pg_krb5_name = pg_an_to_ln(info->pg_krb5_name);
-
-	info->pg_krb5_initialised = 1;
-	return STATUS_OK;
-}
-
-static void
-pg_krb5_destroy(struct krb5_info * info)
-{
-	krb5_free_principal(info->pg_krb5_context, info->pg_krb5_client);
-	krb5_cc_close(info->pg_krb5_context, info->pg_krb5_ccache);
-	krb5_free_unparsed_name(info->pg_krb5_context, info->pg_krb5_name);
-	krb5_free_context(info->pg_krb5_context);
-}
-
-
-/*
- * pg_krb5_sendauth -- client routine to send authentication information to
- *					   the server
- */
-static int
-pg_krb5_sendauth(PGconn *conn)
-{
-	krb5_error_code retval;
-	int			ret;
-	krb5_principal server;
-	krb5_auth_context auth_context = NULL;
-	krb5_error *err_ret = NULL;
-	struct krb5_info info;
-
-	info.pg_krb5_initialised = 0;
-
-	if (!(conn->pghost && conn->pghost[0] != '\0'))
-	{
-		printfPQExpBuffer(&conn->errorMessage,
-						  libpq_gettext("host name must be specified\n"));
-		return STATUS_ERROR;
-	}
-
-	ret = pg_krb5_init(&conn->errorMessage, &info);
-	if (ret != STATUS_OK)
-		return ret;
-
-	retval = krb5_sname_to_principal(info.pg_krb5_context, conn->pghost,
-									 conn->krbsrvname,
-									 KRB5_NT_SRV_HST, &server);
-	if (retval)
-	{
-		printfPQExpBuffer(&conn->errorMessage,
-						  "pg_krb5_sendauth: krb5_sname_to_principal: %s\n",
-						  error_message(retval));
-		pg_krb5_destroy(&info);
-		return STATUS_ERROR;
-	}
-
-	/*
-	 * libpq uses a non-blocking socket. But kerberos needs a blocking socket,
-	 * and we have to block somehow to do mutual authentication anyway. So we
-	 * temporarily make it blocking.
-	 */
-	if (!pg_set_block(conn->sock))
-	{
-		char		sebuf[256];
-
-		printfPQExpBuffer(&conn->errorMessage,
-						  libpq_gettext("could not set socket to blocking mode: %s\n"), pqStrerror(errno, sebuf, sizeof(sebuf)));
-		krb5_free_principal(info.pg_krb5_context, server);
-		pg_krb5_destroy(&info);
-		return STATUS_ERROR;
-	}
-
-	retval = krb5_sendauth(info.pg_krb5_context, &auth_context,
-					  (krb5_pointer) & conn->sock, (char *) conn->krbsrvname,
-						   info.pg_krb5_client, server,
-						   AP_OPTS_MUTUAL_REQUIRED,
-						   NULL, 0,		/* no creds, use ccache instead */
-						   info.pg_krb5_ccache, &err_ret, NULL, NULL);
-	if (retval)
-	{
-		if (retval == KRB5_SENDAUTH_REJECTED && err_ret)
-		{
-#if defined(HAVE_KRB5_ERROR_TEXT_DATA)
-			printfPQExpBuffer(&conn->errorMessage,
-				  libpq_gettext("Kerberos 5 authentication rejected: %*s\n"),
-							  (int) err_ret->text.length, err_ret->text.data);
-#elif defined(HAVE_KRB5_ERROR_E_DATA)
-			printfPQExpBuffer(&conn->errorMessage,
-				  libpq_gettext("Kerberos 5 authentication rejected: %*s\n"),
-							  (int) err_ret->e_data->length,
-							  (const char *) err_ret->e_data->data);
-#else
-#error "bogus configuration"
-#endif
-		}
-		else
-		{
-			printfPQExpBuffer(&conn->errorMessage,
-							  "krb5_sendauth: %s\n", error_message(retval));
-		}
-
-		if (err_ret)
-			krb5_free_error(info.pg_krb5_context, err_ret);
-
-		ret = STATUS_ERROR;
-	}
-
-	krb5_free_principal(info.pg_krb5_context, server);
-
-	if (!pg_set_noblock(conn->sock))
-	{
-		char		sebuf[256];
-
-		printfPQExpBuffer(&conn->errorMessage,
-		 libpq_gettext("could not restore nonblocking mode on socket: %s\n"),
-						  pqStrerror(errno, sebuf, sizeof(sebuf)));
-		ret = STATUS_ERROR;
-	}
-	pg_krb5_destroy(&info);
-
-	return ret;
-}
-#endif   /* KRB5 */
 
 #ifdef ENABLE_GSS
 /*
@@ -443,6 +191,12 @@ pg_GSS_startup(PGconn *conn)
 	 */
 	maxlen = NI_MAXHOST + strlen(conn->krbsrvname) + 2;
 	temp_gbuf.value = (char *) malloc(maxlen);
+	if (!temp_gbuf.value)
+	{
+		printfPQExpBuffer(&conn->errorMessage,
+						  libpq_gettext("out of memory\n"));
+		return STATUS_ERROR;
+	}
 	snprintf(temp_gbuf.value, maxlen, "%s@%s",
 			 conn->krbsrvname, conn->pghost);
 	temp_gbuf.length = strlen(temp_gbuf.value);
@@ -480,12 +234,14 @@ pg_SSPI_error(PGconn *conn, const char *mprefix, SECURITY_STATUS r)
 {
 	char		sysmsg[256];
 
-	if (FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM, NULL, r, 0,
+	if (FormatMessage(FORMAT_MESSAGE_IGNORE_INSERTS |
+					  FORMAT_MESSAGE_FROM_SYSTEM,
+					  NULL, r, 0,
 					  sysmsg, sizeof(sysmsg), NULL) == 0)
-		printfPQExpBuffer(&conn->errorMessage, "%s: SSPI error %x",
+		printfPQExpBuffer(&conn->errorMessage, "%s: SSPI error %x\n",
 						  mprefix, (unsigned int) r);
 	else
-		printfPQExpBuffer(&conn->errorMessage, "%s: %s (%x)",
+		printfPQExpBuffer(&conn->errorMessage, "%s: %s (%x)\n",
 						  mprefix, sysmsg, (unsigned int) r);
 }
 
@@ -546,7 +302,7 @@ pg_SSPI_continue(PGconn *conn)
 
 	if (conn->sspictx == NULL)
 	{
-		/* On first run, transfer retreived context handle */
+		/* On first run, transfer retrieved context handle */
 		conn->sspictx = malloc(sizeof(CtxtHandle));
 		if (conn->sspictx == NULL)
 		{
@@ -619,7 +375,7 @@ pg_SSPI_startup(PGconn *conn, int use_negotiate)
 	conn->sspictx = NULL;
 
 	/*
-	 * Retreive credentials handle
+	 * Retrieve credentials handle
 	 */
 	conn->sspicred = malloc(sizeof(CredHandle));
 	if (conn->sspicred == NULL)
@@ -810,21 +566,9 @@ pg_fe_sendauth(AuthRequest areq, PGconn *conn)
 			return STATUS_ERROR;
 
 		case AUTH_REQ_KRB5:
-#ifdef KRB5
-			pglock_thread();
-			if (pg_krb5_sendauth(conn) != STATUS_OK)
-			{
-				/* Error message already filled in */
-				pgunlock_thread();
-				return STATUS_ERROR;
-			}
-			pgunlock_thread();
-			break;
-#else
 			printfPQExpBuffer(&conn->errorMessage,
 				 libpq_gettext("Kerberos 5 authentication not supported\n"));
 			return STATUS_ERROR;
-#endif
 
 #if defined(ENABLE_GSS) || defined(ENABLE_SSPI)
 		case AUTH_REQ_GSS:
@@ -959,6 +703,19 @@ pg_fe_sendauth(AuthRequest areq, PGconn *conn)
 				return STATUS_ERROR;
 			break;
 
+			/*
+			 * SASL authentication was introduced in version 10. Older
+			 * versions recognize the request only to give a nicer error
+			 * message. We call it "SCRAM authentication" in the error, rather
+			 * than SASL, because SCRAM is more familiar to users, and it's
+			 * the only SASL authentication mechanism that has been
+			 * implemented as of this writing, anyway.
+			 */
+		case AUTH_REQ_SASL:
+			printfPQExpBuffer(&conn->errorMessage,
+							  libpq_gettext("SCRAM authentication requires libpq version 10 or above\n"));
+			return STATUS_ERROR;
+
 		default:
 			printfPQExpBuffer(&conn->errorMessage,
 			libpq_gettext("authentication method %u not supported\n"), areq);
@@ -970,24 +727,28 @@ pg_fe_sendauth(AuthRequest areq, PGconn *conn)
 
 
 /*
- * pg_fe_getauthname -- returns a pointer to dynamic space containing whatever
- *					 name the user has authenticated to the system
+ * pg_fe_getauthname
  *
- * if there is an error, return NULL with an error message in errorMessage
+ * Returns a pointer to malloc'd space containing whatever name the user
+ * has authenticated to the system.  If there is an error, return NULL,
+ * and put a suitable error message in *errorMessage if that's not NULL.
  */
 char *
 pg_fe_getauthname(PQExpBuffer errorMessage)
 {
+	char	   *result = NULL;
 	const char *name = NULL;
-	char	   *authn;
 
 #ifdef WIN32
-	char		username[128];
-	DWORD		namesize = sizeof(username) - 1;
+	/* Microsoft recommends buffer size of UNLEN+1, where UNLEN = 256 */
+	char		username[256 + 1];
+	DWORD		namesize = sizeof(username);
 #else
+	uid_t		user_id = geteuid();
 	char		pwdbuf[BUFSIZ];
 	struct passwd pwdstr;
 	struct passwd *pw = NULL;
+	int			pwerr;
 #endif
 
 	/*
@@ -999,22 +760,42 @@ pg_fe_getauthname(PQExpBuffer errorMessage)
 	 */
 	pglock_thread();
 
-	if (!name)
-	{
 #ifdef WIN32
-		if (GetUserName(username, &namesize))
-			name = username;
+	if (GetUserName(username, &namesize))
+		name = username;
+	else if (errorMessage)
+		printfPQExpBuffer(errorMessage,
+				 libpq_gettext("user name lookup failure: error code %lu\n"),
+						  GetLastError());
 #else
-		if (pqGetpwuid(geteuid(), &pwdstr, pwdbuf, sizeof(pwdbuf), &pw) == 0)
-			name = pw->pw_name;
-#endif
+	pwerr = pqGetpwuid(user_id, &pwdstr, pwdbuf, sizeof(pwdbuf), &pw);
+	if (pw != NULL)
+		name = pw->pw_name;
+	else if (errorMessage)
+	{
+		if (pwerr != 0)
+			printfPQExpBuffer(errorMessage,
+				   libpq_gettext("could not look up local user ID %d: %s\n"),
+							  (int) user_id,
+							  pqStrerror(pwerr, pwdbuf, sizeof(pwdbuf)));
+		else
+			printfPQExpBuffer(errorMessage,
+					 libpq_gettext("local user with ID %d does not exist\n"),
+							  (int) user_id);
 	}
+#endif
 
-	authn = name ? strdup(name) : NULL;
+	if (name)
+	{
+		result = strdup(name);
+		if (result == NULL && errorMessage)
+			printfPQExpBuffer(errorMessage,
+							  libpq_gettext("out of memory\n"));
+	}
 
 	pgunlock_thread();
 
-	return authn;
+	return result;
 }
 
 
@@ -1023,10 +804,10 @@ pg_fe_getauthname(PQExpBuffer errorMessage)
  *
  * This is intended to be used by client applications that wish to send
  * commands like ALTER USER joe PASSWORD 'pwd'.  The password need not
- * be sent in cleartext if it is encrypted on the client side.	This is
+ * be sent in cleartext if it is encrypted on the client side.  This is
  * good because it ensures the cleartext password won't end up in logs,
  * pg_stat displays, etc.  We export the function so that clients won't
- * be dependent on low-level details like whether the enceyption is MD5
+ * be dependent on low-level details like whether the encryption is MD5
  * or something else.
  *
  * Arguments are the cleartext password, and the SQL name of the user it

@@ -1,10 +1,11 @@
 % $Id: dbCommit-methods.Rd,v 0.1 2008/08/10 18:04:01 psk Exp $
 \name{dbCommit-methods}
 \docType{methods}
-\alias{dbBegin-methods}
-\alias{dbCommit-methods}
-\alias{dbRollback-methods}
+\alias{dbBegin-method}
+\alias{dbCommit-method}
+\alias{dbRollback-method}
 \alias{PostgreSQLConnection-method}
+\alias{dbBegin,PostgreSQLConnection-method}
 \alias{dbCommit,PostgreSQLConnection-method}
 \alias{dbRollback,PostgreSQLConnection-method}
 \title{
@@ -33,6 +34,7 @@
 }
 \seealso{
    \code{\link{PostgreSQL}},
+   \code{\link[DBI]{dbBegin}},
    \code{\link[DBI]{dbConnect}},
    \code{\link[DBI]{dbSendQuery}},
    \code{\link[DBI]{dbGetQuery}},

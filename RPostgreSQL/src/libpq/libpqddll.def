@@ -1,5 +1,5 @@
-; DEF file for MS VC++
-LIBRARY LIBPQD
+; DEF file for win32.mak debug build
+LIBRARY LIBPQD.dll
 EXPORTS
     PQconnectdb               @ 1
     PQsetdbLogin              @ 2
@@ -166,3 +166,9 @@ EXPORTS
     lo_tell64                 @ 163
     lo_truncate64             @ 164
     PQconninfo                @ 165
+    PQsslInUse                @ 166
+    PQsslStruct               @ 167
+    PQsslAttributeNames       @ 168
+    PQsslAttribute            @ 169
+    PQsetErrorContextVisibility @ 170
+    PQresultVerboseErrorMessage @ 171

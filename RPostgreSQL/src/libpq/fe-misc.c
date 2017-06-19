@@ -19,7 +19,7 @@
  * routines.
  *
  *
- * Portions Copyright (c) 1996-2013, PostgreSQL Global Development Group
+ * Portions Copyright (c) 1996-2016, PostgreSQL Global Development Group
  * Portions Copyright (c) 1994, Regents of the University of California
  *
  * IDENTIFICATION
@@ -351,6 +351,7 @@ pqCheckOutBufferSpace(size_t bytes_needed, PGconn *conn)
 	int			newsize = conn->outBufSize;
 	char	   *newbuf;
 
+	/* Quick exit if we have enough space */
 	if (bytes_needed <= (size_t) newsize)
 		return 0;
 
@@ -414,6 +415,37 @@ pqCheckInBufferSpace(size_t bytes_needed, PGconn *conn)
 	int			newsize = conn->inBufSize;
 	char	   *newbuf;
 
+	/* Quick exit if we have enough space */
+	if (bytes_needed <= (size_t) newsize)
+		return 0;
+
+	/*
+	 * Before concluding that we need to enlarge the buffer, left-justify
+	 * whatever is in it and recheck.  The caller's value of bytes_needed
+	 * includes any data to the left of inStart, but we can delete that in
+	 * preference to enlarging the buffer.  It's slightly ugly to have this
+	 * function do this, but it's better than making callers worry about it.
+	 */
+	bytes_needed -= conn->inStart;
+
+	if (conn->inStart < conn->inEnd)
+	{
+		if (conn->inStart > 0)
+		{
+			memmove(conn->inBuffer, conn->inBuffer + conn->inStart,
+					conn->inEnd - conn->inStart);
+			conn->inEnd -= conn->inStart;
+			conn->inCursor -= conn->inStart;
+			conn->inStart = 0;
+		}
+	}
+	else
+	{
+		/* buffer is logically empty, reset it */
+		conn->inStart = conn->inCursor = conn->inEnd = 0;
+	}
+
+	/* Recheck whether we have enough space */
 	if (bytes_needed <= (size_t) newsize)
 		return 0;
 
@@ -604,7 +636,7 @@ pqReadData(PGconn *conn)
 	int			someread = 0;
 	int			nread;
 
-	if (conn->sock < 0)
+	if (conn->sock == PGINVALID_SOCKET)
 	{
 		printfPQExpBuffer(&conn->errorMessage,
 						  libpq_gettext("connection not open\n"));
@@ -681,13 +713,13 @@ retry3:
 		/*
 		 * Hack to deal with the fact that some kernels will only give us back
 		 * 1 packet per recv() call, even if we asked for more and there is
-		 * more available.	If it looks like we are reading a long message,
+		 * more available.  If it looks like we are reading a long message,
 		 * loop back to recv() again immediately, until we run out of data or
 		 * buffer space.  Without this, the block-and-restart behavior of
 		 * libpq's higher levels leads to O(N^2) performance on long messages.
 		 *
 		 * Since we left-justified the data above, conn->inEnd gives the
-		 * amount of data already read in the current message.	We consider
+		 * amount of data already read in the current message.  We consider
 		 * the message "long" once we have acquired 32k ...
 		 */
 		if (conn->inEnd > 32768 &&
@@ -712,13 +744,14 @@ retry3:
 	 * the file selected for reading already.
 	 *
 	 * In SSL mode it's even worse: SSL_read() could say WANT_READ and then
-	 * data could arrive before we make the pqReadReady() test.  So we must
-	 * play dumb and assume there is more data, relying on the SSL layer to
-	 * detect true EOF.
+	 * data could arrive before we make the pqReadReady() test, but the second
+	 * SSL_read() could still say WANT_READ because the data received was not
+	 * a complete SSL record.  So we must play dumb and assume there is more
+	 * data, relying on the SSL layer to detect true EOF.
 	 */
 
 #ifdef USE_SSL
-	if (conn->ssl)
+	if (conn->ssl_in_use)
 		return 0;
 #endif
 
@@ -731,12 +764,8 @@ retry3:
 			/* ready for read */
 			break;
 		default:
-			printfPQExpBuffer(&conn->errorMessage,
-							  libpq_gettext(
-								"server closed the connection unexpectedly\n"
-				   "\tThis probably means the server terminated abnormally\n"
-							 "\tbefore or while processing the request.\n"));
-			goto definitelyFailed;
+			/* we override pqReadReady's message with something more useful */
+			goto definitelyEOF;
 	}
 
 	/*
@@ -775,11 +804,19 @@ retry4:
 
 	/*
 	 * OK, we are getting a zero read even though select() says ready. This
-	 * means the connection has been closed.  Cope.  Note that errorMessage
-	 * has been set already.
+	 * means the connection has been closed.  Cope.
 	 */
+definitelyEOF:
+	printfPQExpBuffer(&conn->errorMessage,
+					  libpq_gettext(
+								"server closed the connection unexpectedly\n"
+				   "\tThis probably means the server terminated abnormally\n"
+							 "\tbefore or while processing the request.\n"));
+
+	/* Come here if lower-level code already set a suitable errorMessage */
 definitelyFailed:
-	pqDropConnection(conn);
+	/* Do *not* drop any already-read data; caller still wants it */
+	pqDropConnection(conn, false);
 	conn->status = CONNECTION_BAD;		/* No more connection to backend */
 	return -1;
 }
@@ -800,10 +837,12 @@ pqSendSome(PGconn *conn, int len)
 	int			remaining = conn->outCount;
 	int			result = 0;
 
-	if (conn->sock < 0)
+	if (conn->sock == PGINVALID_SOCKET)
 	{
 		printfPQExpBuffer(&conn->errorMessage,
 						  libpq_gettext("connection not open\n"));
+		/* Discard queued data; no chance it'll ever be sent */
+		conn->outCount = 0;
 		return -1;
 	}
 
@@ -867,16 +906,6 @@ pqSendSome(PGconn *conn, int len)
 			/*
 			 * We didn't send it all, wait till we can send more.
 			 *
-			 * If the connection is in non-blocking mode we don't wait, but
-			 * return 1 to indicate that data is still pending.
-			 */
-			if (pqIsnonblocking(conn))
-			{
-				result = 1;
-				break;
-			}
-
-			/*
 			 * There are scenarios in which we can't send data because the
 			 * communications channel is full, but we cannot expect the server
 			 * to clear the channel eventually because it's blocked trying to
@@ -887,12 +916,29 @@ pqSendSome(PGconn *conn, int len)
 			 * again.  Furthermore, it is possible that such incoming data
 			 * might not arrive until after we've gone to sleep.  Therefore,
 			 * we wait for either read ready or write ready.
+			 *
+			 * In non-blocking mode, we don't wait here directly, but return 1
+			 * to indicate that data is still pending.  The caller should wait
+			 * for both read and write ready conditions, and call
+			 * PQconsumeInput() on read ready, but just in case it doesn't, we
+			 * call pqReadData() ourselves before returning.  That's not
+			 * enough if the data has not arrived yet, but it's the best we
+			 * can do, and works pretty well in practice.  (The documentation
+			 * used to say that you only need to wait for write-ready, so
+			 * there are still plenty of applications like that out there.)
 			 */
 			if (pqReadData(conn) < 0)
 			{
 				result = -1;	/* error message already set up */
 				break;
 			}
+
+			if (pqIsnonblocking(conn))
+			{
+				result = 1;
+				break;
+			}
+
 			if (pqWait(TRUE, TRUE, conn))
 			{
 				result = -1;
@@ -1009,16 +1055,16 @@ pqSocketCheck(PGconn *conn, int forRead, int forWrite, time_t end_time)
 
 	if (!conn)
 		return -1;
-	if (conn->sock < 0)
+	if (conn->sock == PGINVALID_SOCKET)
 	{
 		printfPQExpBuffer(&conn->errorMessage,
-						  libpq_gettext("socket not open\n"));
+						  libpq_gettext("invalid socket\n"));
 		return -1;
 	}
 
 #ifdef USE_SSL
 	/* Check for SSL library buffering read bytes */
-	if (forRead && conn->ssl && SSL_pending(conn->ssl) > 0)
+	if (forRead && conn->ssl_in_use && pgtls_read_pending(conn) > 0)
 	{
 		/* short-circuit the select */
 		return 1;
@@ -1134,7 +1180,7 @@ pqSocketPoll(int sock, int forRead, int forWrite, time_t end_time)
  */
 
 /*
- * returns the byte length of the word beginning s, using the
+ * returns the byte length of the character beginning at s, using the
  * specified encoding.
  */
 int
@@ -1144,7 +1190,7 @@ PQmblen(const char *s, int encoding)
 }
 
 /*
- * returns the display length of the word beginning s, using the
+ * returns the display length of the character beginning at s, using the
  * specified encoding.
  */
 int
@@ -1175,14 +1221,14 @@ PQenv2encoding(void)
 
 #ifdef ENABLE_NLS
 
-char *
-libpq_gettext(const char *msgid)
+static void
+libpq_binddomain()
 {
 	static bool already_bound = false;
 
 	if (!already_bound)
 	{
-		/* dgettext() preserves errno, but bindtextdomain() doesn't */
+		/* bindtextdomain() does not preserve errno */
 #ifdef WIN32
 		int			save_errno = GetLastError();
 #else
@@ -1202,8 +1248,20 @@ libpq_gettext(const char *msgid)
 		errno = save_errno;
 #endif
 	}
+}
 
+char *
+libpq_gettext(const char *msgid)
+{
+	libpq_binddomain();
 	return dgettext(PG_TEXTDOMAIN("libpq"), msgid);
+}
+
+char *
+libpq_ngettext(const char *msgid, const char *msgid_plural, unsigned long n)
+{
+	libpq_binddomain();
+	return dngettext(PG_TEXTDOMAIN("libpq"), msgid, msgid_plural, n);
 }
 
 #endif   /* ENABLE_NLS */

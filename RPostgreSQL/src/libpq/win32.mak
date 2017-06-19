@@ -2,7 +2,7 @@
 
 # Will build a static library libpq(d).lib
 #        and a dynamic library libpq(d).dll with import library libpq(d)dll.lib
-# USE_SSL=1 will compile with OpenSSL
+# USE_OPENSSL=1 will compile with OpenSSL
 # USE_KFW=1 will compile with kfw(kerberos for Windows)
 # DEBUG=1 compiles with debugging symbols
 # ENABLE_THREAD_SAFETY=1 compiles with threading enabled
@@ -16,7 +16,7 @@ CPU=i386
 !MESSAGE Building the Win32 static library...
 !MESSAGE
 !ELSEIF ("$(CPU)" == "IA64")||("$(CPU)" == "AMD64")
-ADD_DEFINES=/D "WIN64" /Wp64 /GS
+ADD_DEFINES=/Wp64 /GS
 ADD_SECLIB=bufferoverflowU.lib
 !MESSAGE Building the Win64 static library...
 !MESSAGE
@@ -113,6 +113,7 @@ CLEAN :
 	-@erase "$(INTDIR)\dirmod.obj"
 	-@erase "$(INTDIR)\pgsleep.obj"
 	-@erase "$(INTDIR)\open.obj"
+	-@erase "$(INTDIR)\system.obj"
 	-@erase "$(INTDIR)\win32error.obj"
 	-@erase "$(INTDIR)\win32setlocale.obj"
 	-@erase "$(OUTDIR)\$(OUTFILENAME).lib"
@@ -123,6 +124,9 @@ CLEAN :
 	-@erase "$(OUTDIR)\$(OUTFILENAME).dll.manifest"
 	-@erase "$(OUTDIR)\*.idb"
 	-@erase pg_config_paths.h"
+!IFDEF USE_OPENSSL
+	-@erase "$(INTDIR)\fe-secure-openssl.obj"
+!ENDIF
 
 
 LIB32=link.exe -lib
@@ -159,9 +163,14 @@ LIB32_OBJS= \
 	"$(INTDIR)\dirmod.obj" \
 	"$(INTDIR)\pgsleep.obj" \
 	"$(INTDIR)\open.obj" \
+	"$(INTDIR)\system.obj" \
 	"$(INTDIR)\win32error.obj" \
 	"$(INTDIR)\win32setlocale.obj" \
 	"$(INTDIR)\pthread-win32.obj"
+
+!IFDEF USE_OPENSSL
+LIB32_OBJS=$(LIB32_OBJS) "$(INTDIR)\fe-secure-openssl.obj"
+!ENDIF
 
 
 config: ..\..\include\pg_config.h ..\..\include\pg_config_ext.h pg_config_paths.h  ..\..\include\pg_config_os.h
@@ -187,8 +196,8 @@ CPP_PROJ=/nologo /W3 /EHsc $(OPT) /I "..\..\include" /I "..\..\include\port\win3
  /Fo"$(INTDIR)\\" /Fd"$(INTDIR)\\" /FD /c  \
  /D "_CRT_SECURE_NO_DEPRECATE" $(ADD_DEFINES)
 
-!IFDEF USE_SSL
-CPP_PROJ=$(CPP_PROJ) /D USE_SSL
+!IFDEF USE_OPENSSL
+CPP_PROJ=$(CPP_PROJ) /D USE_OPENSSL
 SSL_LIBS=ssleay32.lib libeay32.lib gdi32.lib
 !ENDIF
 
@@ -206,7 +215,7 @@ CPP_SBRS=.
 RSC_PROJ=/l 0x409 /fo"$(INTDIR)\libpq.res"
 
 LINK32=link.exe
-LINK32_FLAGS=kernel32.lib user32.lib advapi32.lib shfolder.lib wsock32.lib ws2_32.lib secur32.lib $(SSL_LIBS)  $(KFW_LIB) $(ADD_SECLIB) \
+LINK32_FLAGS=kernel32.lib user32.lib advapi32.lib shell32.lib ws2_32.lib secur32.lib $(SSL_LIBS)  $(KFW_LIB) $(ADD_SECLIB) \
  /nologo /subsystem:windows /dll $(LOPT) /incremental:no \
  /pdb:"$(OUTDIR)\libpqdll.pdb" /machine:$(CPU) \
  /out:"$(OUTDIR)\$(OUTFILENAME).dll"\
@@ -333,6 +342,11 @@ LINK32_OBJS= \
 "$(INTDIR)\open.obj" : ..\..\port\open.c
 	$(CPP) @<<
 	$(CPP_PROJ) /I"." ..\..\port\open.c
+<<
+
+"$(INTDIR)\system.obj" : ..\..\port\system.c
+	$(CPP) @<<
+	$(CPP_PROJ) /I"." ..\..\port\system.c
 <<
 
 "$(INTDIR)\win32error.obj" : ..\..\port\win32error.c

@@ -1,6 +1,7 @@
 
 import(methods)
 import(DBI)
+importFrom("utils", "count.fields", "read.table")
 
 useDynLib(RPostgreSQL)
 
