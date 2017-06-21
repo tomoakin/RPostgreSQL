@@ -9,6 +9,7 @@
 #
 #-------------------------------------------------------------------------
 
+
 subdir = src/libpq
 top_builddir = ..
 
@@ -21,7 +22,7 @@ endif
 include $(R_HOME)/etc/$(R_ARCH)/Makeconf
 WINDRES=$(RESCOMP)
 
-all: pg_config.h pg_config_os.h
+all: libpq.a
 pg_config.h: pg_config.h.win
 	cp pg_config.h.win pg_config.h
 pg_config_ext.h: pg_config_ext.h.win32
@@ -61,6 +62,8 @@ OBJS += ip.o md5.o
 # utils/mb
 OBJS += encnames.o wchar.o
 
+$(OBJS): pg_config.h pg_config_os.h
+
 ifeq ($(PORTNAME), cygwin)
 override shlib = cyg$(NAME)$(DLSUFFIX)
 endif
@@ -92,10 +95,8 @@ endif
 
 SHLIB_EXPORTS = exports.txt
 
-all: all-static-lib
-
-# Shared library stuff
-include Makefile.shlib
+libpq.a: $(OBJS)
+	$(AR) rcs $@ $(OBJS)
 
 # Instead of makeing symlinks we should include the necessary backend C source.
 

@@ -1,7 +1,7 @@
 # src/makefiles/Makefile.win32
 
 # Use replacement include files for those missing on Win32
-override CPPFLAGS+="-I$(top_srcdir)/src/include/port/win32"
+override CPPFLAGS+="-I."
 
 ifdef PGXS
 BE_DLLLIBS= -L$(libdir) -lpostgres
