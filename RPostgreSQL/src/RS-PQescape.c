@@ -28,8 +28,9 @@ RS_PostgreSQL_escape(SEXP conHandle, SEXP preescapestring)
     length = strlen(statement_cstr);
     escapedstring = R_alloc(length * 2 + 1, 1);
     PQescapeStringConn(my_connection, escapedstring, statement_cstr, length, NULL);
-    output = allocVector(STRSXP, 1);
+    PROTECT(output = allocVector(STRSXP, 1));
     SET_STRING_ELT(output, 0, mkChar(escapedstring));
+    UNPROTECT(1);
     return output;
 }
 

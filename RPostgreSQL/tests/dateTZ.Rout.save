@@ -182,4 +182,4 @@ PASS
 > 
 > proc.time()
    user  system elapsed 
-  0.759   0.047   1.030 
+  0.754   0.048   1.099 

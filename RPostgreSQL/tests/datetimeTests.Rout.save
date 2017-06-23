@@ -74,7 +74,8 @@ Type 'q()' to quit R.
 +                      port=ifelse((p<-Sys.getenv("POSTGRES_PORT"))!="", p, 5432))
 + 
 +     dbTypeTests(con, "timestamp")
-+     dbTypeTests(con, "timestamp with time zone")
++ #    dbTypeTests(con, "timestamp with time zone")
++ # output differs depending on the compute environment
 +     dbTypeTests(con, "date")
 + 
 +     dbDisconnect(con)
@@ -94,17 +95,6 @@ Loading required package: DBI
 Time difference of -3103.466 days
 
 
-**** Trying with  timestamp with time zone 
-                   tt zz
-1 2008-07-01 05:15:16  1
-2 2000-01-01 18:04:05  2
-  name  Sclass           type len precision scale nullOK
-1   tt POSIXct TIMESTAMPTZOID   8        -1    -1   TRUE
-[1] "2008-07-01 05:15:16 UTC" "2000-01-01 18:04:05 UTC"
-[1] "POSIXct" "POSIXt" 
-Time difference of -3103.466 days
-
-
 **** Trying with  date 
           tt zz
 1 2008-07-01  1
@@ -119,4 +109,4 @@ Time difference of -3103 days
 > 
 > proc.time()
    user  system elapsed 
-  0.551   0.035   0.649 
+  0.500   0.040   0.586 

@@ -84,4 +84,4 @@ Removing "AA"
 > 
 > proc.time()
    user  system elapsed 
-  0.441   0.034   0.546 
+  0.446   0.027   0.524 

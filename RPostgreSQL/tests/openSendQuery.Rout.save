@@ -92,4 +92,4 @@ PASS tmptest disappeared after disconnection
 > 
 > proc.time()
    user  system elapsed 
-  0.466   0.028   0.566 
+  0.442   0.042   0.504 

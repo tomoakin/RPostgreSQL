@@ -80,4 +80,4 @@ Removing rock'data
 > 
 > proc.time()
    user  system elapsed 
-  0.460   0.039   0.544 
+  0.478   0.031   0.553 

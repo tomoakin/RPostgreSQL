@@ -215,7 +215,7 @@ RS_PostgreSQL_cloneConnection(Con_Handle * conHandle)
     con = RS_DBI_getConnection(conHandle);
     conParams = con->conParams;
 
-    mgrHandle = RS_DBI_asMgrHandle(MGR_ID(conHandle));
+    PROTECT(mgrHandle = RS_DBI_asMgrHandle(MGR_ID(conHandle)));
 
 
     /* Connection parameters need to be put into a 8-element character
@@ -232,6 +232,7 @@ RS_PostgreSQL_cloneConnection(Con_Handle * conHandle)
     SET_CHR_EL(con_params, 6, C_S_CPY(conParams->options));
 
     MEM_UNPROTECT(1);
+    UNPROTECT(1);
 
     return RS_PostgreSQL_newConnection(mgrHandle, con_params);
 }

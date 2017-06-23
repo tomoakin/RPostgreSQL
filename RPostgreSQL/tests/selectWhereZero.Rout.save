@@ -85,4 +85,4 @@ In postgresqlQuickSQL(conn, statement, ...) :
 > 
 > proc.time()
    user  system elapsed 
-  0.458   0.034   0.560 
+  0.468   0.041   0.546 

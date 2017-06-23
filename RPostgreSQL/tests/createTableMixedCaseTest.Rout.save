@@ -112,4 +112,4 @@ Pass - "foo2" Table does not exist.
 > 
 > proc.time()
    user  system elapsed 
-  0.467   0.038   0.539 
+  0.480   0.034   0.541 
