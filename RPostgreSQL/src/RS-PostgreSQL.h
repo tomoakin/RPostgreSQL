@@ -84,6 +84,8 @@ extern "C" {
     s_object * RS_PostgreSQL_getResult(Con_Handle * conHandle);
 
     SEXP RS_PostgreSQL_pqexec(Con_Handle * conHandle, s_object * statement);
+    SEXP RS_PostgreSQL_pqexecparams(SEXP args);
+
 
 
 

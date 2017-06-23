@@ -142,11 +142,16 @@ static const R_CallMethodDef callMethods[]  = {
   {NULL, NULL, 0},
 };
 
+static const R_ExternalMethodDef extMethods[] = {
+  {"RS_PostgreSQL_pqexecparams", (DL_FUNC) &RS_PostgreSQL_pqexecparams, -1},
+  {NULL, NULL, 0},
+};
+
 
 void
 R_init_RPostgreSQL(DllInfo *info)
 {
-   R_registerRoutines(info, cMethods, callMethods, NULL, NULL);
+   R_registerRoutines(info, cMethods, callMethods, NULL, extMethods);
 }
 
 

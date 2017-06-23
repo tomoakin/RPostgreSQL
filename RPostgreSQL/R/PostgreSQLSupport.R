@@ -200,7 +200,7 @@ postgresqlExecStatement <- function(con, statement, params, ...) {
     if(missing(params)){
         rsId <- .Call(RS_PostgreSQL_exec, conId, statement)
     }else{
-        rsId <- .External("RS_PostgreSQL_pqexecparams", conId, statement, as(params, "character"), ..., PACKAGE = .PostgreSQLPkgName)
+        rsId <- .External(RS_PostgreSQL_pqexecparams, conId, statement, as(params, "character"), ...)
     }
     new("PostgreSQLResult", Id = rsId)
 }
@@ -234,7 +234,7 @@ postgresqlpqExecParams <- function(con, statement, ...) {
         stop(paste("expired", class(con)))
     conId <- as(con, "integer")
     statement <- as(statement, "character")
-    .External("RS_PostgreSQL_pqexecparams", conId, statement, ..., PACKAGE = .PostgreSQLPkgName)
+    .External(RS_PostgreSQL_pqexecparams, conId, statement, ...)
 }
 
 postgresqlCopyIn <- function(con, filename) {
