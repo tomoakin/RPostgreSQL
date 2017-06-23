@@ -1,0 +1,88 @@
+
+R version 3.3.1 (2016-06-21) -- "Bug in Your Hair"
+Copyright (C) 2016 The R Foundation for Statistical Computing
+Platform: x86_64-pc-linux-gnu (64-bit)
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for an HTML browser interface to help.
+Type 'q()' to quit R.
+
+> 
+> ## selectWhereZero test
+> ##
+> ## test for the 'Issue 1' on the Google Code issue log
+> ## this was reported in June and fixed by Joe Conway (svr committ r100)
+> ##
+> ## Assumes that
+> ##  a) PostgreSQL is running, and
+> ##  b) the current user can connect
+> ## both of which are not viable for release but suitable while we test
+> ##
+> ## Dirk Eddelbuettel, 03 Oct 2009
+> 
+> ## only run this if this env.var is set correctly
+> if (Sys.getenv("POSTGRES_USER") != "" & Sys.getenv("POSTGRES_HOST") != "" & Sys.getenv("POSTGRES_DATABASE") != "") {
++ 
++     ## try to load our module and abort if this fails
++     stopifnot(require(RPostgreSQL))
++     stopifnot(require(datasets))
++ 
++     ## load the PostgresSQL driver
++     drv <- dbDriver("PostgreSQL")
++ 
++     ## connect to the default db
++     con <- dbConnect(drv,
++                      user=Sys.getenv("POSTGRES_USER"),
++                      password=Sys.getenv("POSTGRES_PASSWD"),
++                      host=Sys.getenv("POSTGRES_HOST"),
++                      dbname=Sys.getenv("POSTGRES_DATABASE"),
++                      port=ifelse((p<-Sys.getenv("POSTGRES_PORT"))!="", p, 5432))
++ 
++ 
++     if (dbExistsTable(con, "tmpirisdata")) {
++         print("Removing tmpirisdata\n")
++         dbRemoveTable(con, "tmpirisdata")
++     }
++ 
++     dbWriteTable(con, "tmpirisdata", iris)
++ 
++     ## run a simple query and show the query result
++     res <- dbGetQuery(con, "select * from tmpirisdata where \"Species\"=0")
++     print(res)
++ 
++     ## cleanup
++     if (dbExistsTable(con, "tmpirisdata")) {
++         print("Removing tmpirisdata\n")
++         dbRemoveTable(con, "tmpirisdata")
++     }
++ 
++     ## and disconnect
++     dbDisconnect(con)
++     cat("PASS:  reached to the end of the test code without segmentation fault\n")
++ }
+Loading required package: RPostgreSQL
+Loading required package: DBI
+Error in postgresqlExecStatement(conn, statement, ...) : 
+  RS-DBI driver: (could not Retrieve the result : ERROR:  operator does not exist: text = integer
+LINE 1: select * from tmpirisdata where "Species"=0
+                                                 ^
+HINT:  No operator matches the given name and argument type(s). You might need to add explicit type casts.
+)
+NULL
+[1] "Removing tmpirisdata\n"
+PASS:  reached to the end of the test code without segmentation fault
+Warning message:
+In postgresqlQuickSQL(conn, statement, ...) :
+  Could not create execute: select * from tmpirisdata where "Species"=0
+> 
+> proc.time()
+   user  system elapsed 
+  0.458   0.034   0.560 

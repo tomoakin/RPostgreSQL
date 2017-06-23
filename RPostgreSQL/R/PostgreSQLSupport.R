@@ -482,7 +482,7 @@ postgresqlCloseResult <- function(res, ...) {
     if(!isPostgresqlIdCurrent(res))
         return(TRUE)
     rsId <- as(res, "integer")
-    .Call("RS_PostgreSQL_closeResultSet", rsId, PACKAGE = .PostgreSQLPkgName)
+    .Call(RS_PostgreSQL_closeResultSet, rsId)
 }
 
 ## Use NULL, "", or 0 as row.names to prevent using any field as row.names.

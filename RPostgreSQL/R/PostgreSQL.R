@@ -107,8 +107,7 @@ setMethod("dbGetException", "PostgreSQLConnection",
           def = function(conn, ...){
               if(!isPostgresqlIdCurrent(conn))
                   stop(paste("expired", class(conn)))
-              .Call("RS_PostgreSQL_getException", as(conn, "integer"),
-                    PACKAGE = .PostgreSQLPkgName)
+              .Call(RS_PostgreSQL_getException, as(conn, "integer"))
           },
           valueClass = "list"
           )
@@ -362,7 +361,7 @@ setMethod("dbHasCompleted", "PostgreSQLResult",
 setMethod("dbGetException", "PostgreSQLResult",
           def = function(conn, ...){
               id <- as(conn, "integer")[1:2]
-              .Call("RS_PostgreSQL_getException", id, PACKAGE = .PostgreSQLPkgName)
+              .Call(RS_PostgreSQL_getException, id)
           },
           valueClass = "list"    ## TODO: should be a DBIException?
           )

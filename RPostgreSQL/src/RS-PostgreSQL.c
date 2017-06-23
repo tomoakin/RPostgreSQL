@@ -151,7 +151,9 @@ static const R_ExternalMethodDef extMethods[] = {
 void
 R_init_RPostgreSQL(DllInfo *info)
 {
-   R_registerRoutines(info, cMethods, callMethods, NULL, extMethods);
+  R_registerRoutines(info, cMethods, callMethods, NULL, extMethods);
+  R_useDynamicSymbols(info, FALSE);
+  R_forceSymbols(info, TRUE);
 }
 
 
