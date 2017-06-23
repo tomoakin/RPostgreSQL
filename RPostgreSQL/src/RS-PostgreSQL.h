@@ -22,6 +22,7 @@ extern "C" {
 
 #    include "libpq-fe.h"
 #    include <string.h>
+#    include <R_ext/Rdynload.h>
 #    include "RS-DBI.h"
 
 /* Note that the default number of maximum connections to the PostgreSQL server is typically 100
@@ -71,6 +72,20 @@ extern "C" {
     s_object *RS_PostgreSQL_closeResultSet(Res_Handle * rsHandle);
 
     s_object *RS_PostgreSQL_copyin(Con_Handle * conHandle, s_object * filename);
+    s_object *RS_PostgreSQL_CopyIn(Con_Handle * conHandle, s_object * filename);
+    SEXP RS_PostgreSQL_CopyInDataframe(Con_Handle * conHandle, SEXP x, SEXP nrow, SEXP ncol);
+
+    s_object * RS_PostgreSQL_dbApply(s_object * rsHandle, s_object * s_group_field, s_object * s_funs, s_object * rho, s_object * s_batch_size, s_object * s_max_rec);
+    SEXP RS_PostgreSQL_escape(SEXP conHandle, SEXP preescapestring); 
+    SEXP RS_PostgreSQL_escape_bytea(SEXP conHandle, SEXP raw_data); 
+
+    SEXP RS_PostgreSQL_unescape_bytea(SEXP escapedstring);
+
+    s_object * RS_PostgreSQL_getResult(Con_Handle * conHandle);
+
+    SEXP RS_PostgreSQL_pqexec(Con_Handle * conHandle, s_object * statement);
+
+
 
     s_object *RS_PostgreSQL_validHandle(Db_Handle * handle);    /* boolean */
 

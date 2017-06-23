@@ -71,6 +71,86 @@ struct data_types RS_PostgreSQL_dataTypes[] = {
  */
 
 
+/* RS_PostgreSQL_closeManager */
+/* s_object *
+ * RS_PostgreSQL_closeManager(Mgr_Handle * mgrHandle)
+ * {
+ *     S_EVALUATOR RS_DBI_manager * mgr;
+ *     s_object *status;
+ */
+
+s_object * RS_PostgreSQL_closeManager(Mgr_Handle * mgrHandle);
+
+/* 
+ * RS_DBI_SclassNames
+ * RS_DBI_validHandle
+ * RS_PostgreSQL_cloneConnection
+ * RS_PostgreSQL_closeConnection
+ * RS_PostgreSQL_closeManager
+ * RS_PostgreSQL_closeResultSet
+ * RS_PostgreSQL_connectionInfo
+ * RS_PostgreSQL_CopyIn
+ * RS_PostgreSQL_CopyInDataframe
+ * RS_PostgreSQL_dbApply
+ * RS_PostgreSQL_escape
+ * RS_PostgreSQL_escape_bytea
+ * RS_PostgreSQL_exec
+ * RS_PostgreSQL_fetch
+ * RS_PostgreSQL_getException
+ * RS_PostgreSQL_getResult
+ * RS_PostgreSQL_init
+ * RS_PostgreSQL_managerInfo
+ * RS_PostgreSQL_newConnection
+ * RS_PostgreSQL_pqexec
+ * RS_PostgreSQL_resultSetInfo
+ * RS_PostgreSQL_typeNames
+ * RS_PostgreSQL_unescape_bytea
+ */
+
+static R_NativePrimitiveArgType RS_PostgreSQL_closeManager_t[] = {
+    INTSXP
+};
+
+static const R_CMethodDef cMethods[] = {
+   {NULL, NULL, 0, NULL}
+};
+
+static const R_CallMethodDef callMethods[]  = {
+  {"RS_DBI_SclassNames", (DL_FUNC) &RS_DBI_SclassNames, 1},
+  {"RS_DBI_validHandle", (DL_FUNC) &RS_DBI_validHandle, 1},
+  {"RS_PostgreSQL_cloneConnection", (DL_FUNC) &RS_PostgreSQL_cloneConnection, 1},
+  {"RS_PostgreSQL_closeConnection", (DL_FUNC) &RS_PostgreSQL_closeConnection, 1},
+  {"RS_PostgreSQL_closeManager", (DL_FUNC) &RS_PostgreSQL_closeManager, 1},
+  {"RS_PostgreSQL_closeResultSet", (DL_FUNC) &RS_PostgreSQL_closeResultSet, 1},
+  {"RS_PostgreSQL_connectionInfo", (DL_FUNC) &RS_PostgreSQL_connectionInfo, 1},
+  {"RS_PostgreSQL_CopyIn", (DL_FUNC) &RS_PostgreSQL_CopyIn, 2},
+  {"RS_PostgreSQL_CopyInDataframe", (DL_FUNC) &RS_PostgreSQL_CopyInDataframe, 4},
+  {"RS_PostgreSQL_dbApply", (DL_FUNC) &RS_PostgreSQL_dbApply, 6},
+  {"RS_PostgreSQL_escape", (DL_FUNC) &RS_PostgreSQL_escape, 2},
+  {"RS_PostgreSQL_escape_bytea", (DL_FUNC) &RS_PostgreSQL_escape_bytea, 2},
+  {"RS_PostgreSQL_unescape_bytea", (DL_FUNC) &RS_PostgreSQL_unescape_bytea, 1},
+  {"RS_PostgreSQL_exec", (DL_FUNC) &RS_PostgreSQL_exec, 2},
+  {"RS_PostgreSQL_fetch", (DL_FUNC) &RS_PostgreSQL_fetch, 2},
+  {"RS_PostgreSQL_getException", (DL_FUNC) &RS_PostgreSQL_getException, 1},
+  {"RS_PostgreSQL_getResult", (DL_FUNC) &RS_PostgreSQL_getResult, 1},
+  {"RS_PostgreSQL_init", (DL_FUNC) &RS_PostgreSQL_init, 2},
+  {"RS_PostgreSQL_managerInfo", (DL_FUNC) &RS_PostgreSQL_managerInfo, 1},
+  {"RS_PostgreSQL_newConnection", (DL_FUNC) &RS_PostgreSQL_newConnection, 2},
+  {"RS_PostgreSQL_pqexec", (DL_FUNC) &RS_PostgreSQL_pqexec, 2},
+  {"RS_PostgreSQL_resultSetInfo", (DL_FUNC) &RS_PostgreSQL_resultSetInfo, 1},
+  {"RS_PostgreSQL_typeNames", (DL_FUNC) &RS_PostgreSQL_typeNames, 1},
+  {NULL, NULL, 0},
+};
+
+
+void
+R_init_RPostgreSQL(DllInfo *info)
+{
+   R_registerRoutines(info, cMethods, callMethods, NULL, NULL);
+}
+
+
+
 Mgr_Handle *
 RS_PostgreSQL_init(s_object * config_params, s_object * reload)
 {
@@ -111,7 +191,6 @@ RS_PostgreSQL_closeManager(Mgr_Handle * mgrHandle)
     MEM_UNPROTECT(1);
     return status;
 }
-
 
 
 /* open a connection with the same parameters used for in
