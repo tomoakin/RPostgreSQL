@@ -18,13 +18,7 @@ Known bugs/deficiencies:
 
   o  Active issue list is at http://code.google.com/p/rpostgresql/issues/list
 
-RPostgreSQL is hosted on Google Code, for more information see
-
-   http://rpostgresql.googlecode.com/
-
-For any suggestions and queries, please contact:
-
-   rpostgresql-dev@googlegroups.com
+RPostgreSQL is hosted on Github https://github.com/tomoakin/RPostgreSQL
 
 For security issues that should not directly go to public,
 you may contact:
