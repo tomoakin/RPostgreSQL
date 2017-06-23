@@ -279,13 +279,13 @@ postgresqlQuickSQL <- function(con, statement, ...) {
     if(dbHasCompleted(rs)){
         dbClearResult(rs)            ## no records to fetch, we're done
         invisible()
-        return(NULL)
+        return(data.frame()) # data.frame of 0 row 0 columns
     }
     res <- fetch(rs, n = -1)
     if(dbHasCompleted(rs))
         dbClearResult(rs)
     else
-        warning("pending rows")
+        warning("pending rows")  # shouldn't occur...
     res
 }
 
