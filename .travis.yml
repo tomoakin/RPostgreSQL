@@ -17,7 +17,7 @@ before_script:
   - sudo su postgres -c "createdb -O $POSTGRES_USER $POSTGRES_DATABASE"
 
 install:
-  - build_check_with_vars.sh
+  - sh build_check_with_vars.sh
   - R CMD INSTALL RPostgreSQL
 
 script:
