@@ -27,7 +27,7 @@ if (Sys.getenv("POSTGRES_USER") != "" & Sys.getenv("POSTGRES_HOST") != "" & Sys.
 
 
     #  create a table
-    res <- dbGetQuery(con, "CREATE TABLE aa (pk integer primary key, v1 float not null, v2 float)" )
+    res <- dbGetQuery(con, "CREATE TABLE aa (pk integer, v1 float not null, v2 float)" )
 
     ## run a simple query and show the query result
     res <- dbGetQuery(con, "INSERT INTO aa VALUES(3, 2, NULL)" )

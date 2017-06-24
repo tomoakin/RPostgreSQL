@@ -64,7 +64,6 @@ Type 'q()' to quit R.
 + }
 Loading required package: RPostgreSQL
 Loading required package: DBI
-NOTICE:  CREATE TABLE / PRIMARY KEY will create implicit index "aa_pkey" for table "aa"
 dbColumnInfo
       name  Sclass    type len precision scale nullOK
 1       pk integer INTEGER   4        -1    -1  FALSE
