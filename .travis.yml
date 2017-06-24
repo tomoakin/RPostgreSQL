@@ -12,7 +12,7 @@ apt_packages:
 r_packages:
   - DBI
 
-before_script:
+before_install:
   - sudo su postgres -c "createuser -d $POSTGRES_USER"
   - sudo su postgres -c "createdb -O $POSTGRES_USER $POSTGRES_DATABASE"
 
