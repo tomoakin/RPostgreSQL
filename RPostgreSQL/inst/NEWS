@@ -1,7 +1,7 @@
-Version 0.6
+Version 0.6-2
 
     o   dbGetQuery do not return NULL.
-    o   
+    o   use registration mechanism to call native routines.
 
 Version 0.5-3
 
