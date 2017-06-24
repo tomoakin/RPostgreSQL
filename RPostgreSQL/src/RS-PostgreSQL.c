@@ -327,8 +327,12 @@ RS_PostgreSQL_newConnection(Mgr_Handle * mgrHandle, s_object * con_params)
     conParams->options = RS_DBI_copyString(PQoptions(my_connection));
 
     if (PQstatus(my_connection) != CONNECTION_OK) {
-        char buf[1000];
-	sprintf(buf, "could not connect %s@%s on dbname \"%s\"\n", PQuser(my_connection), host?host:"local", PQdb(my_connection));
+        char buf[1024];
+	snprintf(buf, 1023, 
+           "could not connect %s@%s:%s on dbname \"%s\": %s", 
+           conParams->user, conParams->host, conParams->port,
+           conParams->dbname, PQerrorMessage(my_connection));
+        buf[1023]= '\0';
         PQfinish(my_connection);
         my_connection = NULL;
         RS_PostgreSQL_freeConParams(conParams); /*free BEFORE emitting err message that do not come back */
@@ -969,8 +973,9 @@ RS_PostgreSQL_connectionInfo(Con_Handle * conHandle)
     revision_num = minor_revision % 100;
 
     {
-        char buf1[50];
-        sprintf(buf1, "%d.%d.%d", major, minor, revision_num);
+        char buf1[64];
+        snprintf(buf1, 63, "%d.%d.%d", major, minor, revision_num);
+        buf1[63]='\0';
         SET_LST_CHR_EL(output, 4, 0, C_S_CPY(buf1));
     }
 
