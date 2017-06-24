@@ -1,0 +1,23 @@
+language: R
+
+sudo: enabled
+
+env:
+  - POSTGRES_USER=testdbuser POSTGRES_PASSWD= POSTGRES_HOST= POSTGRES_DATABASE=testdb
+
+apt_packages:
+  - postgresql
+  - libpq-dev
+
+r_packages:
+  - DBI
+
+before_script:
+  - sudo su postgres -c "createuser -d $POSTGRES_USER"
+  - sudo su postgres -c "createdb -O $POSTGRES_USER $POSTGRES_DATABASE"
+
+script:
+  - build_check_with_vars.sh
+  - R CMD INSTALL RPostgreSQL
+  - sh check_with_vars.sh
+
