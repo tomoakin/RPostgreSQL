@@ -1,4 +1,4 @@
-language: R
+language: r
 
 sudo: enabled
 
@@ -16,8 +16,10 @@ before_script:
   - sudo su postgres -c "createuser -d $POSTGRES_USER"
   - sudo su postgres -c "createdb -O $POSTGRES_USER $POSTGRES_DATABASE"
 
-script:
+install:
   - build_check_with_vars.sh
   - R CMD INSTALL RPostgreSQL
+
+script:
   - sh check_with_vars.sh
 
