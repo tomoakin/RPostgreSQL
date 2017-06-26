@@ -8,6 +8,7 @@ env:
 apt_packages:
   - postgresql
   - libpq-dev
+  - valgrind
 
 r_packages:
   - DBI
