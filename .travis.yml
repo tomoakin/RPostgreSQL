@@ -8,12 +8,13 @@ env:
 apt_packages:
   - postgresql
   - libpq-dev
-  - valgrind
 
 r_packages:
   - DBI
 
 before_install:
+  - sudo apt-get update
+  - sudo apt-get install -y valgrind
   - sudo su postgres -c "createuser -d $POSTGRES_USER"
   - sudo su postgres -c "createdb -O $POSTGRES_USER $POSTGRES_DATABASE"
   - Rscript -e 'install.packages("DBI");'
