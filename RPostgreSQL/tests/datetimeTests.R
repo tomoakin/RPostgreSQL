@@ -14,7 +14,8 @@ dbTypeTests <- function(con, dateclass="timestamp without time zone") {
 
     now <- ISOdatetime(2000,1,2,3,4,5.678)
     dbGetQuery(con, paste("insert into tempostgrestable values('", format(now), "', 2);", sep=""))
-
+    dbGetQuery(con, paste("insert into tempostgrestable values('", "infinity", "', 3);", sep=""))
+    
     res <- dbReadTable(con, "tempostgrestable")
     print(res)
 
