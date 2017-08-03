@@ -656,6 +656,9 @@ postgresqlWriteTable <- function(con, name, value, field.types, row.names = TRUE
         if(is.object(z) && !is.factor(z)) as.character(z) else z
     })
     oldenc <- dbGetQuery(new.con, "SHOW client_encoding")
+    if (inherits(oldenc, "data.frame")) {
+      oldenc <- oldenc$client_encoding
+    }
     postgresqlpqExec(new.con, "SET CLIENT_ENCODING TO 'UTF8'")
     sql4 <- paste("COPY", postgresqlTableRef(name),"(",paste(postgresqlQuoteId(names(value)),collapse=","),") FROM STDIN")
     postgresqlpqExec(new.con, sql4)
