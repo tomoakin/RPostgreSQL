@@ -44,7 +44,7 @@ Type 'q()' to quit R.
 + 
 + 
 +     #  create a table
-+     res <- dbGetQuery(con, "CREATE TABLE aa (pk integer primary key, v1 float not null, v2 float)" )
++     res <- dbGetQuery(con, "CREATE TABLE aa (pk integer, v1 float not null, v2 float)" )
 + 
 +     ## run a simple query and show the query result
 +     res <- dbGetQuery(con, "INSERT INTO aa VALUES(3, 2, NULL)" )
@@ -66,12 +66,12 @@ Loading required package: RPostgreSQL
 Loading required package: DBI
 dbColumnInfo
       name  Sclass    type len precision scale nullOK
-1       pk integer INTEGER   4        -1    -1  FALSE
+1       pk integer INTEGER   4        -1    -1   TRUE
 2       v1  double  FLOAT8   8        -1    -1  FALSE
 3       v2  double  FLOAT8   8        -1    -1   TRUE
 4 ?column?  double  FLOAT8   8        -1    -1     NA
       name  Sclass    type len precision scale nullOK
-1       pk integer INTEGER   4        -1    -1  FALSE
+1       pk integer INTEGER   4        -1    -1   TRUE
 2       v1  double  FLOAT8   8        -1    -1  FALSE
 3       v2  double  FLOAT8   8        -1    -1   TRUE
 4 ?column?  double  FLOAT8   8        -1    -1     NA
@@ -83,4 +83,4 @@ Removing "AA"
 > 
 > proc.time()
    user  system elapsed 
-  0.446   0.027   0.524 
+  0.433   0.036   0.479 

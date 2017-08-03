@@ -433,16 +433,21 @@ postgresqlFetch <- function(res, n=0, ...) {
     else
         oldClass(rel) <- "data.frame"
 
+    drop_infinity <- function(x){ if(is.na(x)) NA else if(x == 'infinity' || x == '-infinity'){warning(x, ": infinity in date data detected") ; NA} else x}
     flds <- dbGetInfo(res)$fieldDescription[[1]]$type
+    if(length(rel[,1])>0){
     for(i in 1:length(flds)) {
         if(flds[[i]] == 1114) {  ## 1114 corresponds to Timestamp without TZ (mapped to POSIXct class)
+            rel[,i] <- sapply(rel[,i], drop_infinity) 
             rel[,i] <- as.POSIXct(rel[,i])
         } else if(flds[[i]] == 1082) {  ## 1082 corresponds to Date (mapped to Date class)
+            rel[,i] <- sapply(rel[,i], drop_infinity) 
             rel[,i] <- as.Date(rel[,i])
         } else if(flds[[i]] == 1184)  {  ## 1184 corresponds to Timestamp with TimeZone
+            rel[,i] <- sapply(rel[,i], drop_infinity) 
             rel[,i] <- as.POSIXct(sub('([+-]..)$', '\\100', sub(':(..)$','\\1' ,rel[,i])), format="%Y-%m-%d %H:%M:%OS%z")
         }
-    }
+    }}
     rel
 }
 
