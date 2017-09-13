@@ -270,11 +270,11 @@ postgresqlQuickSQL <- function(con, statement, ...) {
     if (length(rsList)>0){  # clear results
         dbClearResult(rsList[[1]])
     }
-    rs <- try(dbSendQuery(con, statement, ...))
-    if (inherits(rs, ErrorClass)){
-        warning("Could not create execute: ", statement)
-        return(NULL)
-    }
+
+    ## Let dbSendQuery raise an error if it cannot execute statement.
+    ## (Surrounding code should be responsible for handling errors.)
+    rs <- dbSendQuery(con, statement, ...)
+
     if(dbHasCompleted(rs)){
         dbClearResult(rs)            ## no records to fetch, we're done
         invisible()
@@ -421,8 +421,7 @@ postgresqlFetch <- function(res, n=0, ...) {
     n <- as(n, "integer")
     rsId <- as(res, "integer")
     rel <- .Call(RS_PostgreSQL_fetch, rsId, nrec = n)
-    if(length(rel)==0 || length(rel[[1]])==0)
-        return(NULL)
+
     ## create running row index as of previous fetch (if any)
     cnt <- dbGetRowCount(res)
     nrec <- length(rel[[1]])
