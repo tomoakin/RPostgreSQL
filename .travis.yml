@@ -3,7 +3,7 @@ language: r
 sudo: enabled
 
 env:
-  - POSTGRES_USER=testdbuser POSTGRES_PASSWD= POSTGRES_HOST= POSTGRES_DATABASE=testdb
+  - POSTGRES_USER=testdbuser POSTGRES_PASSWD= POSTGRES_HOST=localhost POSTGRES_DATABASE=testdb
 
 apt_packages:
   - postgresql
