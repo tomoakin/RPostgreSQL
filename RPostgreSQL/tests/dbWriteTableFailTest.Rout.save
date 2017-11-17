@@ -95,7 +95,8 @@ Error in postgresqlpqExec(new.con, sql4) :
 write table to rockdata
 [1] FALSE
 PASS as the return value is false
-data frame with 0 columns and 0 rows
+[1] a b
+<0 rows> (or 0-length row.names)
 [1] "Removing rockdata\n"
 [1] TRUE
 Warning message:
@@ -104,4 +105,4 @@ In postgresqlWriteTable(conn, name, value, ...) :
 > 
 > proc.time()
    user  system elapsed 
-  0.473   0.035   0.519 
+  0.455   0.040   0.499 

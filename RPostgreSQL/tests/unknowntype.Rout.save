@@ -76,7 +76,8 @@ Loading required package: DBI
 <PostgreSQLResult>
   name    Sclass    type len precision scale nullOK
 1   ra character UNKNOWN  -1        -1    -1   TRUE
-data frame with 0 columns and 0 rows
+[1] ra
+<0 rows> (or 0-length row.names)
 [1] "Removing tmpirisdata\n"
 PASS:  reached to the end of the test code without segmentation fault
 Warning message:
@@ -85,4 +86,4 @@ In postgresqlDescribeFields(res, ...) :
 > 
 > proc.time()
    user  system elapsed 
-  0.435   0.042   0.515 
+  0.453   0.034   0.524 

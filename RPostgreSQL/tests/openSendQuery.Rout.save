@@ -84,12 +84,14 @@ Type 'q()' to quit R.
 Loading required package: RPostgreSQL
 Loading required package: DBI
 create temp table tmptest with dbGetQuery
-data frame with 0 columns and 0 rows
+[1] f1
+<0 rows> (or 0-length row.names)
 create temp table tmptest with dbSendQuery
-data frame with 0 columns and 0 rows
+[1] f2
+<0 rows> (or 0-length row.names)
 PASS tmptest disappeared after disconnection
 [1] TRUE
 > 
 > proc.time()
    user  system elapsed 
-  0.442   0.042   0.504 
+  0.454   0.031   0.497 
