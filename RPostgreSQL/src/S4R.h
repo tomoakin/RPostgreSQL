@@ -24,36 +24,12 @@ extern "C" {
 #    endif
 
 /*
- * If using SPLUS, you *need* to define the macro USING_SPLUS=[5|6]
- * (probably in the compiler command line) to trigger the right
- * sequence of definitions (we can no longer simply rely on S.h ---
- * we may need to avoid S.h altogether!)
  *
  * Some of these come from MASS, some from packages developed under
  * the Omega project, and some from RS-DBI itself.
  *
  */
-#    ifdef USING_SPLUS
-#        if USING_SPLUS == 6
-#            define S_COMPATIBILITY 10
-                                /* changing to the "new" API may be too */
-#            include "S_engine.h"
-                                /* time-consuming. */
-#        else
-#            include "S.h"
-#        endif
-#    else                       /* not Splus, is it S4 or R? */
-#        include "S.h"
-#        if (defined(S_VERSION))
-#            define USING_S4    /* do we really need S4 any more? */
-#        else
-#            define USING_R
-#        endif
-#    endif
-
-/* Some of these come from MASS, some from packages developed under
- * the Omega project, and some from RS-DBI itself.
- */
+#define USING_R
 
 #    ifdef USING_R
 #        include "R.h"
@@ -77,26 +53,13 @@ extern "C" {
 #        define MEM_PROTECT(x) PROTECT(x)
 #        define MEM_UNPROTECT(n) UNPROTECT(n)
 #        define MEM_UNPROTECT_PTR(x) UNPROTECT_PTR(x)
-#    elif (defined(USING_S4) || defined(USING_SPLUS))
-#        define singl float
-#        define Sint long
-#        define charPtr char **
-#        define CHAR_DEREF(x) x
-#        define C_S_CPY(p)    c_s_cpy((p), S_evaluator) /* cpy C string to S */
-#        define RAW_DATA(p)   (RAW_POINTER(p))  /* missing in S4 S.h */
-#        define MEM_PROTECT(x)  (x) /**/
-#        define MEM_UNPROTECT(n) /**/
-#        define MEM_UNPROTECT_PTR(x) /**/
 #    endif
 /* The following are macros defined in the Green Book, but missing
  * in Rdefines.h.  The semantics are as close to S4's as possible (?).
  */
 #    ifdef USING_R
-#        define COPY(x) duplicate(x)
 #        define COPY_ALL(x) duplicate(x)
 #        define EVAL_IN_FRAME(expr,n)  eval(expr,n)
-#        define GET_FROM_FRAME(name,n) findVar(install(name),n)
-#        define ASSIGN_IN_FRAME(name,obj,n) defineVar(install(name),COPY(obj),n)
 #    endif
 /* data types common to R and S4 */
 #    ifdef USING_R
@@ -110,26 +73,12 @@ extern "C" {
 #        define STRING_TYPE    STRSXP
 #        define COMPLEX_TYPE	 CPLXSXP
 #        define LIST_TYPE	 VECSXP
-#    else
-#        define Stype           int
-#        define LOGICAL_TYPE	  LGL
-#        define INTEGER_TYPE	  INT
-#        define NUMERIC_TYPE	  DOUBLE
-#        define SINGLE_TYPE     REAL
-#        define REAL_TYPE       REAL
-#        define CHARACTER_TYPE  CHAR
-#        define STRING_TYPE     CHAR
-#        define COMPLEX_TYPE	  COMPLEX
-#        define LIST_TYPE	  LIST
-#        define RAW_TYPE	  RAW
 #    endif
 #    ifdef USING_R
 #        undef INTEGER_DATA
 #        define INTEGER_DATA(x) (INTEGER(x))
 #        undef S_NULL_ENTRY
 #        define S_NULL_ENTRY R_NilValue
-#    else
-#        define S_NULL_ENTRY  NULL_ENTRY
 #    endif
 /* We simplify one- and two-level access to object and list
  * (mostly built on top of jmc's macros)
@@ -186,19 +135,11 @@ extern "C" {
 #        define NA_SET(p,t)   RS_na_set((p),(t))
 #        define NA_CHR_SET(p) SET_CHR_EL(p, 0, NA_STRING)
 #        define IS_NA(p,t)    RS_is_na((p),(t))
-#    else
-#        define NA_SET(p,t)   na_set((p),(t))
-#        define NA_CHR_SET(p) (p) = C_S_CPY(NA_STRING)
-#        define IS_NA(p,t)    is_na((p), (t))
 #    endif
 /* SET_ROWNAMES() and SET_CLASS_NAME() don't exist in S4 */
 #    ifdef USING_R
 #        define SET_ROWNAMES(df,n)  setAttrib(df, R_RowNamesSymbol, n)
-#        define GET_CLASS_NAME(x)   GET_CLASS(x)
 #        define SET_CLASS_NAME(x,n) SET_CLASS(x, n)
-#    else
-#        define SET_ROWNAMES(df,n)  error("un-implemented macro SET_ROWNAMES")
-#        define SET_CLASS_NAME(x,n) error("un-implemented macro SET_CLASS_NAME")
 #    endif
 /* end of RS-DBI macros */
 #    ifdef __cplusplus
