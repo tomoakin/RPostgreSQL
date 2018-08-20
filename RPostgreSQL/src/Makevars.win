@@ -8,4 +8,4 @@ $(SHLIB): libpq/libpq.a
 export CC
 
 libpq/libpq.a:
-	(cd libpq; make -f Makefile.win)
+	(cd libpq; make CUSTOM_CC="$(CC)" -f "$(R_HOME)/etc/$(R_ARCH)/Makeconf" -f Makefile.win)

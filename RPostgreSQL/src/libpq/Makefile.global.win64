@@ -248,15 +248,15 @@ ZIC =
 
 # Linking
 
-AR = ar
-DLLTOOL = dlltool
-DLLWRAP = dllwrap
+#AR = ar
+#DLLTOOL = dlltool
+#DLLWRAP = dllwrap
 LIBS = -lz -lws2_32 -lm 
 LDAP_LIBS_FE = 
 LDAP_LIBS_BE = 
 UUID_LIBS = 
 UUID_EXTRA_OBJS = 
-LD = C:/MinGW/msys/1.0/Rtools/mingw_64/x86_64-w64-mingw32/bin/ld.exe
+#LD = C:/MinGW/msys/1.0/Rtools/mingw_64/x86_64-w64-mingw32/bin/ld.exe
 with_gnu_ld = yes
 ld_R_works = 
 
