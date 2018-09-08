@@ -45,7 +45,7 @@ postgresqlDescribeDriver <- function(obj, verbose = FALSE, ...) {
    }
    cat("  Open connections:", info$"num_con", "\n")
    if(verbose && !is.null(info$connectionIds)){
-      for(i in seq(along = info$connectionIds)){
+      for(i in seq(along.with = info$connectionIds)){
          cat("   ", i, " ")
          print(info$connectionIds[[i]])
       }
@@ -61,7 +61,7 @@ postgresqlDriverInfo <- function(obj, what="", ...) {
     ## replace drv/connection id w. actual drv/connection objects
     conObjs <- vector("list", length = info$"num_con")
     ids <- info$connectionIds
-    for(i in seq(along = ids))
+    for(i in seq(along.with = ids))
         conObjs[[i]] <- new("PostgreSQLConnection", Id = c(drvId, ids[i]))
     info$connectionIds <- conObjs
     info$managerId <- new("PostgreSQLDriver", Id = drvId)
@@ -131,7 +131,7 @@ postgresqlDescribeConnection <- function(obj, verbose = FALSE, ...) {
         cat("  PostgreSQL server thread id: ", info$threadId, "\n")
     }
     if (length(info$rsId)>0) {
-        for (i in seq(along = info$rsId)) {
+        for (i in seq(along.with = info$rsId)) {
             cat("   ", i, " ")
             print(info$rsId[[i]])
         }
@@ -161,7 +161,7 @@ postgresqlConnectionInfo <- function(obj, what="", ...) {
     id <- as(obj, "integer")
     info <- .Call(RS_PostgreSQL_connectionInfo, id)
     rsId <- vector("list", length = length(info$rsId))
-    for(i in seq(along = info$rsId))
+    for(i in seq(along.with = info$rsId))
         rsId[[i]] <- new("PostgreSQLResult", Id = c(id, info$rsId[i]))
     info$rsId <- rsId
     if(!missing(what))
@@ -310,7 +310,7 @@ postgresqlDescribeFields <- function(res, ...) {
 
         flds$type <- .Call(RS_PostgreSQL_typeNames, as.integer(flds$type))
         ## no factors
-        structure(flds, row.names = paste(seq(along=flds$type)),
+        structure(flds, row.names = paste(seq(along.with = flds$type)),
                   class = "data.frame")
     }
     else data.frame(flds)
@@ -424,7 +424,7 @@ postgresqlFetch <- function(res, n=0, ...) {
     ## create running row index as of previous fetch (if any)
     cnt <- dbGetRowCount(res)
     nrec <- length(rel[[1]])
-    indx <- seq(from = cnt - nrec + 1, length = nrec)
+    indx <- seq(from = cnt - nrec + 1, length.out = nrec)
     attr(rel, "row.names") <- as.integer(indx)
     if(usingR())
         class(rel) <- "data.frame"
