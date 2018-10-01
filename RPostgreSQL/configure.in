@@ -29,16 +29,27 @@ AC_PATH_PROG([PG_CONFIG], [pg_config])
 ENABLE_LIBPQ=
 
 # If pg_config was found, let's use it
-if test "${PG_CONFIG}" != ""; then
+# Use pg_config for header and linker arguments
 
-    # Use pg_config for header and linker arguments
-    PG_INCDIR=`${PG_CONFIG} --includedir`
-    PG_LIBDIR=`${PG_CONFIG} --libdir`
+if test "${PG_CONFIG}" != "" ; then
+        PG_INCDIR=`${PG_CONFIG} --includedir`
+        PG_LIBDIR=`${PG_CONFIG} --libdir`
+fi
 
-else
+
+# If pg_config wasn't found, or was found but references a directory that doesn't exist,
+# Let's look elsewhere
+
+if test "${PG_CONFIG}" == "" || ! test -d "${PG_INCDIR}" || ! test -d "${PG_LIBDIR}" ; then
 
     # let's look around -- code copied from RdbuiPgSQL but modified to use test -f
+
     AC_MSG_NOTICE([checking for PostgreSQL header files])
+
+    # Unset PG_INCDIR and PG_LIBDIR since at least one doesn't exist
+    PG_INCDIR=
+    PG_LIBDIR=
+
     if ! test $PG_INCDIR
     then
 	for dir in \
@@ -51,6 +62,8 @@ else
 	/usr/local/include/postgresql \
 	/usr/local/pgsql/include \
 	/usr/local/postgresql/include \
+	/usr/local/PostgreSQL/pg95/include \
+	~/Documents/PostgreSQL/pg95/include \
 	/opt/include \
 	/opt/include/pgsql \
 	/opt/include/postgresql \
@@ -79,6 +92,8 @@ else
 	/usr/local/lib/postgresql \
 	/usr/local/pgsql/lib \
 	/usr/local/postgresql/lib \
+	/usr/local/PostgreSQL/pg95/lib \
+	~/Documents/PostgreSQL/pg95/lib \
 	/opt/lib \
 	/opt/lib/pgsql \
 	/opt/lib/postgresql \
