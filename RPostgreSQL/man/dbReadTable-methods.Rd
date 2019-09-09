@@ -129,7 +129,7 @@ the backend raw_names may change in future versions.
 }
 \examples{\dontrun{
 conn <- dbConnect("PostgreSQL", dbname = "wireless")
-if(dbExistsTable(con, "frame_fuel")){
+if(dbExistsTable(conn, "frame_fuel")){
    dbRemoveTable(conn, "frame_fuel")
    dbWriteTable(conn, "frame_fuel", fuel.frame)
 }
