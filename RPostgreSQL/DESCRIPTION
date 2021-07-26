@@ -1,6 +1,6 @@
 Package: RPostgreSQL
-Version: 0.6-3
-Date: 2018-08-20
+Version: 0.7
+Date: 2021-07-26
 Title: R Interface to the 'PostgreSQL' Database System
 Author: Joe Conway, Dirk Eddelbuettel, Tomoaki Nishiyama, Sameer Kumar Prayaga (during 2008), Neil Tiffin
 Maintainer: Tomoaki Nishiyama <tomoakin@staff.kanazawa-u.ac.jp>
@@ -14,7 +14,7 @@ Description: Database interface and 'PostgreSQL' driver for 'R'.
  On 'macOS' and 'Microsoft Windows' system the attached 'libpq' library source will be used.
 LazyLoad: true
 Depends: R (>= 2.9.0), methods, DBI (>= 0.3)
-License: GPL-2 | file LICENSE
+License: GPL-3 | file LICENSE
 Copyright: Authors listed above, PostgreSQL Global Development Group, and The Regents of the University of California
 Collate: S4R.R zzz.R PostgreSQLSupport.R dbObjectId.R PostgreSQL.R
 URL: https://github.com/tomoakin/RPostgreSQL, https://cran.r-project.org/package=DBI, http://www.postgresql.org

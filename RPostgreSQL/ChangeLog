@@ -1,3 +1,11 @@
+2021-07-26  Tomoaki NISHIYAMA  <tomoakin@staff.kanazawa-u.ac.jp>
+	* Change LICENCE to GPL-3
+	* import new config.guess and config.sub
+	* Drop an unused variable RS_PostgreSQL_closeManager_t
+	* Use seq_along() instead of seq(along=)
+	* -Wno-stringop-truncation for libpq compilation on windows
+	* Change Description for new version and license.
+
 2017-06-19  Tomoaki NISHIYAMA  <tomoakin@staff.kanazawa-u.ac.jp>
 	* new libpq from postgresql-9.6.3 and Makefiles generated on Sierra (macOS 10.12)
 
