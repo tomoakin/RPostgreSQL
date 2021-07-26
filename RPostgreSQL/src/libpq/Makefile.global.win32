@@ -195,7 +195,7 @@ override CPPFLAGS := -I. $(CPPFLAGS)
 CC = gcc
 GCC = yes
 SUN_STUDIO_CC = no
-CFLAGS = -Wall -Wmissing-prototypes -Wpointer-arith -Wdeclaration-after-statement -Wendif-labels -Wmissing-format-attribute -Wformat-security -fno-strict-aliasing -fwrapv -fexcess-precision=standard -O2
+CFLAGS = -Wall -Wmissing-prototypes -Wpointer-arith -Wdeclaration-after-statement -Wendif-labels -Wmissing-format-attribute -Wformat-security -fno-strict-aliasing -fwrapv -fexcess-precision=standard -O2 -Wno-stringop-truncation
 CFLAGS_VECTOR =  -funroll-loops -ftree-vectorize
 CFLAGS_SSE42 = -msse4.2
 
