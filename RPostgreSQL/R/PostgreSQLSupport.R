@@ -45,7 +45,7 @@ postgresqlDescribeDriver <- function(obj, verbose = FALSE, ...) {
    }
    cat("  Open connections:", info$"num_con", "\n")
    if(verbose && !is.null(info$connectionIds)){
-      for(i in seq(along = info$connectionIds)){
+      for(i in seq_along(info$connectionIds)){
          cat("   ", i, " ")
          print(info$connectionIds[[i]])
       }
@@ -61,7 +61,7 @@ postgresqlDriverInfo <- function(obj, what="", ...) {
     ## replace drv/connection id w. actual drv/connection objects
     conObjs <- vector("list", length = info$"num_con")
     ids <- info$connectionIds
-    for(i in seq(along = ids))
+    for(i in seq_along(ids))
         conObjs[[i]] <- new("PostgreSQLConnection", Id = c(drvId, ids[i]))
     info$connectionIds <- conObjs
     info$managerId <- new("PostgreSQLDriver", Id = drvId)
@@ -131,7 +131,7 @@ postgresqlDescribeConnection <- function(obj, verbose = FALSE, ...) {
         cat("  PostgreSQL server thread id: ", info$threadId, "\n")
     }
     if (length(info$rsId)>0) {
-        for (i in seq(along = info$rsId)) {
+        for (i in seq_along(info$rsId)) {
             cat("   ", i, " ")
             print(info$rsId[[i]])
         }
@@ -161,7 +161,7 @@ postgresqlConnectionInfo <- function(obj, what="", ...) {
     id <- as(obj, "integer")
     info <- .Call(RS_PostgreSQL_connectionInfo, id)
     rsId <- vector("list", length = length(info$rsId))
-    for(i in seq(along = info$rsId))
+    for(i in seq_along(info$rsId))
         rsId[[i]] <- new("PostgreSQLResult", Id = c(id, info$rsId[i]))
     info$rsId <- rsId
     if(!missing(what))
@@ -310,7 +310,7 @@ postgresqlDescribeFields <- function(res, ...) {
 
         flds$type <- .Call(RS_PostgreSQL_typeNames, as.integer(flds$type))
         ## no factors
-        structure(flds, row.names = paste(seq(along=flds$type)),
+        structure(flds, row.names = paste(seq_along(flds$type)),
                   class = "data.frame")
     }
     else data.frame(flds)
