@@ -107,10 +107,6 @@ s_object * RS_PostgreSQL_closeManager(Mgr_Handle * mgrHandle);
  * RS_PostgreSQL_unescape_bytea
  */
 
-static R_NativePrimitiveArgType RS_PostgreSQL_closeManager_t[] = {
-    INTSXP
-};
-
 static const R_CMethodDef cMethods[] = {
    {NULL, NULL, 0, NULL}
 };
