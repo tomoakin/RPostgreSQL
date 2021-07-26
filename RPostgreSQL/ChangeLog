@@ -5,6 +5,8 @@
 	* Use seq_along() instead of seq(along=)
 	* -Wno-stringop-truncation for libpq compilation on windows
 	* Change Description for new version and license.
+	* fix type as pointed out by PR #109
+	* http to https transition for URLs
 
 2017-06-19  Tomoaki NISHIYAMA  <tomoakin@staff.kanazawa-u.ac.jp>
 	* new libpq from postgresql-9.6.3 and Makefiles generated on Sierra (macOS 10.12)

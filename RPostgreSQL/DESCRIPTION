@@ -17,4 +17,4 @@ Depends: R (>= 2.9.0), methods, DBI (>= 0.3)
 License: GPL-3 | file LICENSE
 Copyright: Authors listed above, PostgreSQL Global Development Group, and The Regents of the University of California
 Collate: S4R.R zzz.R PostgreSQLSupport.R dbObjectId.R PostgreSQL.R
-URL: https://github.com/tomoakin/RPostgreSQL, https://cran.r-project.org/package=DBI, http://www.postgresql.org
+URL: https://github.com/tomoakin/RPostgreSQL, https://cran.r-project.org/package=DBI, https://www.postgresql.org
