@@ -1,7 +1,6 @@
 # RPostgreSQL
 An R Interface to PostgreSQL.
 
-
 Releases go to CRAN at
 https://CRAN.R-project.org/package=RPostgreSQL
 
