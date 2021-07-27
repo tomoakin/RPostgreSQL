@@ -6,7 +6,7 @@
 # This file draws heavily on configure.in files from littler, RMySQL, and RdbiPgSQL
 
 # Set the name and version -- the version set here will propagate to other files from here
-AC_INIT(RPostgreSQL, 0.5)
+AC_INIT(RPostgreSQL, 0.7)
 
 AC_CONFIG_AUX_DIR(src)
 
@@ -35,7 +35,14 @@ if test "${PG_CONFIG}" != ""; then
     PG_INCDIR=`${PG_CONFIG} --includedir`
     PG_LIBDIR=`${PG_CONFIG} --libdir`
 
-else
+fi
+# If pg_config wasn't found, or was found but references a directory that doesn't exist,
+# Let's look elsewhere
+
+if ! test -d "${PG_INCDIR}" || ! test -d "${PG_LIBDIR}" ; then
+    unset PG_INCDIR
+    unset PG_LIBDIR
+fi
 
     # let's look around -- code copied from RdbuiPgSQL but modified to use test -f
     AC_MSG_NOTICE([checking for PostgreSQL header files])
@@ -43,20 +50,11 @@ else
     then
 	for dir in \
 	/usr/include \
-	/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.8.sdk/usr/include \
-	/usr/include/pgsql \
 	/usr/include/postgresql \
 	/usr/local/include \
-	/usr/local/include/pgsql \
 	/usr/local/include/postgresql \
 	/usr/local/pgsql/include \
 	/usr/local/postgresql/include \
-	/opt/include \
-	/opt/include/pgsql \
-	/opt/include/postgresql \
-	/opt/local/include \
-	/opt/local/include/postgresql \
-	/sw/include/postgresql
 	do
         AC_MSG_NOTICE([Checking include ${dir}.])
 	    if test -f ${dir}/libpq-fe.h
