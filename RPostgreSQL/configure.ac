@@ -46,7 +46,7 @@ fi
 
     # let's look around -- code copied from RdbuiPgSQL but modified to use test -f
     AC_MSG_NOTICE([checking for PostgreSQL header files])
-    if ! test $PG_INCDIR
+    if ! test -d "$PG_INCDIR"
     then
 	for dir in \
 	/usr/include \
@@ -54,7 +54,7 @@ fi
 	/usr/local/include \
 	/usr/local/include/postgresql \
 	/usr/local/pgsql/include \
-	/usr/local/postgresql/include \
+	/usr/local/postgresql/include 
 	do
         AC_MSG_NOTICE([Checking include ${dir}.])
 	    if test -f ${dir}/libpq-fe.h
@@ -70,19 +70,10 @@ fi
     then
 	for dir in \
 	/usr/lib \
-	/usr/lib/pgsql \
 	/usr/lib/postgresql \
 	/usr/local/lib \
-	/usr/local/lib/pgsql \
 	/usr/local/lib/postgresql \
-	/usr/local/pgsql/lib \
-	/usr/local/postgresql/lib \
-	/opt/lib \
-	/opt/lib/pgsql \
-	/opt/lib/postgresql \
-	/opt/local/lib \
-	/opt/local/lib/postgresql \
-	/sw/lib
+	/usr/local/postgresql/lib 
 	do
         AC_MSG_NOTICE([Checking lib ${dir}.])
 	    if test -f ${dir}/libpq.so
@@ -122,7 +113,6 @@ clean:
 '
         fi
     fi
-fi
 
 # Expand into arguments
 

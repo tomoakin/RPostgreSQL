@@ -2760,7 +2760,7 @@ fi
     # let's look around -- code copied from RdbuiPgSQL but modified to use test -f
     { $as_echo "$as_me:${as_lineno-$LINENO}: checking for PostgreSQL header files" >&5
 $as_echo "$as_me: checking for PostgreSQL header files" >&6;}
-    if ! test $PG_INCDIR
+    if ! test -d "$PG_INCDIR"
     then
 	for dir in \
 	/usr/include \
@@ -2768,7 +2768,7 @@ $as_echo "$as_me: checking for PostgreSQL header files" >&6;}
 	/usr/local/include \
 	/usr/local/include/postgresql \
 	/usr/local/pgsql/include \
-	/usr/local/postgresql/include \
+	/usr/local/postgresql/include
 	do
         { $as_echo "$as_me:${as_lineno-$LINENO}: Checking include ${dir}." >&5
 $as_echo "$as_me: Checking include ${dir}." >&6;}
@@ -2785,19 +2785,10 @@ $as_echo "$as_me: Checking include ${dir}." >&6;}
     then
 	for dir in \
 	/usr/lib \
-	/usr/lib/pgsql \
 	/usr/lib/postgresql \
 	/usr/local/lib \
-	/usr/local/lib/pgsql \
 	/usr/local/lib/postgresql \
-	/usr/local/pgsql/lib \
-	/usr/local/postgresql/lib \
-	/opt/lib \
-	/opt/lib/pgsql \
-	/opt/lib/postgresql \
-	/opt/local/lib \
-	/opt/local/lib/postgresql \
-	/sw/lib
+	/usr/local/postgresql/lib
 	do
         { $as_echo "$as_me:${as_lineno-$LINENO}: Checking lib ${dir}." >&5
 $as_echo "$as_me: Checking lib ${dir}." >&6;}
@@ -2838,7 +2829,6 @@ clean:
 '
         fi
     fi
-fi
 
 # Expand into arguments
 
