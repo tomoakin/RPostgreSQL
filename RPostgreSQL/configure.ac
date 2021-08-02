@@ -30,6 +30,9 @@ ENABLE_LIBPQ=
 
 # If pg_config was found, let's use it
 if test "${PG_CONFIG}" != ""; then
+    # for debug purpose, let pg_config print all the information
+    ${PG_CONFIG} | sed -e 's/^/PG_CONFIG_/' -e '/C.*FLAGS/s/-W/cflwarn/g'
+    # edit the output to avoid unnecessary warning
 
     # Use pg_config for header and linker arguments
     PG_INCDIR=`${PG_CONFIG} --includedir`
@@ -92,11 +95,11 @@ fi
     then
        echo $PG_LIBDIR
        echo $PG_INCDIR
-    else
-        if test "$R_OS_TYPE" = "darwin" ; then
+    fi
+    if test "$R_OS_TYPE" = "darwin" ; then
 # in case we cannot find any libpq library we will use the accompanied libpq
 # This content would be written into src/Makevars at the end of this script
-            ENABLE_LIBPQ='
+            DARWIN_INTERNAL_LIBPQ='
 
 PKG_CPPFLAGS=-Ilibpq
 PKG_LIBS=libpq/libpq.a
@@ -111,13 +114,24 @@ libpq/libpq.5.dylib:
 clean:
 	(cd libpq; $(MAKE) -f Makefile.darwin clean)
 '
-        fi
-    fi
+    fi 
+# if darwin
+
+# check if a program using libpq can be executed.
+# int PQlibVersion(void);
+
+## AC_CHECK_LIB(pq, PQlibVersion, ENABLE_LIBPQ="")
+
+AC_LANG(C)
+ echo '#include <libpq-fe.h>' > conftest.c
+ echo 'int main(){printf("%i",PQlibVersion());return 0;}' >> conftest.c
+$CC $CFLAGS -I${PG_INCDIR} -L${PG_LIBDIR} -lpq conftest.c -o pqconftest
+AC_TRY_RUN([int main(){return system("./pqconftest");}], ENABLE_LIBPQ="" , ENABLE_LIBPQ=$DARWIN_INTERNAL_LIBPQ; echo "system -lpq don't appear to work; use internal")
 
 # Expand into arguments
 
 #  make sure we use the included libpq-fe.h if it was not previously found
-if ! test $PG_INCDIR ; then
+if ! test "$ENABLE_LIBPQ" = '' ; then
 	AC_MSG_NOTICE([Using internal package libpq-fe.h])
 	PG_INCDIR="src/libpq"
 fi
