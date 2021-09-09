@@ -6,7 +6,7 @@
 
 #include "RS-PostgreSQL.h"
 #include <Rinternals.h>  
-#include <R_ext/RS.h>  /* for Calloc/Free */
+#include <R.h>  /* for Calloc/Free */
 #include <ctype.h>
 #include <stdlib.h>
 #include <errno.h>
