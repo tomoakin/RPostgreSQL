@@ -32,12 +32,13 @@ extern "C" {
 #define USING_R
 
 #    ifdef USING_R
-#        include "R.h"
+#        include <R.h>
+#        include <R_ext/Error.h>
 #        include "Rversion.h"
 #        if defined(R_VERSION) && R_VERSION >= R_Version(1,2,0)
 #            define USE_RINTERNALS 1
                                 /* buggy Rdefines.h in 1.2.0/1.2.1 */
-#            include "Rdefines.h"
+#            include <Rdefines.h>
 #            ifdef SET_ELEMENT  /* workaround for bug in Rdefines.h */
 #                undef SET_ELEMENT
 #                define SET_ELEMENT(x,i,val) SET_VECTOR_ELT((x),(i),(val))
