@@ -6,7 +6,7 @@
 # This file draws heavily on configure.in files from littler, RMySQL, and RdbiPgSQL
 
 # Set the name and version -- the version set here will propagate to other files from here
-AC_INIT(RPostgreSQL, 0.7)
+AC_INIT([RPostgreSQL],[0.7])
 
 AC_CONFIG_AUX_DIR(src)
 
@@ -126,7 +126,7 @@ AC_LANG(C)
  echo '#include <libpq-fe.h>' > conftest.c
  echo 'int main(){printf("%i",PQlibVersion());return 0;}' >> conftest.c
 $CC $CFLAGS -I${PG_INCDIR} -L${PG_LIBDIR} -lpq conftest.c -o pqconftest
-AC_TRY_RUN([int main(){return system("./pqconftest");}], ENABLE_LIBPQ="" , ENABLE_LIBPQ=$DARWIN_INTERNAL_LIBPQ; echo "system -lpq don't appear to work; use internal")
+AC_RUN_IFELSE([AC_LANG_SOURCE([[int main(){return system("./pqconftest");}]])],[ENABLE_LIBPQ="" ],[ENABLE_LIBPQ=$DARWIN_INTERNAL_LIBPQ; echo "system -lpq don't appear to work; use internal"],[])
 
 # Expand into arguments
 
@@ -149,4 +149,5 @@ AC_SUBST(PKG_CPPFLAGS)
 AC_SUBST(PKG_LIBS)
 
 AC_SUBST(ENABLE_LIBPQ)
-AC_OUTPUT(src/Makevars)
+AC_CONFIG_FILES([src/Makevars])
+AC_OUTPUT
