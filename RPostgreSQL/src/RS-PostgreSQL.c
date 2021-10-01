@@ -1513,7 +1513,7 @@ check_groupEvents(s_object * data, Stype fld_Sclass[], Sint irow, Sint jcol)
         break;
 
     default:
-        PROBLEM "un-regongnized R/S data type %d", fld_Sclass[jcol] ERROR;
+        Rf_error("un-regongnized R/S data type %d", fld_Sclass[jcol]);
         break;
     }
 
