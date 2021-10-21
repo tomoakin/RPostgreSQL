@@ -124,9 +124,20 @@ clean:
 
 AC_LANG(C)
  echo '#include <libpq-fe.h>' > conftest.c
- echo 'int main(){printf("%i",PQlibVersion());return 0;}' >> conftest.c
-$CC $CFLAGS -I${PG_INCDIR} -L${PG_LIBDIR} -lpq conftest.c -o pqconftest
-AC_RUN_IFELSE([AC_LANG_SOURCE([[int main(){return system("./pqconftest");}]])],[ENABLE_LIBPQ="" ],[ENABLE_LIBPQ=$DARWIN_INTERNAL_LIBPQ; echo "system -lpq don't appear to work; use internal"],[])
+ echo 'int main(){printf("%i...",PQlibVersion());return 0;}' >> conftest.c
+echo $CC $CFLAGS -I${PG_INCDIR} -L${PG_LIBDIR} conftest.c -lpq -o pqconftest
+$CC $CFLAGS -I${PG_INCDIR} -L${PG_LIBDIR} conftest.c -lpq -o pqconftest
+echo ./pqconftest
+./pqconftest
+status=$?
+if test $status -eq 0 ; then
+  echo "runs fine"
+  ENABLE_LIBPQ="" 
+else
+  echo "system -lpq don't appear to work; use internal"
+  ENABLE_LIBPQ=$DARWIN_INTERNAL_LIBPQ; 
+fi
+rm -f pqconftest conftest.c
 
 # Expand into arguments
 
