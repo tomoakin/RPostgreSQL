@@ -597,16 +597,16 @@ RS_DBI_errorMessage(char *msg, DBI_EXCEPTION exception_type)
 
     switch (exception_type) {
     case RS_DBI_MESSAGE:
-        Rf_warning("%s driver message: (%s)", driver);    /* was PRINT_IT */
+        Rf_warning("%s driver message: (%s)", driver, msg);    /* was PRINT_IT */
         break;
     case RS_DBI_WARNING:
-        Rf_warning("%s driver warning: (%s)", driver);
+        Rf_warning("%s driver warning: (%s)", driver, msg);
         break;
     case RS_DBI_ERROR:
-        Rf_error("%s driver: (%s)", driver);
+        Rf_error("%s driver: (%s)", driver, msg);
         break;
     case RS_DBI_TERMINATE:
-        Rf_error("%s driver fatal: (%s)", driver);     /* was TERMINATE */
+        Rf_error("%s driver fatal: (%s)", driver, msg);     /* was TERMINATE */
         break;
     }
     return;
