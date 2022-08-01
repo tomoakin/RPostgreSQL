@@ -37,7 +37,7 @@ RS_PostgreSQL_getResult(Con_Handle * conHandle)
     S_EVALUATOR RS_DBI_resultSet * result;
     PGconn *my_connection;
     Res_Handle *rsHandle;
-    Sint res_id;
+    int res_id;
  
     PGresult *my_result;
    
@@ -45,7 +45,7 @@ RS_PostgreSQL_getResult(Con_Handle * conHandle)
     my_connection = (PGconn *) con->drvConnection;
 
     if (con->num_res > 0) {
-        res_id = (Sint) con->resultSetIds[0];
+        res_id = con->resultSetIds[0];
         rsHandle = RS_DBI_asResHandle(MGR_ID(conHandle), CON_ID(conHandle), res_id);
         result = RS_DBI_getResultSet(rsHandle);
         if (result->completed == 0) {
@@ -78,7 +78,7 @@ RS_PostgreSQL_getResult(Con_Handle * conHandle)
     PROTECT(rsHandle = RS_DBI_allocResultSet(conHandle));
     result = RS_DBI_getResultSet(rsHandle);
     result->drvResultSet = (void *) NULL;
-    result->rowCount = (Sint) 0;
+    result->rowCount = 0;
     result->isSelect = 0;
     result->rowsAffected = 0;
     result->completed = 1;

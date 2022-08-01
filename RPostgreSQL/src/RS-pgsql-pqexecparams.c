@@ -27,7 +27,7 @@ RS_PostgreSQL_pqexecparams(SEXP args)
     Con_Handle * conHandle;
     s_object * statement;
     s_object * params;
-    Sint is_select=0;
+    int is_select=0;
     const char *dyn_statement;
     const char ** pqparams;
     RS_DBI_resultSet *result;
@@ -71,10 +71,10 @@ RS_PostgreSQL_pqexecparams(SEXP args)
 
 
     if (PQresultStatus(my_result) == PGRES_TUPLES_OK) {
-        is_select = (Sint) TRUE;
+        is_select = TRUE;
     }
     if (PQresultStatus(my_result) == PGRES_COMMAND_OK) {
-        is_select = (Sint) FALSE;
+        is_select = FALSE;
     }
 
     if (strcmp(PQresultErrorMessage(my_result), "") != 0) {
@@ -97,7 +97,7 @@ RS_PostgreSQL_pqexecparams(SEXP args)
     result = RS_DBI_getResultSet(retval);
     result->statement = RS_DBI_copyString(dyn_statement);
     result->drvResultSet = (void *) my_result;
-    result->rowCount = (Sint) 0;
+    result->rowCount = 0;
     result->isSelect = is_select;
 
     /*  Returns the number of rows affected by the SQL command.
@@ -105,11 +105,11 @@ RS_PostgreSQL_pqexecparams(SEXP args)
      */
 
     if (!is_select) {
-        result->rowsAffected = (Sint) atoi(PQcmdTuples(my_result));
+        result->rowsAffected = atoi(PQcmdTuples(my_result));
         result->completed = 1;
     }
     else {
-        result->rowsAffected = (Sint) - 1;
+        result->rowsAffected = -1;
         result->completed = 0;
     }
 

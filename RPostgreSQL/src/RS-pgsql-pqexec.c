@@ -45,7 +45,7 @@ RS_PostgreSQL_pqexec(Con_Handle * conHandle, s_object * statement)
     PGconn *my_connection;
     PGresult *my_result;
  
-    Sint is_select=0;
+    int is_select=0;
     char *dyn_statement;
 
     con = RS_DBI_getConnection(conHandle);
@@ -71,10 +71,10 @@ RS_PostgreSQL_pqexec(Con_Handle * conHandle, s_object * statement)
 
 
     if (PQresultStatus(my_result) == PGRES_TUPLES_OK) {
-        is_select = (Sint) TRUE;
+        is_select = TRUE;
     }
     if (PQresultStatus(my_result) == PGRES_COMMAND_OK) {
-        is_select = (Sint) FALSE;
+        is_select = FALSE;
     }
 
     if (strcmp(PQresultErrorMessage(my_result), "") != 0) {

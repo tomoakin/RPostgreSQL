@@ -163,7 +163,7 @@ RS_PostgreSQL_init(s_object * config_params, s_object * reload)
          * explicitly in the S call to fetch).
          */
         Mgr_Handle * mgrHandle;
-    Sint fetch_default_rec, force_reload, max_con;
+    int fetch_default_rec, force_reload, max_con;
     const char *drvName = "PostgreSQL";
 
 
@@ -189,7 +189,7 @@ RS_PostgreSQL_closeManager(Mgr_Handle * mgrHandle)
     }
     RS_DBI_freeManager(mgrHandle);
 
-    MEM_PROTECT(status = NEW_LOGICAL((Sint) 1));
+    MEM_PROTECT(status = NEW_LOGICAL(1));
     LGL_EL(status, 0) = TRUE;
     MEM_UNPROTECT(1);
     return status;
@@ -218,7 +218,7 @@ RS_PostgreSQL_cloneConnection(Con_Handle * conHandle)
      * vector to be passed to the RS_PostgreSQL_newConnection() function.
      */
 
-    MEM_PROTECT(con_params = NEW_CHARACTER((Sint) 7));
+    MEM_PROTECT(con_params = NEW_CHARACTER(7));
     SET_CHR_EL(con_params, 0, C_S_CPY(conParams->user));
     SET_CHR_EL(con_params, 1, C_S_CPY(conParams->password));
     SET_CHR_EL(con_params, 2, C_S_CPY(conParams->host));
@@ -336,7 +336,7 @@ RS_PostgreSQL_newConnection(Mgr_Handle * mgrHandle, s_object * con_params)
         return R_NilValue; /* don't reach here as it goes back to R proc */
     }
 
-    PROTECT(conHandle = RS_DBI_allocConnection(mgrHandle, (Sint) 1)); /* The second argument (1) specifies the number of result sets allocated */
+    PROTECT(conHandle = RS_DBI_allocConnection(mgrHandle, 1)); /* The second argument (1) specifies the number of result sets allocated */
     con = RS_DBI_getConnection(conHandle);
     if (my_connection && !con) {
         PQfinish(my_connection);
@@ -379,7 +379,7 @@ RS_PostgreSQL_closeConnection(Con_Handle * conHandle)
 
     RS_DBI_freeConnection(conHandle);
 
-    MEM_PROTECT(status = NEW_LOGICAL((Sint) 1));
+    MEM_PROTECT(status = NEW_LOGICAL(1));
     LGL_EL(status, 0) = TRUE;
     MEM_UNPROTECT(1);
 
@@ -400,7 +400,7 @@ RS_PostgreSQL_exec(Con_Handle * conHandle, s_object * statement)
     PGconn *my_connection;
     PGresult *my_result;
  
-    Sint res_id, is_select=0;
+    int res_id, is_select=0;
     char *dyn_statement;
 
     con = RS_DBI_getConnection(conHandle);
@@ -411,7 +411,7 @@ RS_PostgreSQL_exec(Con_Handle * conHandle, s_object * statement)
      * PostgreSQL only allows  one resultSet per connection.
      */
     if (con->num_res > 0) {
-        res_id = (Sint) con->resultSetIds[0];   /* recall, PostgreSQL has only 1 res */
+        res_id = con->resultSetIds[0];   /* recall, PostgreSQL has only 1 res */
         rsHandle = RS_DBI_asResHandle(MGR_ID(conHandle), CON_ID(conHandle), res_id);
         result = RS_DBI_getResultSet(rsHandle);
         if (result->completed == 0) {
@@ -444,10 +444,10 @@ RS_PostgreSQL_exec(Con_Handle * conHandle, s_object * statement)
     /* ExecStatusType PQresultStatus(const PGresult *res); */
 
     if (PQresultStatus(my_result) == PGRES_TUPLES_OK) {
-        is_select = (Sint) TRUE;
+        is_select = TRUE;
     }
     if (PQresultStatus(my_result) == PGRES_COMMAND_OK) {
-        is_select = (Sint) FALSE;
+        is_select = FALSE;
     }
 
     /* char *PQresultErrorMessage(const PGresult *res); */
@@ -472,7 +472,7 @@ RS_PostgreSQL_exec(Con_Handle * conHandle, s_object * statement)
     result = RS_DBI_getResultSet(rsHandle);
     result->statement = RS_DBI_copyString(dyn_statement);
     result->drvResultSet = (void *) my_result;
-    result->rowCount = (Sint) 0;
+    result->rowCount = 0;
     result->isSelect = is_select;
 
     /*  Returns the number of rows affected by the SQL command.
@@ -480,11 +480,11 @@ RS_PostgreSQL_exec(Con_Handle * conHandle, s_object * statement)
      */
 
     if (!is_select) {
-        result->rowsAffected = (Sint) atoi(PQcmdTuples(my_result));
+        result->rowsAffected = atoi(PQcmdTuples(my_result));
         result->completed = 1;
     }
     else {
-        result->rowsAffected = (Sint) - 1;
+        result->rowsAffected = -1;
         result->completed = 0;
     }
 
@@ -528,12 +528,12 @@ RS_PostgreSQL_createDataMappings(Res_Handle * rsHandle)
 
         flds->type[j] = (int) PQftype(my_result, j);
 
-        flds->length[j] = (Sint) PQfsize(my_result, j);
+        flds->length[j] = PQfsize(my_result, j);
 
         /* NOTE: PQfmod is -1 incase of no information */
-        flds->precision[j] = (Sint) PQfmod(my_result, j);
+        flds->precision[j] = PQfmod(my_result, j);
 
-        flds->scale[j] = (Sint) - 1;
+        flds->scale[j] = -1;
 
         /* PQftablecol returns the column number (within its table) of
          * the column making up the specified query result column.Zero
@@ -547,7 +547,7 @@ RS_PostgreSQL_createDataMappings(Res_Handle * rsHandle)
          * table.
          */
 
-        flds->nullOk[j] = (Sint) INT_MIN; /* This should translate to NA in R */
+        flds->nullOk[j] = INT_MIN; /* This should translate to NA in R */
 
         if (PQftablecol(my_result, j) != 0) {
             /* Code to find whether a row can be nullable or not */
@@ -562,10 +562,10 @@ RS_PostgreSQL_createDataMappings(Res_Handle * rsHandle)
 	    if (res && (PQntuples(res) > 0)){
                 const char * attnotnull = PQgetvalue(res, 0, 0);
 		if(strcmp(attnotnull, "f") == 0) {
-		    flds->nullOk[j] = (Sint) 1; /* nollOK is TRUE when attnotnull is f*/
+		    flds->nullOk[j] = 1; /* nollOK is TRUE when attnotnull is f*/
                 }
 		if(strcmp(attnotnull, "t") == 0) {
-		    flds->nullOk[j] = (Sint) 0; /* nollOK is FALSE when attnotnull is t*/
+		    flds->nullOk[j] = 0; /* nollOK is FALSE when attnotnull is t*/
                 }
 	    }
             PQclear(res);
@@ -579,7 +579,7 @@ RS_PostgreSQL_createDataMappings(Res_Handle * rsHandle)
             break;
         case BPCHAROID:
             flds->Sclass[j] = CHARACTER_TYPE;
-            flds->isVarLength[j] = (Sint) 0;
+            flds->isVarLength[j] = 0;
             break;
         case VARCHAROID:
         case TEXTOID:
@@ -588,7 +588,7 @@ RS_PostgreSQL_createDataMappings(Res_Handle * rsHandle)
         case MACADDROID:
         case INETOID:
             flds->Sclass[j] = CHARACTER_TYPE;
-            flds->isVarLength[j] = (Sint) 1;
+            flds->isVarLength[j] = 1;
             break;
         case INT2OID:
         case INT4OID:
@@ -596,7 +596,7 @@ RS_PostgreSQL_createDataMappings(Res_Handle * rsHandle)
             flds->Sclass[j] = INTEGER_TYPE;
             break;
         case INT8OID:
-            if (sizeof(Sint) >= 8) {
+            if (sizeof(int) >= 8) {
                 flds->Sclass[j] = INTEGER_TYPE;
             }
             else {
@@ -615,11 +615,10 @@ RS_PostgreSQL_createDataMappings(Res_Handle * rsHandle)
         case TIMESTAMPTZOID:
         case INTERVALOID:
             flds->Sclass[j] = CHARACTER_TYPE;
-            /*flds->isVarLength[j] = (Sint) 1; */
             break;
         default:
             flds->Sclass[j] = CHARACTER_TYPE;
-            flds->isVarLength[j] = (Sint) 1;
+            flds->isVarLength[j] = 1;
             snprintf(buff, 1000, "select typname, typcategory from pg_type where oid = %d", internal_type); 
             res = PQexec(conn, buff);
 	    if (res){ 
@@ -660,9 +659,9 @@ RS_PostgreSQL_fetch(s_object * rsHandle, s_object * max_rec)
     PGresult *my_result;
     s_object *output, *s_tmp;
     int i, j, null_item, expand;
-    Sint completed;
+    int completed;
     Stype *fld_Sclass;
-    Sint num_rec;
+    int num_rec;
     int num_fields;
     int num_rows;               /*num_rows added to count number of rows */
     int k;                      /* This takes care of pointer to the required row */
@@ -686,7 +685,7 @@ RS_PostgreSQL_fetch(s_object * rsHandle, s_object * max_rec)
         num_rec = mgr->fetch_default_rec;
     }
     num_fields = flds->num_fields;
-    MEM_PROTECT(output = NEW_LIST((Sint) num_fields));
+    MEM_PROTECT(output = NEW_LIST(num_fields));
     RS_DBI_allocOutput(output, flds, num_rec, 0);
     fld_Sclass = flds->Sclass;
     /* actual fetching.... */
@@ -712,7 +711,7 @@ RS_PostgreSQL_fetch(s_object * rsHandle, s_object * max_rec)
       }
     }
 
-    completed = (Sint) 0;
+    completed = 0;
     for (i = 0;; i++, k++) {
         if (k >= num_rows) {
             completed = 1;
@@ -765,10 +764,10 @@ RS_PostgreSQL_fetch(s_object * rsHandle, s_object * max_rec)
                     NA_SET(&(LST_INT_EL(output, j, i)), LOGICAL_TYPE);
                 }
                 else if (strcmp(PQgetvalue(my_result, k, j), "f") == 0) {
-                    LST_LGL_EL(output, j, i) = (Sint) 0;        /* FALSE */
+                    LST_LGL_EL(output, j, i) = 0;        /* FALSE */
                 }
                 else if (strcmp(PQgetvalue(my_result, k, j), "t") == 0) {
-                    LST_LGL_EL(output, j, i) = (Sint) 1;        /* TRUE */
+                    LST_LGL_EL(output, j, i) = 1;        /* TRUE */
                 }
                 break;
 
@@ -777,7 +776,7 @@ RS_PostgreSQL_fetch(s_object * rsHandle, s_object * max_rec)
                     NA_SET(&(LST_INT_EL(output, j, i)), INTEGER_TYPE);
                 }
                 else {
-                    LST_INT_EL(output, j, i) = (Sint) atol(PQgetvalue(my_result, k, j));        /* NOTE: changed */
+                    LST_INT_EL(output, j, i) = atol(PQgetvalue(my_result, k, j));        /* NOTE: changed */
                 }
                 break;
 
@@ -844,10 +843,10 @@ RS_PostgreSQL_getException(s_object * conHandle)
     S_EVALUATOR PGconn * my_connection;
     s_object *output;
     RS_DBI_connection *con;
-    Sint n = 2;
+    int n = 2;
     char *exDesc[] = { "errorNum", "errorMsg" };
     Stype exType[] = { INTEGER_TYPE, CHARACTER_TYPE };
-    Sint exLen[] = { 1, 1 };
+    int exLen[] = { 1, 1 };
 
     con = RS_DBI_getConnection(conHandle);
     if (!con->drvConnection) {
@@ -891,7 +890,7 @@ RS_PostgreSQL_closeResultSet(s_object * resHandle)
     result->drvResultSet = (void *) NULL;
     RS_DBI_freeResultSet(resHandle);
 
-    MEM_PROTECT(status = NEW_LOGICAL((Sint) 1));
+    MEM_PROTECT(status = NEW_LOGICAL(1));
     LGL_EL(status, 0) = TRUE;
     MEM_UNPROTECT(1);
 
@@ -903,8 +902,8 @@ RS_PostgreSQL_managerInfo(Mgr_Handle * mgrHandle)
 {
     S_EVALUATOR RS_DBI_manager * mgr;
     s_object *output;
-    Sint i, num_con, max_con, *cons, ncon;
-    Sint j, n = 7;
+    int i, num_con, max_con, *cons, ncon;
+    int j, n = 7;
     char *mgrDesc[] = { "drvName", "connectionIds", "fetch_default_rec",
         "managerId", "length", "num_con",
         "counter"               /*,   "clientVersion" */
@@ -913,25 +912,25 @@ RS_PostgreSQL_managerInfo(Mgr_Handle * mgrHandle)
         INTEGER_TYPE, INTEGER_TYPE, INTEGER_TYPE,
         INTEGER_TYPE            /*,   CHARACTER_TYPE */
     };
-    Sint mgrLen[] = { 1, 1, 1, 1, 1, 1, 1 /*, 1 */  };
+    int mgrLen[] = { 1, 1, 1, 1, 1, 1, 1 /*, 1 */  };
 
     mgr = RS_DBI_getManager(mgrHandle);
     if (!mgr) {
         RS_DBI_errorMessage("driver not loaded yet", RS_DBI_ERROR);
     }
-    num_con = (Sint) mgr->num_con;
-    max_con = (Sint) mgr->length;
+    num_con = mgr->num_con;
+    max_con = mgr->length;
     mgrLen[1] = num_con;
 
     PROTECT(output = RS_DBI_createNamedList(mgrDesc, mgrType, mgrLen, n));
-    j = (Sint) 0;
+    j = 0;
     if (mgr->drvName) {
         SET_LST_CHR_EL(output, j++, 0, C_S_CPY(mgr->drvName));
     }
     else {
         SET_LST_CHR_EL(output, j++, 0, C_S_CPY(""));
     }
-    cons = (Sint *) S_alloc((long) max_con, (int) sizeof(Sint));
+    cons = (int *) S_alloc((long) max_con, (int) sizeof(int));
     ncon = RS_DBI_listEntries(mgr->connectionIds, mgr->length, cons);
     if (ncon != num_con) {
         RS_DBI_errorMessage("internal error: corrupt RS_DBI connection table", RS_DBI_ERROR);
@@ -956,7 +955,7 @@ RS_PostgreSQL_connectionInfo(Con_Handle * conHandle)
     RS_PostgreSQL_conParams *conParams;
     RS_DBI_connection *con;
     s_object *output;
-    Sint i, n = 8, *res, nres;
+    int i, n = 8, *res, nres;
     int sv, major, minor_revision, minor, revision_num;
     char *conDesc[] = { "host", "port", "user", "dbname",
         "serverVersion", "protocolVersion",
@@ -966,7 +965,7 @@ RS_PostgreSQL_connectionInfo(Con_Handle * conHandle)
         CHARACTER_TYPE, CHARACTER_TYPE, INTEGER_TYPE,
         INTEGER_TYPE, INTEGER_TYPE
     };
-    Sint conLen[] = { 1, 1, 1, 1, 1, 1, 1, -1 };
+    int conLen[] = { 1, 1, 1, 1, 1, 1, 1, -1 };
 
     con = RS_DBI_getConnection(conHandle);
     conLen[7] = con->num_res;   
@@ -993,17 +992,17 @@ RS_PostgreSQL_connectionInfo(Con_Handle * conHandle)
         SET_LST_CHR_EL(output, 4, 0, C_S_CPY(buf1));
     }
 
-    LST_INT_EL(output, 5, 0) = (Sint) PQprotocolVersion(my_con);
-    LST_INT_EL(output, 6, 0) = (Sint) PQbackendPID(my_con);
+    LST_INT_EL(output, 5, 0) = PQprotocolVersion(my_con);
+    LST_INT_EL(output, 6, 0) = PQbackendPID(my_con);
 
-    res = (Sint *) S_alloc((long) con->length, (int) sizeof(Sint));
+    res = (int *) S_alloc((long) con->length, (int) sizeof(int));
     nres = RS_DBI_listEntries(con->resultSetIds, con->length, res);
     if (nres != con->num_res) {
         RS_DBI_errorMessage("internal error: corrupt RS_DBI resultSet table", RS_DBI_ERROR);
     }
 
     for (i = 0; i < con->num_res; i++) {
-        LST_INT_EL(output, 7, i) = (Sint) res[i];
+        LST_INT_EL(output, 7, i) = res[i];
     }
     UNPROTECT(1);
     return output;
@@ -1014,14 +1013,14 @@ RS_PostgreSQL_resultSetInfo(Res_Handle * rsHandle)
 {
     S_EVALUATOR RS_DBI_resultSet * result;
     s_object *output, *flds;
-    Sint n = 6;
+    int n = 6;
     char *rsDesc[] = { "statement", "isSelect", "rowsAffected",
         "rowCount", "completed", "fieldDescription"
     };
     Stype rsType[] = { CHARACTER_TYPE, INTEGER_TYPE, INTEGER_TYPE,
         INTEGER_TYPE, INTEGER_TYPE, LIST_TYPE
     };
-    Sint rsLen[] = { 1, 1, 1, 1, 1, 1 };
+    int rsLen[] = { 1, 1, 1, 1, 1, 1 };
 
     result = RS_DBI_getResultSet(rsHandle);
     if (result->fields) {
@@ -1037,7 +1036,7 @@ RS_PostgreSQL_resultSetInfo(Res_Handle * rsHandle)
     LST_INT_EL(output, 3, 0) = result->rowCount;
     LST_INT_EL(output, 4, 0) = result->completed;
     if (flds != S_NULL_ENTRY) {
-        SET_ELEMENT(LST_EL(output, 5), (Sint) 0, flds);
+        SET_ELEMENT(LST_EL(output, 5), 0, flds);
     }
     UNPROTECT(2);
     return output;
@@ -1047,7 +1046,7 @@ s_object *
 RS_PostgreSQL_typeNames(s_object * type)
 {
     s_object *typeNames;
-    Sint n, *typeCodes;
+    int n, *typeCodes;
     int i;
 
     n = LENGTH(type);
@@ -1097,9 +1096,9 @@ RS_PostgreSQL_typeNames(s_object * type)
  *          then a handle_event() could conveniently handle all the events.
  */
 
-s_object *expand_list(s_object * old, Sint new_len);
-void add_group(s_object * group_names, s_object * data, Stype * fld_Sclass, Sint group, Sint ngroup, Sint i);
-unsigned int check_groupEvents(s_object * data, Stype fld_Sclass[], Sint row, Sint col);
+s_object *expand_list(s_object * old, int new_len);
+void add_group(s_object * group_names, s_object * data, Stype * fld_Sclass, int group, int ngroup, int i);
+unsigned int check_groupEvents(s_object * data, Stype fld_Sclass[], int row, int col);
 
 /* The following are the masks for the events/states we recognize as we
  * bring rows from the result set/cursor
@@ -1127,7 +1126,7 @@ RS_DBI_invokeBeginGroup(s_object * callObj,     /* should be initialized */
     S_EVALUATOR s_object * s_group_name;
 
     /* make a copy of the argument */
-    MEM_PROTECT(s_group_name = NEW_CHARACTER((Sint) 1));
+    MEM_PROTECT(s_group_name = NEW_CHARACTER(1));
     SET_CHR_EL(s_group_name, 0, C_S_CPY(group_name));
 
     /* and stick into call object */
@@ -1165,7 +1164,7 @@ RS_DBI_invokeEndGroup(s_object * callObj, s_object * data, const char *group_nam
     /* make copies of the arguments */
     MEM_PROTECT(callObj = duplicate(callObj));
     MEM_PROTECT(s_x = COPY_ALL(data));
-    MEM_PROTECT(s_group_name = NEW_CHARACTER((Sint) 1));
+    MEM_PROTECT(s_group_name = NEW_CHARACTER(1));
     SET_CHR_EL(s_group_name, 0, C_S_CPY(group_name));
 
     /* stick copies of args into the call object */
@@ -1199,14 +1198,14 @@ RS_PostgreSQL_dbApply(s_object * rsHandle,      /* resultset handle */
     s_object *data, *cur_rec, *out_list, *group_names, *val;
     /*  unsigned long  *lens = (unsigned long *)0; NOTE: not being used */
     Stype *fld_Sclass;
-    Sint i, j, null_item, expand, completed;
+    int i, j, null_item, expand, completed;
     /* *fld_nullOk not used */
-    Sint num_rec, num_groups;
+    int num_rec, num_groups;
     int num_fields;
-    Sint max_rec = INT_EL(s_max_rec, 0);        /* max rec per group */
-    Sint ngroup = 0, group_field = INT_EL(s_group_field, 0);
+    int max_rec = INT_EL(s_max_rec, 0);        /* max rec per group */
+    int ngroup = 0, group_field = INT_EL(s_group_field, 0);
     long total_records;
-    Sint pushed_back = FALSE;
+    int pushed_back = FALSE;
 
     unsigned int event = NEVER;
     int np = 0;                 /* keeps track of MEM_PROTECT()'s */
@@ -1244,10 +1243,10 @@ RS_PostgreSQL_dbApply(s_object * rsHandle,      /* resultset handle */
     num_fields = flds->num_fields;
     fld_Sclass = flds->Sclass;
 /*    fld_nullOk = flds->nullOk; * set but not used*/
-    MEM_PROTECT(data = NEW_LIST((Sint) num_fields));    /* buffer records */
-    MEM_PROTECT(cur_rec = NEW_LIST((Sint) num_fields)); /* current record */
+    MEM_PROTECT(data = NEW_LIST(num_fields));    /* buffer records */
+    MEM_PROTECT(cur_rec = NEW_LIST(num_fields)); /* current record */
     np += 2;
-    RS_DBI_allocOutput(cur_rec, flds, (Sint) 1, 1);
+    RS_DBI_allocOutput(cur_rec, flds, 1, 1);
     RS_DBI_makeDataFrame(cur_rec);
 
     num_rec = INT_EL(s_batch_size, 0);  /* this is num of rec per group! */
@@ -1267,7 +1266,7 @@ RS_PostgreSQL_dbApply(s_object * rsHandle,      /* resultset handle */
     /* actual fetching.... */
 
     my_result = (PGresult *) result->drvResultSet;
-    completed = (Sint) 0;
+    completed = 0;
 
     row_max = PQntuples(my_result);
 
@@ -1294,7 +1293,7 @@ RS_PostgreSQL_dbApply(s_object * rsHandle,      /* resultset handle */
         }
         if (row_counter == row_max) {   /*finish  *//*NOTE:Changed */
 
-            completed = (Sint) 1;
+            completed = 1;
             /* TODO: error handling has to be done */
             break;
 
@@ -1418,7 +1417,7 @@ RS_PostgreSQL_dbApply(s_object * rsHandle,      /* resultset handle */
             /* set length of data to zero to force initialization
              * for next group
              */
-            RS_DBI_allocOutput(data, flds, (Sint) 0, (Sint) 1);
+            RS_DBI_allocOutput(data, flds, 0, 1);
             i = 0;              /* flush */
             ++ngroup;
             pushed_back = TRUE;
@@ -1481,7 +1480,7 @@ RS_PostgreSQL_dbApply(s_object * rsHandle,      /* resultset handle */
 }
 
 unsigned int
-check_groupEvents(s_object * data, Stype fld_Sclass[], Sint irow, Sint jcol)
+check_groupEvents(s_object * data, Stype fld_Sclass[], int irow, int jcol)
 {
     if (irow == 0) {              /* Begin */
         return (BEGIN | BEGIN_GROUP);
@@ -1522,7 +1521,7 @@ check_groupEvents(s_object * data, Stype fld_Sclass[], Sint irow, Sint jcol)
 
 /* append current group (as character) to the vector of group names */
 void
-add_group(s_object * group_names, s_object * data, Stype * fld_Sclass, Sint group_field, Sint ngroup, Sint i)
+add_group(s_object * group_names, s_object * data, Stype * fld_Sclass, int group_field, int ngroup, int i)
 {
     char buff[1024];
 

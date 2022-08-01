@@ -29,7 +29,7 @@
 static RS_DBI_manager *dbManager = NULL;
 
 Mgr_Handle *
-RS_DBI_allocManager(const char *drvName, Sint max_con, Sint fetch_default_rec, Sint force_realloc)
+RS_DBI_allocManager(const char *drvName, int max_con, int fetch_default_rec, int force_realloc)
 {
     /* Currently, the dbManager is a singleton (therefore we don't
      * completly free all the space).  Here we alloc space
@@ -41,8 +41,8 @@ RS_DBI_allocManager(const char *drvName, Sint max_con, Sint fetch_default_rec, S
      */
     Mgr_Handle *mgrHandle;
     RS_DBI_manager *mgr;
-    Sint counter;
-    Sint mgr_id = (Sint) getpid();
+    int counter;
+    pid_t mgr_id = getpid();
     int i;
 
     PROTECT(mgrHandle = RS_DBI_asMgrHandle(mgr_id));
@@ -77,7 +77,7 @@ RS_DBI_allocManager(const char *drvName, Sint max_con, Sint fetch_default_rec, S
         free(mgr);
         RS_DBI_errorMessage("could not calloc RS_DBI_connections", RS_DBI_ERROR);
     }
-    mgr->connectionIds = (Sint *) calloc((size_t) max_con, sizeof(Sint));
+    mgr->connectionIds = (int *) calloc((size_t) max_con, sizeof(int));
     if (!mgr->connectionIds) {
         free(mgr->drvName);
         free(mgr->connections);
@@ -86,7 +86,7 @@ RS_DBI_allocManager(const char *drvName, Sint max_con, Sint fetch_default_rec, S
     }
     mgr->counter = counter;
     mgr->length = max_con;
-    mgr->num_con = (Sint) 0;
+    mgr->num_con = 0;
     mgr->fetch_default_rec = fetch_default_rec;
     for (i = 0; i < max_con; i++) {
         mgr->connectionIds[i] = -1;
@@ -133,18 +133,18 @@ RS_DBI_freeManager(Mgr_Handle * mgrHandle)
     }
     if (mgr->connectionIds) {
         free(mgr->connectionIds);
-        mgr->connectionIds = (Sint *) NULL;
+        mgr->connectionIds = (int *) NULL;
     }
     return;
 }
 
 Con_Handle *
-RS_DBI_allocConnection(Mgr_Handle * mgrHandle, Sint max_res)
+RS_DBI_allocConnection(Mgr_Handle * mgrHandle, int max_res)
 {
     RS_DBI_manager *mgr;
     RS_DBI_connection *con;
     Con_Handle *conHandle;
-    Sint i, indx, con_id;
+    int i, indx, con_id;
 
     mgr = RS_DBI_getManager(mgrHandle);
     indx = RS_DBI_newEntry(mgr->connectionIds, mgr->length);
@@ -167,7 +167,7 @@ RS_DBI_allocConnection(Mgr_Handle * mgrHandle, Sint max_res)
     con->drvConnection = (void *) NULL;
     con->drvData = (void *) NULL;       /* to be used by the driver in any way */
     con->conParams = (void *) NULL;
-    con->counter = (Sint) 0;
+    con->counter = 0;
     con->length = max_res;      /* length of resultSet vector */
 
     /* result sets for this connection */
@@ -179,8 +179,8 @@ RS_DBI_allocConnection(Mgr_Handle * mgrHandle, Sint max_res)
         free(con);
         RS_DBI_errorMessage(errMsg, RS_DBI_ERROR);
     }
-    con->num_res = (Sint) 0;
-    con->resultSetIds = (Sint *) calloc((size_t) max_res, sizeof(Sint));
+    con->num_res = 0;
+    con->resultSetIds = (int *) calloc((size_t) max_res, sizeof(int));
     if (!con->resultSetIds) {
         char *errMsg = "could not calloc vector of resultSet Ids";
         free(con->resultSets);
@@ -194,8 +194,8 @@ RS_DBI_allocConnection(Mgr_Handle * mgrHandle, Sint max_res)
     }
 
     /* Finally, update connection table in mgr */
-    mgr->num_con += (Sint) 1;
-    mgr->counter += (Sint) 1;
+    mgr->num_con += 1;
+    mgr->counter += 1;
     mgr->connections[indx] = con;
     mgr->connectionIds[indx] = con_id;
     conHandle = RS_DBI_asConHandle(MGR_ID(mgrHandle), con_id);
@@ -212,7 +212,7 @@ RS_DBI_freeConnection(Con_Handle * conHandle)
 {
     RS_DBI_connection *con;
     RS_DBI_manager *mgr;
-    Sint indx;
+    int indx;
 
     con = RS_DBI_getConnection(conHandle);
     mgr = RS_DBI_getManager(conHandle);
@@ -224,7 +224,7 @@ RS_DBI_freeConnection(Con_Handle * conHandle)
         Res_Handle *rsHandle;
 
         for (i = 0; i < con->num_res; i++) {
-            rsHandle = RS_DBI_asResHandle(con->managerId, con->connectionId, (Sint) con->resultSetIds[i]);
+            rsHandle = RS_DBI_asResHandle(con->managerId, con->connectionId, (int) con->resultSetIds[i]);
             RS_DBI_freeResultSet(rsHandle);
         }
         RS_DBI_errorMessage(errMsg, RS_DBI_WARNING);
@@ -254,7 +254,7 @@ RS_DBI_freeConnection(Con_Handle * conHandle)
     indx = RS_DBI_lookup(mgr->connectionIds, mgr->length, con->connectionId);
     RS_DBI_freeEntry(mgr->connectionIds, indx);
     mgr->connections[indx] = (RS_DBI_connection *) NULL;
-    mgr->num_con -= (Sint) 1;
+    mgr->num_con -= (int) 1;
 
     free(con);
     con = (RS_DBI_connection *) NULL;
@@ -268,7 +268,7 @@ RS_DBI_allocResultSet(Con_Handle * conHandle)
     RS_DBI_connection *con = NULL;
     RS_DBI_resultSet *result = NULL;
     Res_Handle *rsHandle;
-    Sint indx, res_id;
+    int indx, res_id;
 
     con = RS_DBI_getConnection(conHandle);
     indx = RS_DBI_newEntry(con->resultSetIds, con->length);
@@ -292,16 +292,16 @@ RS_DBI_allocResultSet(Con_Handle * conHandle)
     result->managerId = MGR_ID(conHandle);
     result->connectionId = CON_ID(conHandle);
     result->resultSetId = con->counter;
-    result->isSelect = (Sint) - 1;
-    result->rowsAffected = (Sint) - 1;
-    result->rowCount = (Sint) 0;
-    result->completed = (Sint) - 1;
+    result->isSelect =  -1;
+    result->rowsAffected = -1;
+    result->rowCount = 0;
+    result->completed = -1;
     result->fields = (RS_DBI_fields *) NULL;
 
     /* update connection's resultSet table */
     res_id = con->counter;
-    con->num_res += (Sint) 1;
-    con->counter += (Sint) 1;
+    con->num_res += 1;
+    con->counter += 1;
     con->resultSets[indx] = result;
     con->resultSetIds[indx] = res_id;
 
@@ -314,7 +314,7 @@ RS_DBI_freeResultSet(Res_Handle * rsHandle)
 {
     RS_DBI_resultSet *result;
     RS_DBI_connection *con;
-    Sint indx;
+    int indx;
 
     con = RS_DBI_getConnection(rsHandle);
     result = RS_DBI_getResultSet(rsHandle);
@@ -340,7 +340,7 @@ RS_DBI_freeResultSet(Res_Handle * rsHandle)
     indx = RS_DBI_lookup(con->resultSetIds, con->length, RES_ID(rsHandle));
     RS_DBI_freeEntry(con->resultSetIds, indx);
     con->resultSets[indx] = (RS_DBI_resultSet *) NULL;
-    con->num_res -= (Sint) 1;
+    con->num_res -= 1;
 
     return;
 }
@@ -359,12 +359,12 @@ RS_DBI_allocFields(int num_fields)
     n = (size_t) num_fields;
     flds->num_fields = num_fields;
     flds->name = (char **) calloc(n, sizeof(char *));
-    flds->type = (Sint *) calloc(n, sizeof(Sint));
-    flds->length = (Sint *) calloc(n, sizeof(Sint));
-    flds->precision = (Sint *) calloc(n, sizeof(Sint));
-    flds->scale = (Sint *) calloc(n, sizeof(Sint));
-    flds->nullOk = (Sint *) calloc(n, sizeof(Sint));
-    flds->isVarLength = (Sint *) calloc(n, sizeof(Sint));
+    flds->type = (int *) calloc(n, sizeof(int));
+    flds->length = (int *) calloc(n, sizeof(int));
+    flds->precision = (int *) calloc(n, sizeof(int));
+    flds->scale = (int *) calloc(n, sizeof(int));
+    flds->nullOk = (int *) calloc(n, sizeof(int));
+    flds->isVarLength = (int *) calloc(n, sizeof(int));
     flds->Sclass = (Stype *) calloc(n, sizeof(Stype));
 
     return flds;
@@ -420,7 +420,7 @@ RS_DBI_makeDataFrame(s_object * data)
     s_object *S_RowNamesSymbol; /* mimic Rinternal.h R_RowNamesSymbol */
     s_object *S_ClassSymbol;
 #endif
-    Sint i, n;
+    int i, n;
     char buf[1024];
 
 #ifndef USING_R
@@ -434,7 +434,7 @@ RS_DBI_makeDataFrame(s_object * data)
 #endif
 
     MEM_PROTECT(data);
-    MEM_PROTECT(df_class_name = NEW_CHARACTER((Sint) 1));
+    MEM_PROTECT(df_class_name = NEW_CHARACTER(1));
     SET_CHR_EL(df_class_name, 0, C_S_CPY("data.frame"));
 
     /* row.names */
@@ -449,10 +449,10 @@ RS_DBI_makeDataFrame(s_object * data)
     SET_CLASS_NAME(data, df_class_name);
 #else
     /* untested S4/Splus code */
-    MEM_PROTECT(S_RowNamesSymbol = NEW_CHARACTER((Sint) 1));
+    MEM_PROTECT(S_RowNamesSymbol = NEW_CHARACTER(1));
     SET_CHR_EL(S_RowNamesSymbol, 0, C_S_CPY("row.names"));
 
-    MEM_PROTECT(S_ClassSymbol = NEW_CHARACTER((Sint) 1));
+    MEM_PROTECT(S_ClassSymbol = NEW_CHARACTER(1));
     SET_CHR_EL(S_ClassSymbol, 0, C_S_CPY("class"));
     /* Note: the fun attribute() is just an educated guess as to
      * which function to use for setting attributes (see S.h)
@@ -465,10 +465,10 @@ RS_DBI_makeDataFrame(s_object * data)
 }
 
 void
-RS_DBI_allocOutput(s_object * output, RS_DBI_fields * flds, Sint num_rec, Sint expand)
+RS_DBI_allocOutput(s_object * output, RS_DBI_fields * flds, int num_rec, int expand)
 {
     s_object *names, *s_tmp;
-    Sint j;
+    int j;
     int num_fields;
     Stype *fld_Sclass;
 
@@ -485,7 +485,7 @@ RS_DBI_allocOutput(s_object * output, RS_DBI_fields * flds, Sint num_rec, Sint e
 
     num_fields = flds->num_fields;
     if (expand) {
-        for (j = 0; j < (Sint) num_fields; j++) {
+        for (j = 0; j < num_fields; j++) {
             /* Note that in R-1.2.3 (at least) we need to protect SET_LENGTH */
             s_tmp = LST_EL(output, j);
             MEM_PROTECT(SET_LENGTH(s_tmp, num_rec));
@@ -500,7 +500,7 @@ RS_DBI_allocOutput(s_object * output, RS_DBI_fields * flds, Sint num_rec, Sint e
     }
 
     fld_Sclass = flds->Sclass;
-    for (j = 0; j < (Sint) num_fields; j++) {
+    for (j = 0; j < num_fields; j++) {
         switch ((int) fld_Sclass[j]) {
         case LOGICAL_TYPE:
             SET_ELEMENT(output, j, NEW_LOGICAL(num_rec));
@@ -527,8 +527,8 @@ RS_DBI_allocOutput(s_object * output, RS_DBI_fields * flds, Sint num_rec, Sint e
         }
     }
 
-    MEM_PROTECT(names = NEW_CHARACTER((Sint) num_fields));
-    for (j = 0; j < (Sint) num_fields; j++) {
+    MEM_PROTECT(names = NEW_CHARACTER(num_fields));
+    for (j = 0; j < num_fields; j++) {
         SET_CHR_EL(names, j, C_S_CPY(flds->name[j]));
     }
     SET_NAMES(output, names);
@@ -558,8 +558,8 @@ RS_DBI_validHandle(Db_Handle * handle)
         handleType = RES_HANDLE_TYPE;
         break;
     }
-    MEM_PROTECT(valid = NEW_LOGICAL((Sint) 1));
-    LGL_EL(valid, 0) = (Sint) is_validHandle(handle, handleType);
+    MEM_PROTECT(valid = NEW_LOGICAL(1));
+    LGL_EL(valid, 0) = is_validHandle(handle, handleType);
     MEM_UNPROTECT(1);
     return valid;
 }
@@ -663,7 +663,7 @@ s_object *
 RS_DBI_copyfields(RS_DBI_fields * flds)
 {
     S_EVALUATOR s_object *S_fields;
-    Sint n = (Sint) 8;
+    int n = 8;
     char *desc[] = { "name", "Sclass", "type", "len", "precision",
         "scale", "isVarLength", "nullOK"
     };
@@ -671,34 +671,34 @@ RS_DBI_copyfields(RS_DBI_fields * flds)
         INTEGER_TYPE, INTEGER_TYPE, INTEGER_TYPE,
         LOGICAL_TYPE, LOGICAL_TYPE
     };
-    Sint lengths[8];
+    int lengths[8];
     int i, j, num_fields;
 
     num_fields = flds->num_fields;
     for (j = 0; j < n; j++) {
-        lengths[j] = (Sint) num_fields;
+        lengths[j] = num_fields;
     }
     PROTECT(S_fields = RS_DBI_createNamedList(desc, types, lengths, n));
     /* copy contentes from flds into an R/S list */
     for (i = 0; i < num_fields; i++) {
         SET_LST_CHR_EL(S_fields, 0, i, C_S_CPY(flds->name[i]));
-        LST_INT_EL(S_fields, 1, i) = (Sint) flds->Sclass[i];
-        LST_INT_EL(S_fields, 2, i) = (Sint) flds->type[i];
-        LST_INT_EL(S_fields, 3, i) = (Sint) flds->length[i];
-        LST_INT_EL(S_fields, 4, i) = (Sint) flds->precision[i];
-        LST_INT_EL(S_fields, 5, i) = (Sint) flds->scale[i];
-        LST_INT_EL(S_fields, 6, i) = (Sint) flds->isVarLength[i];
-        LST_INT_EL(S_fields, 7, i) = (Sint) flds->nullOk[i];
+        LST_INT_EL(S_fields, 1, i) = flds->Sclass[i];
+        LST_INT_EL(S_fields, 2, i) = flds->type[i];
+        LST_INT_EL(S_fields, 3, i) = flds->length[i];
+        LST_INT_EL(S_fields, 4, i) = flds->precision[i];
+        LST_INT_EL(S_fields, 5, i) = flds->scale[i];
+        LST_INT_EL(S_fields, 6, i) = flds->isVarLength[i];
+        LST_INT_EL(S_fields, 7, i) = flds->nullOk[i];
     }
     UNPROTECT(1);
     return S_fields;
 }
 
 s_object *
-RS_DBI_createNamedList(char **names, Stype * types, Sint * lengths, Sint n)
+RS_DBI_createNamedList(char **names, Stype * types, int * lengths, int n)
 {
     S_EVALUATOR s_object *output, *output_names, *obj = S_NULL_ENTRY;
-    Sint num_elem;
+    int num_elem;
     int j;
 
     MEM_PROTECT(output = NEW_LIST(n));
@@ -733,7 +733,7 @@ RS_DBI_createNamedList(char **names, Stype * types, Sint * lengths, Sint n)
                 RS_DBI_errorMessage(msg, RS_DBI_ERROR);
             }
         }
-        SET_ELEMENT(output, (Sint) j, obj);
+        SET_ELEMENT(output, j, obj);
         SET_CHR_EL(output_names, j, C_S_CPY(names[j]));
     }
     SET_NAMES(output, output_names);
@@ -745,8 +745,8 @@ s_object *
 RS_DBI_SclassNames(s_object * type)
 {
     s_object *typeNames;
-    Sint *typeCodes;
-    Sint n;
+    int *typeCodes;
+    int n;
     int i;
     const char *s;
 
@@ -770,22 +770,22 @@ RS_DBI_SclassNames(s_object * type)
  */
 
 Mgr_Handle *
-RS_DBI_asMgrHandle(Sint mgrId)
+RS_DBI_asMgrHandle(int mgrId)
 {
     Mgr_Handle *mgrHandle;
 
-    MEM_PROTECT(mgrHandle = NEW_INTEGER((Sint) 1));
+    MEM_PROTECT(mgrHandle = NEW_INTEGER(1));
     MGR_ID(mgrHandle) = mgrId;
     MEM_UNPROTECT(1);
     return mgrHandle;
 }
 
 Con_Handle *
-RS_DBI_asConHandle(Sint mgrId, Sint conId)
+RS_DBI_asConHandle(int mgrId, int conId)
 {
     Con_Handle *conHandle;
 
-    MEM_PROTECT(conHandle = NEW_INTEGER((Sint) 2));
+    MEM_PROTECT(conHandle = NEW_INTEGER(2));
     MGR_ID(conHandle) = mgrId;
     CON_ID(conHandle) = conId;
     MEM_UNPROTECT(1);
@@ -793,11 +793,11 @@ RS_DBI_asConHandle(Sint mgrId, Sint conId)
 }
 
 Res_Handle *
-RS_DBI_asResHandle(Sint mgrId, Sint conId, Sint resId)
+RS_DBI_asResHandle(int mgrId, int conId, int resId)
 {
     Res_Handle *resHandle;
 
-    MEM_PROTECT(resHandle = NEW_INTEGER((Sint) 3));
+    MEM_PROTECT(resHandle = NEW_INTEGER(3));
     MGR_ID(resHandle) = mgrId;
     CON_ID(resHandle) = conId;
     RES_ID(resHandle) = resId;
@@ -824,7 +824,7 @@ RS_DBI_connection *
 RS_DBI_getConnection(Con_Handle * conHandle)
 {
     RS_DBI_manager *mgr;
-    Sint indx;
+    int indx;
 
     mgr = RS_DBI_getManager(conHandle);
     indx = RS_DBI_lookup(mgr->connectionIds, mgr->length, CON_ID(conHandle));
@@ -841,7 +841,7 @@ RS_DBI_resultSet *
 RS_DBI_getResultSet(Res_Handle * rsHandle)
 {
     RS_DBI_connection *con;
-    Sint indx;
+    int indx;
 
     con = RS_DBI_getConnection(rsHandle);
     indx = RS_DBI_lookup(con->resultSetIds, con->length, RES_ID(rsHandle));
@@ -861,12 +861,12 @@ RS_DBI_getResultSet(Res_Handle * rsHandle)
  * themselves to give total control to the invoking functions (this
  * simplify error management in the invoking routines.)
  */
-Sint
-RS_DBI_newEntry(Sint * table, Sint length)
+int
+RS_DBI_newEntry(int * table, int length)
 {
-    Sint i, indx, empty_val;
+    int i, indx, empty_val;
 
-    indx = empty_val = (Sint) - 1;
+    indx = empty_val = -1;
     for (i = 0; i < length; i++) {
         if (table[i] == empty_val) {
             indx = i;
@@ -876,12 +876,12 @@ RS_DBI_newEntry(Sint * table, Sint length)
     return indx;
 }
 
-Sint
-RS_DBI_lookup(Sint * table, Sint length, Sint obj_id)
+int
+RS_DBI_lookup(int * table, int length, int obj_id)
 {
-    Sint i, indx;
+    int i, indx;
 
-    indx = (Sint) - 1;
+    indx = -1;
     for (i = 0; i < length; ++i) {
         if (table[i] == obj_id) {
             indx = i;
@@ -895,8 +895,8 @@ RS_DBI_lookup(Sint * table, Sint length, Sint obj_id)
  * but the caller should free() it).  The function returns the number
  * of entries.
  */
-Sint
-RS_DBI_listEntries(Sint * table, Sint length, Sint * entries)
+int
+RS_DBI_listEntries(int * table, int length, int * entries)
 {
     int i, n;
 
@@ -910,9 +910,9 @@ RS_DBI_listEntries(Sint * table, Sint length, Sint * entries)
 }
 
 void
-RS_DBI_freeEntry(Sint * table, Sint indx)
+RS_DBI_freeEntry(int * table, int indx)
 {                               /* no error checking!!! */
-    Sint empty_val = (Sint) - 1;
+    int empty_val = -1;
     table[indx] = empty_val;
     return;
 }
@@ -920,7 +920,7 @@ RS_DBI_freeEntry(Sint * table, Sint indx)
 int
 is_validHandle(Db_Handle * handle, HANDLE_TYPE handleType)
 {
-    Sint mgr_id, len, indx;
+    int mgr_id, len, indx;
     RS_DBI_manager *mgr;
     RS_DBI_connection *con;
 
@@ -936,7 +936,7 @@ is_validHandle(Db_Handle * handle, HANDLE_TYPE handleType)
         return 0;
     }
     mgr_id = MGR_ID(handle);
-    if (((Sint) getpid()) != mgr_id) {
+    if ((getpid()) != mgr_id) {
         return 0;
     }
 
@@ -993,8 +993,8 @@ RS_DBI_managerInfo(Mgr_Handle * mgrHandle)
 {
     S_EVALUATOR RS_DBI_manager *mgr;
     s_object *output;
-    Sint i, num_con;
-    Sint n = (Sint) 7;
+    int i, num_con;
+    int n = 7;
     char *mgrDesc[] = { "connectionIds", "fetch_default_rec", "managerId",
         "length", "num_con", "counter", "clientVersion"
     };
@@ -1002,21 +1002,21 @@ RS_DBI_managerInfo(Mgr_Handle * mgrHandle)
         INTEGER_TYPE, INTEGER_TYPE, INTEGER_TYPE,
         CHARACTER_TYPE
     };
-    Sint mgrLen[] = { 1, 1, 1, 1, 1, 1, 1 };
+    int mgrLen[] = { 1, 1, 1, 1, 1, 1, 1 };
 
     mgr = RS_DBI_getManager(mgrHandle);
-    num_con = (Sint) mgr->num_con;
+    num_con = mgr->num_con;
     mgrLen[0] = num_con;
 
     PROTECT(output = RS_DBI_createNamedList(mgrDesc, mgrType, mgrLen, n));
     for (i = 0; i < num_con; i++) {
-        LST_INT_EL(output, 0, i) = (Sint) mgr->connectionIds[i];
+        LST_INT_EL(output, 0, i) = mgr->connectionIds[i];
     }
-    LST_INT_EL(output, 1, 0) = (Sint) mgr->fetch_default_rec;
-    LST_INT_EL(output, 2, 0) = (Sint) mgr->managerId;
-    LST_INT_EL(output, 3, 0) = (Sint) mgr->length;
-    LST_INT_EL(output, 4, 0) = (Sint) mgr->num_con;
-    LST_INT_EL(output, 5, 0) = (Sint) mgr->counter;
+    LST_INT_EL(output, 1, 0) = mgr->fetch_default_rec;
+    LST_INT_EL(output, 2, 0) = mgr->managerId;
+    LST_INT_EL(output, 3, 0) = mgr->length;
+    LST_INT_EL(output, 4, 0) = mgr->num_con;
+    LST_INT_EL(output, 5, 0) = mgr->counter;
     SET_LST_CHR_EL(output, 6, 0, C_S_CPY("NA"));        /* client versions? */
     UNPROTECT(1);
     return output;
@@ -1031,8 +1031,8 @@ RS_DBI_connectionInfo(Con_Handle * conHandle)
 {
     S_EVALUATOR RS_DBI_connection *con;
     s_object *output;
-    Sint i;
-    Sint n = (Sint) 8;
+    int i;
+    int n = 8;
     char *conDesc[] = { "host", "port", "user", "dbname" 
         "serverVersion", "protocolVersion",
         "threadId", "rsHandle"
@@ -1041,7 +1041,7 @@ RS_DBI_connectionInfo(Con_Handle * conHandle)
         CHARACTER_TYPE,  CHARACTER_TYPE, INTEGER_TYPE,
         INTEGER_TYPE, INTEGER_TYPE
     };
-    Sint conLen[] = { 1, 1, 1, 1, 1, 1, 1, -1 };
+    int conLen[] = { 1, 1, 1, 1, 1, 1, 1, -1 };
 
     con = RS_DBI_getConnection(conHandle);
     conLen[7] = con->num_res; 
@@ -1053,11 +1053,11 @@ RS_DBI_connectionInfo(Con_Handle * conHandle)
     SET_LST_CHR_EL(output, 2, 0, C_S_CPY("NA"));        /* dbname */
     SET_LST_CHR_EL(output, 3, 0, C_S_CPY("NA"));        /* user */
     SET_LST_CHR_EL(output, 4, 0, C_S_CPY("NA"));        /* serverVersion */
-    LST_INT_EL(output, 5, 0) = (Sint) - 1;      /* protocolVersion */
-    LST_INT_EL(output, 6, 0) = (Sint) - 1;      /* threadId */
+    LST_INT_EL(output, 5, 0) = -1;      /* protocolVersion */
+    LST_INT_EL(output, 6, 0) = -1;      /* threadId */
 
     for (i = 0; i < con->num_res; i++) {
-        LST_INT_EL(output, 7, (Sint) i) = con->resultSetIds[i];
+        LST_INT_EL(output, 7, i) = con->resultSetIds[i];
     }
     UNPROTECT(1);
     return output;
@@ -1068,14 +1068,14 @@ RS_DBI_resultSetInfo(Res_Handle * rsHandle)
 {
     S_EVALUATOR RS_DBI_resultSet *result;
     s_object *output, *flds;
-    Sint n = (Sint) 6;
+    int n = 6;
     char *rsDesc[] = { "statement", "isSelect", "rowsAffected",
         "rowCount", "completed", "fields"
     };
     Stype rsType[] = { CHARACTER_TYPE, INTEGER_TYPE, INTEGER_TYPE,
         INTEGER_TYPE, INTEGER_TYPE, LIST_TYPE
     };
-    Sint rsLen[] = { 1, 1, 1, 1, 1, 1 };
+    int rsLen[] = { 1, 1, 1, 1, 1, 1 };
 
     result = RS_DBI_getResultSet(rsHandle);
     if (result->fields) {
@@ -1091,7 +1091,7 @@ RS_DBI_resultSetInfo(Res_Handle * rsHandle)
     LST_INT_EL(output, 2, 0) = result->rowsAffected;
     LST_INT_EL(output, 3, 0) = result->rowCount;
     LST_INT_EL(output, 4, 0) = result->completed;
-    SET_ELEMENT(LST_EL(output, 5), (Sint) 0, flds);
+    SET_ELEMENT(LST_EL(output, 5), 0, flds);
     UNPROTECT(2);
     return output;
 }
@@ -1100,8 +1100,8 @@ s_object *                      /* named list */
 RS_DBI_getFieldDescriptions(RS_DBI_fields * flds)
 {
     S_EVALUATOR s_object *S_fields;
-    Sint n = (Sint) 7;
-    Sint lengths[7];
+    int n = 7;
+    int lengths[7];
     char *desc[] = { "name", "Sclass", "type", "len", "precision",
         "scale", "nullOK"
     };
@@ -1109,23 +1109,23 @@ RS_DBI_getFieldDescriptions(RS_DBI_fields * flds)
         INTEGER_TYPE, INTEGER_TYPE, INTEGER_TYPE,
         LOGICAL_TYPE
     };
-    Sint i, j;
+    int i, j;
     int num_fields;
 
     num_fields = flds->num_fields;
     for (j = 0; j < n; j++) {
-        lengths[j] = (Sint) num_fields;
+        lengths[j] = num_fields;
     }
     PROTECT(S_fields = RS_DBI_createNamedList(desc, types, lengths, n));
     /* copy contentes from flds into an R/S list */
-    for (i = 0; i < (Sint) num_fields; i++) {
+    for (i = 0; i <  num_fields; i++) {
         SET_LST_CHR_EL(S_fields, 0, i, C_S_CPY(flds->name[i]));
-        LST_INT_EL(S_fields, 1, i) = (Sint) flds->Sclass[i];
-        LST_INT_EL(S_fields, 2, i) = (Sint) flds->type[i];
-        LST_INT_EL(S_fields, 3, i) = (Sint) flds->length[i];
-        LST_INT_EL(S_fields, 4, i) = (Sint) flds->precision[i];
-        LST_INT_EL(S_fields, 5, i) = (Sint) flds->scale[i];
-        LST_INT_EL(S_fields, 6, i) = (Sint) flds->nullOk[i];
+        LST_INT_EL(S_fields, 1, i) = flds->Sclass[i];
+        LST_INT_EL(S_fields, 2, i) = flds->type[i];
+        LST_INT_EL(S_fields, 3, i) = flds->length[i];
+        LST_INT_EL(S_fields, 4, i) = flds->precision[i];
+        LST_INT_EL(S_fields, 5, i) = flds->scale[i];
+        LST_INT_EL(S_fields, 6, i) = flds->nullOk[i];
     }
     UNPROTECT(1);
     return (S_fields);
@@ -1134,7 +1134,7 @@ RS_DBI_getFieldDescriptions(RS_DBI_fields * flds)
 /* given a type id return its human-readable name.
  * We define an RS_DBI_dataTypeTable */
 const char *
-RS_DBI_getTypeName(Sint t, const struct data_types table[])
+RS_DBI_getTypeName(int t, const struct data_types table[])
 {
     int i;
     char buf[128];
@@ -1173,9 +1173,9 @@ RS_DBI_makeSQLNames(s_object * snames)
     char *name, c;
     char errMsg[128];
     size_t len;
-    Sint i;
+    int i;
 
-    nstrings = (Sint) GET_LENGTH(snames);
+    nstrings = GET_LENGTH(snames);
     for (i = 0; i < nstrings; i++) {
         name = (char *) CHR_EL(snames, i);      /* NOTE: Sameer.... casted RHS using (char*) */
         if (strlen(name) > RS_DBI_MAX_IDENTIFIER_LENGTH) {
@@ -1216,14 +1216,14 @@ void
 RS_na_set(void *ptr, Stype type)
 {
     double *d;
-    Sint *i;
+    int *i;
     switch (type) {
     case INTEGER_TYPE:
-        i = (Sint *) ptr;
+        i = (int *) ptr;
         *i = NA_INTEGER;
         break;
     case LOGICAL_TYPE:
-        i = (Sint *) ptr;
+        i = (int *) ptr;
         *i = NA_LOGICAL;
         break;
     case NUMERIC_TYPE:
