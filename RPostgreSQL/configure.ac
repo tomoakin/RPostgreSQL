@@ -5,6 +5,15 @@
 #
 # This file draws heavily on configure.in files from littler, RMySQL, and RdbiPgSQL
 
+: ${R_HOME=`R RHOME`}
+if test -z "${R_HOME}"; then
+  echo "could not determine R_HOME"
+  exit 1
+fi
+CC=`"${R_HOME}/bin/R" CMD config CC`
+CFLAGS=`"${R_HOME}/bin/R" CMD config CFLAGS`
+CPPFLAGS=`"${R_HOME}/bin/R" CMD config CPPFLAGS`
+
 # Set the name and version -- the version set here will propagate to other files from here
 AC_INIT([RPostgreSQL],[0.7])
 
