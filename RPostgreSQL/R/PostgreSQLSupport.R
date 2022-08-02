@@ -705,7 +705,7 @@ postgresqlBuildTableDefinition <- function(dbObj, name, obj, field.types = NULL,
 postgresqlDataType <- function(obj, ...) {
     rs.class <- data.class(obj)
     if(rs.class=="numeric"){
-        sql.type <- if(class(obj)=="integer") "integer" else  "float8"
+        sql.type <- if(is(obj,"integer")) "integer" else  "float8"
     }
     else {
         sql.type <- switch(rs.class,
