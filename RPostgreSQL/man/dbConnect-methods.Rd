@@ -25,6 +25,10 @@
 \item{host}{Name or the numeric IPaddress of the host to connect to. If address is specified, it should be in the standard IPv4 address format, e.g., 172.28.40.9 or if your machine supports IPv6, you can also use those addresses. The default is to connect to localhost by a UNIX domain socket.
  }
 \item{dbname}{The database name. Defaults to "", which is interpreted as PostgreSQL default.
+  Most parameters are currently passed to PQsetdbLogin() as is. 
+  If dbname contains an = sign or has a valid connection URI prefix, 
+  it is taken as a conninfo for PQconnectdb() depending on the linked driver version.
+  Refer to \url{https://www.postgresql.org/docs/current/libpq-connect.html} for detail.
  }
 \item{user}{PostgreSQL user name to connect as. Defaults to be the same as the operating system name of the user running the application.
  }
@@ -36,7 +40,7 @@
  }
 \item{options}{Command-line options to be sent to the server.
  }
-\item{forceISOdate}{logical if the communication of date (time stamp) from PostgreSQL is forced to ISO style at conection.
+\item{forceISOdate}{logical if the communication of date (time stamp) from PostgreSQL is forced to ISO style at conection. This is an exception that is not really set by an option for PQsetdbLogin, but by issueing dbGetQuery(con, "set datestyle to ISO") after connection.
  }
 }
 }
