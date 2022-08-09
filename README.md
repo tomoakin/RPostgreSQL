@@ -1,4 +1,7 @@
 # RPostgreSQL
+
+[![Build Status](https://travis-ci.org/tomoakin/RPostgreSQL.svg?branch=master)](https://travis-ci.org/tomoakin/RPostgreSQL)
+
 An R Interface to PostgreSQL.
 
 Releases go to CRAN at
