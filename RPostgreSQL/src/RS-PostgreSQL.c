@@ -1537,7 +1537,7 @@ add_group(s_object * group_names, s_object * data, Stype * fld_Sclass, int group
         snprintf(buff, 1024, "%f", (double) LST_NUM_EL(data, group_field, i));
         break;
     case CHARACTER_TYPE:
-        strncpy(buff, LST_CHR_EL(data, group_field, i), 1024);
+        strncpy(buff, LST_CHR_EL(data, group_field, i), 1023);
         break;
     default:
         RS_DBI_errorMessage("unrecognized R/S type for group", RS_DBI_ERROR);
