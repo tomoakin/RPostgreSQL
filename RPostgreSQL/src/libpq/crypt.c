@@ -465,7 +465,8 @@ static C_block PC1ROT[64 / CHUNKBITS][1 << CHUNKBITS];
 static C_block PC2ROT[2][64 / CHUNKBITS][1 << CHUNKBITS];
 
 /* Initial permutation/expansion table */
-static C_block IE3264[32 / CHUNKBITS][1 << CHUNKBITS];
+static C_block IE3264[64 / CHUNKBITS][1 << CHUNKBITS];
+/* This is passed to init_perm(C_block[64 / CHUNKBITS][1 << CHUNKBITS], unsigned char[64], int, int); */
 
 /* Table that combines the S, P, and E operations.  */
 static int32_t SPE[2][8][64];
