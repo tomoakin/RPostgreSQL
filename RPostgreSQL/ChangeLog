@@ -1,3 +1,7 @@
+2023-01-12  Tomoaki NISHIYAMA  <tomoakin@staff.kanazawa-u.ac.jp>
+	* replace sprintf with snprintf
+	* replace strcpy with strncpy
+
 2021-07-26  Tomoaki NISHIYAMA  <tomoakin@staff.kanazawa-u.ac.jp>
 	* Change LICENCE to GPL-3
 	* import new config.guess and config.sub

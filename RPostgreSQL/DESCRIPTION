@@ -1,6 +1,6 @@
 Package: RPostgreSQL
-Version: 0.7-4
-Date: 2022-08-02
+Version: 0.7-5
+Date: 2023-02-09
 Title: R Interface to the 'PostgreSQL' Database System
 Author: Joe Conway, Dirk Eddelbuettel, Tomoaki Nishiyama, Sameer Kumar Prayaga (during 2008), Neil Tiffin
 Maintainer: Tomoaki Nishiyama <tomoakin@staff.kanazawa-u.ac.jp>
