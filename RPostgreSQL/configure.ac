@@ -19,9 +19,6 @@ AC_INIT([RPostgreSQL],[0.7])
 
 AC_CONFIG_AUX_DIR(src)
 
-# Checks for common programs using default macros
-AC_PROG_CC
-
 AC_CANONICAL_HOST
 AC_CANONICAL_TARGET
 case "${host_os}" in
