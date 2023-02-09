@@ -152,7 +152,7 @@ RS_DBI_allocConnection(Mgr_Handle * mgrHandle, int max_res)
         char buf[128], msg[128];
         (void) strcat(msg, "cannot allocate a new connection -- maximum of ");
         (void) strcat(msg, "%d connections already opened");
-        (void) sprintf(buf, msg, (int) mgr->length);
+        (void) snprintf(buf, 128, msg, (int) mgr->length);
         RS_DBI_errorMessage(buf, RS_DBI_ERROR);
     }
     con = (RS_DBI_connection *) malloc(sizeof(RS_DBI_connection));
@@ -276,7 +276,7 @@ RS_DBI_allocResultSet(Con_Handle * conHandle)
         char msg[128], fmt[128];
         (void) strcpy(fmt, "cannot allocate a new resultSet -- ");
         (void) strcat(fmt, "maximum of %d resultSets already reached");
-        (void) sprintf(msg, fmt, con->length);
+        (void) snprintf(msg, 128, fmt, con->length);
         RS_DBI_errorMessage(msg, RS_DBI_ERROR);
     }
 
@@ -441,7 +441,7 @@ RS_DBI_makeDataFrame(s_object * data)
     n = GET_LENGTH(LST_EL(data, 0));    /* length(data[[1]]) */
     MEM_PROTECT(row_names = NEW_CHARACTER(n));
     for (i = 0; i < n; i++) {
-        (void) sprintf(buf, "%d", i + 1);
+        (void) snprintf(buf, 1024, "%d", i + 1);
         SET_CHR_EL(row_names, i, C_S_CPY(buf));
     }
 #ifdef USING_R
@@ -632,7 +632,7 @@ RS_DBI_nCopyString(const char *str, size_t len, int del_blanks)
     str_buffer = (char *) malloc(len + 1);
     if (!str_buffer) {
         char errMsg[128];
-        (void) sprintf(errMsg, "could not malloc %ld bytes in RS_DBI_nCopyString", (long) len + 1);
+        (void) snprintf(errMsg, 128, "could not malloc %ld bytes in RS_DBI_nCopyString", (long) len + 1);
         RS_DBI_errorMessage(errMsg, RS_DBI_ERROR);
     }
     if (len == 0) {
@@ -729,7 +729,7 @@ RS_DBI_createNamedList(char **names, Stype * types, int * lengths, int n)
         default:
             {
                 char msg[256];
-                sprintf(msg,"unsupported data type in createNamedList: %i in list %i (%s)", types[j], j, names[j]);
+                snprintf(msg, 256, "unsupported data type in createNamedList: %i in list %i (%s)", types[j], j, names[j]);
                 RS_DBI_errorMessage(msg, RS_DBI_ERROR);
             }
         }
@@ -1144,7 +1144,7 @@ RS_DBI_getTypeName(int t, const struct data_types table[])
             return table[i].typeName;
         }
     }
-    sprintf(buf, "unknown (%ld)", (long) t);
+    snprintf(buf, 128, "unknown (%ld)", (long) t);
     RS_DBI_errorMessage(buf, RS_DBI_WARNING);
     return "UNKNOWN";
 }
@@ -1179,7 +1179,7 @@ RS_DBI_makeSQLNames(s_object * snames)
     for (i = 0; i < nstrings; i++) {
         name = (char *) CHR_EL(snames, i);      /* NOTE: Sameer.... casted RHS using (char*) */
         if (strlen(name) > RS_DBI_MAX_IDENTIFIER_LENGTH) {
-            (void) sprintf(errMsg, "SQL identifier %s longer than %d chars", name, RS_DBI_MAX_IDENTIFIER_LENGTH);
+            (void) snprintf(errMsg, 128, "SQL identifier %s longer than %d chars", name, RS_DBI_MAX_IDENTIFIER_LENGTH);
             RS_DBI_errorMessage(errMsg, RS_DBI_WARNING);
         }
         /* check for delimited-identifiers (those in double-quotes);
