@@ -1528,16 +1528,16 @@ add_group(s_object * group_names, s_object * data, Stype * fld_Sclass, int group
     switch ((int) fld_Sclass[group_field]) {
 
     case LOGICAL_TYPE:
-        (void) sprintf(buff, "%ld", (long) LST_LGL_EL(data, group_field, i));
+        snprintf(buff, 1024, "%ld", (long) LST_LGL_EL(data, group_field, i));
         break;
     case INTEGER_TYPE:
-        (void) sprintf(buff, "%ld", (long) LST_INT_EL(data, group_field, i));
+        snprintf(buff, 1024, "%ld", (long) LST_INT_EL(data, group_field, i));
         break;
     case NUMERIC_TYPE:
-        (void) sprintf(buff, "%f", (double) LST_NUM_EL(data, group_field, i));
+        snprintf(buff, 1024, "%f", (double) LST_NUM_EL(data, group_field, i));
         break;
     case CHARACTER_TYPE:
-        strcpy(buff, LST_CHR_EL(data, group_field, i));
+        strncpy(buff, LST_CHR_EL(data, group_field, i), 1024);
         break;
     default:
         RS_DBI_errorMessage("unrecognized R/S type for group", RS_DBI_ERROR);
