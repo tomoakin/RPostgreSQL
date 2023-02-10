@@ -1,3 +1,7 @@
+Version 0.7-5
+
+    o   Adhere to coding standards.
+
 Version 0.6-2
 
     o   dbGetQuery do not return NULL.
