@@ -130,7 +130,7 @@ clean:
 
 AC_LANG(C)
  echo '#include <libpq-fe.h>' > conftest.c
- echo 'int main(){printf("%i...",PQlibVersion());return 0;}' >> conftest.c
+ echo 'int main(void);int main(){printf("%i...",PQlibVersion());return 0;}' >> conftest.c
 echo $CC $CFLAGS -I${PG_INCDIR} -L${PG_LIBDIR} conftest.c -lpq -o pqconftest
 $CC $CFLAGS -I${PG_INCDIR} -L${PG_LIBDIR} conftest.c -lpq -o pqconftest
 echo ./pqconftest
