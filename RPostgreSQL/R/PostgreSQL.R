@@ -234,6 +234,7 @@ setMethod("dbListFields",
               flds <- dbGetQuery(conn,
                   paste("select a.attname from pg_attribute a, pg_class c, pg_tables t, pg_namespace nsp",
                   " where a.attrelid = c.oid and c.relname = tablename and c.relnamespace = nsp.oid and a.attnum > 0 and ",
+                  "and not a.attisdropped ",
                   "nspname = current_schema() and schemaname = nspname and ",
                   "tablename = '", postgresqlEscapeStrings(conn, name), "'", sep=""))[,1]
               }
@@ -242,6 +243,7 @@ setMethod("dbListFields",
                   flds <- dbGetQuery(conn,
                       paste("select a.attname from pg_attribute a, pg_class c, pg_tables t, pg_namespace nsp",
                       " where a.attrelid = c.oid and c.relname = t.tablename and c.relnamespace = nsp.oid and a.attnum > 0 and ",
+                      "and not a.attisdropped ",
                       "nspname = schemaname ",
                       "and schemaname = '", postgresqlEscapeStrings(conn, name[1]), "' ",
                       "and tablename = '", postgresqlEscapeStrings(conn, name[2]), "'", sep=""))[,1]
