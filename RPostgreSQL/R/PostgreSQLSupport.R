@@ -424,7 +424,7 @@ postgresqlFetch <- function(res, n=0, ...) {
     ## create running row index as of previous fetch (if any)
     cnt <- dbGetRowCount(res)
     nrec <- length(rel[[1]])
-    indx <- seq(from = cnt - nrec + 1, length = nrec)
+    indx <- seq(from = cnt - nrec + 1, length.out = nrec)
     attr(rel, "row.names") <- as.integer(indx)
     if(usingR())
         class(rel) <- "data.frame"
