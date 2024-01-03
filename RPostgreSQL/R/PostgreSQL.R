@@ -73,6 +73,11 @@ setMethod("dbConnect", "character",
           valueClass = "PostgreSQLConnection"
           )
 
+setMethod("dbIsValid", "PostgreSQLConnection", 
+          def = function(dbObj, ... ) isPostgresqlIdCurrent(dbObj, ... ),
+          valueClass = "logical"
+)
+
 ## clone a connection
 setMethod("dbConnect", "PostgreSQLConnection",
           def = function(drv, ...) postgresqlCloneConnection(drv, ...),
