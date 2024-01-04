@@ -51,6 +51,7 @@ setMethod("print", "dbObjectId",
 
 ## verify that obj refers to a currently open/loaded database
 isPostgresqlIdCurrent <- function(obj) {
+    if(is.null(obj)) return(FALSE)
     obj <- as(obj, "integer")
     .Call(RS_DBI_validHandle, obj)
 }
