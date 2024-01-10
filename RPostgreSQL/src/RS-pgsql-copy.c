@@ -302,7 +302,7 @@ RS_PostgreSQL_CopyInDataframe(Con_Handle * conHandle, SEXP x, SEXP nrow, SEXP nc
                             tmp = EncodeElementSconn(my_connection, levels[j], REAL(xj)[i] - 1,
                                                  &rstrbuf, cdec);
 			}else
-			    error("column %s claims to be a factor but does not have numeric codes", j+1);
+			    error("column %i claims to be a factor but does not have numeric codes", j+1);
 		    } else {
 			tmp = EncodeElementSconn(my_connection, xj, i, 
 					     &rstrbuf, cdec);
