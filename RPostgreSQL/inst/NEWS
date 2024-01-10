@@ -1,3 +1,8 @@
+Version 0.7-6
+    o   Fix bug found by warnings and suppress other nonsesical warnings
+    o   Fix partial match warning #132
+    o   exclude dropped column from column listing #130
+
 Version 0.7-5
 
     o   Adhere to coding standards.
