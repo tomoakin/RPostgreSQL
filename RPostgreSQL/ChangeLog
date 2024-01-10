@@ -1,3 +1,7 @@
+2023-12-15  Tomoaki NISHIYAMA  <tomoakin@staff.kanazawa-u.ac.jp>
+        * %s format string for an integer in an error message was corrected
+        * exclude dropped column from column listing (reported by warnes #130)
+
 2023-01-12  Tomoaki NISHIYAMA  <tomoakin@staff.kanazawa-u.ac.jp>
 	* replace sprintf with snprintf
 	* replace strcpy with strncpy
