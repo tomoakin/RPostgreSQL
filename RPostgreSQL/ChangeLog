@@ -1,5 +1,6 @@
 2024-01-10  Tomoaki NISHIYAMA  <tomoakin@staff.kanazawa-u.ac.jp>
         * Fix partial match warning #132
+        * Suppress warnings on win-devel
 
 2023-12-15  Tomoaki NISHIYAMA  <tomoakin@staff.kanazawa-u.ac.jp>
         * %s format string for an integer in an error message was corrected

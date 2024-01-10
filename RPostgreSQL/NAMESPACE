@@ -62,7 +62,7 @@ export(
   PostgreSQL,
   postgresqlBuildTableDefinition,
   isPostgresqlIdCurrent,
-  .PostgreSQLKeywords,
+#  .PostgreSQLKeywords,
   postgresqlInitDriver,
   postgresqlCloseDriver,
   postgresqlDescribeDriver,

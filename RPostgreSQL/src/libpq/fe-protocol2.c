@@ -1612,12 +1612,30 @@ pqBuildStartupPacket2(PGconn *conn, int *packetlen,
 	startpacket->protoVersion = htonl(conn->pversion);
 
 	/* strncpy is safe here: postmaster will handle full fields correctly */
-	strncpy(startpacket->user, conn->pguser, SM_USER);
-	strncpy(startpacket->database, conn->dbName, SM_DATABASE);
-	strncpy(startpacket->tty, conn->pgtty, SM_TTY);
+        { size_t l; 
+          l = strnlen(conn->pguser, SM_USER);
+          if(l == SM_USER)
+  	    memcpy(startpacket->user, conn->pguser, l);
+          else
+  	    memcpy(startpacket->user, conn->pguser, l+1);
+          l = strnlen(conn->dbName, SM_DATABASE);
+          if(l == SM_DATABASE)
+	    memcpy(startpacket->database, conn->dbName, SM_DATABASE);
+          else
+	    memcpy(startpacket->database, conn->dbName, l+1);
+          l = strnlen(conn->dbName, SM_TTY);
+          if(l == SM_TTY)
+  	    memcpy(startpacket->tty, conn->pgtty, SM_TTY);
+          else
+  	    memcpy(startpacket->tty, conn->pgtty, l+1);
 
-	if (conn->pgoptions)
-		strncpy(startpacket->options, conn->pgoptions, SM_OPTIONS);
-
+	  if (conn->pgoptions) {
+            l = strnlen(conn->pgoptions, SM_OPTIONS);
+            if( l == SM_OPTIONS)
+		memcpy(startpacket->options, conn->pgoptions, SM_OPTIONS);
+            else
+		memcpy(startpacket->options, conn->pgoptions, l+1);
+            }
+        }
 	return (char *) startpacket;
 }
