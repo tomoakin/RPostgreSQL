@@ -1,3 +1,6 @@
+2024-01-11  Tomoaki NISHIYAMA  <tomoakin@staff.kanazawa-u.ac.jp>
+        * Supply (void) for a testprogram in configure.ac for warning by clang
+
 2024-01-10  Tomoaki NISHIYAMA  <tomoakin@staff.kanazawa-u.ac.jp>
         * Fix partial match warning #132
         * Suppress warnings on win-devel
