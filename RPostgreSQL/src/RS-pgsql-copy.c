@@ -266,7 +266,7 @@ RS_PostgreSQL_CopyInDataframe(Con_Handle * conHandle, SEXP x, SEXP nrow, SEXP nc
     if(isVectorList(x)) { /* A data frame */
         R_StringBuffer rstrbuf = {NULL, 0, 10000};
         
-        char *strBuf  = Calloc(buff_threshold * 2 + 2, char); /* + 2 for '\t' or '\n' plus '\0'*/
+        char *strBuf  = R_Calloc(buff_threshold * 2 + 2, char); /* + 2 for '\t' or '\n' plus '\0'*/
         char *strendp = strBuf;
         SEXP *levels;
         *strendp = '\0';
@@ -335,7 +335,7 @@ RS_PostgreSQL_CopyInDataframe(Con_Handle * conHandle, SEXP x, SEXP nrow, SEXP nc
 	}
         pqretcode = PQputCopyData(my_connection, strBuf, strendp - strBuf);
         chkpqcopydataerr(my_connection, pqretcode);
-        Free(strBuf);
+        R_Free(strBuf);
         R_FreeStringBuffer(&rstrbuf);
     }
     PQputCopyEnd(my_connection, NULL);

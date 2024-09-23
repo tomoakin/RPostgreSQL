@@ -40,7 +40,7 @@ RS_PostgreSQL_pqexecparams(SEXP args)
     my_connection = (PGconn *) con->drvConnection;
     dyn_statement = CHR_EL(statement, 0);
     nparams = length(params);
-    pqparams = Calloc(nparams, const char*);
+    pqparams = R_Calloc(nparams, const char*);
     
     for (R_len_t i = 0; i < nparams; i++){
         pqparams[i] = CHR_EL(params, i);
@@ -57,7 +57,7 @@ RS_PostgreSQL_pqexecparams(SEXP args)
  *                      int resultFormat);
  */
     my_result = PQexecParams(my_connection, dyn_statement, nparams, NULL, pqparams, NULL, NULL, 0);
-    Free(pqparams);
+    R_Free(pqparams);
     if (my_result == NULL) {
         char *errMsg;
         const char *omsg;

@@ -1,3 +1,12 @@
+2024-09-24  Tomoaki NISHIYAMA <tomoaki@sci.u-toyama.ac.jp>
+        * Update DESCRIPTION
+
+2024-09-22  Tomoaki NISHIYAMA  <tomoaki@sci.u-toyama.ac.jp>
+        * Update DESCRIPTION
+
+2024-08-26  Tomoaki NISHIYAMA  <tomoakin@staff.kanazawa-u.ac.jp>
+        * Replace Calloc and Free with R_Calloc and R_Free, respectively.
+
 2024-01-11  Tomoaki NISHIYAMA  <tomoakin@staff.kanazawa-u.ac.jp>
         * Supply (void) for a testprogram in configure.ac for warning by clang
 
