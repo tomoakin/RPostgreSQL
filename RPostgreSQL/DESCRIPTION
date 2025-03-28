@@ -1,6 +1,6 @@
 Package: RPostgreSQL
-Version: 0.7-7
-Date: 2024-09-30
+Version: 0.7-8
+Date: 2025-03-28
 Title: R Interface to the 'PostgreSQL' Database System
 Maintainer: Tomoaki Nishiyama <tomoaki@sci.u-toyama.ac.jp>
 Description: Database interface and 'PostgreSQL' driver for 'R'.
@@ -14,9 +14,12 @@ Description: Database interface and 'PostgreSQL' driver for 'R'.
 LazyLoad: true
 Depends: R (>= 3.4.0), methods, DBI (>= 0.3)
 License: GPL-3 | file LICENSE
-Copyright: Authors listed above, PostgreSQL Global Development Group, and The Regents of the University of California
+Copyright: Authors listed above, PostgreSQL Global Development Group,
+        and The Regents of the University of California
 Collate: S4R.R zzz.R PostgreSQLSupport.R dbObjectId.R PostgreSQL.R
-URL: https://github.com/tomoakin/RPostgreSQL, https://cran.r-project.org/package=DBI, https://www.postgresql.org
+URL: https://github.com/tomoakin/RPostgreSQL,
+        https://cran.r-project.org/package=DBI,
+        https://www.postgresql.org
 Authors@R: c(person(given = "Joe",
                        family = "Conway",
                        role = "aut"),
@@ -34,3 +37,10 @@ Authors@R: c(person(given = "Joe",
                 person(given = "Neil",
                        family = "Tiffin",
                        role = "aut"))
+NeedsCompilation: yes
+Packaged: 2025-03-28 01:35:52 UTC; tomoaki
+Author: Joe Conway [aut],
+  Dirk Eddelbuettel [aut],
+  Tomoaki Nishiyama [aut, cre],
+  Sameer Kumar Prayaga [aut] (during 2008),
+  Neil Tiffin [aut]

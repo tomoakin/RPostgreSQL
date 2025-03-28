@@ -49,9 +49,6 @@ PQgetlength               46
 PQgetisnull               47
 PQclear                   48
 PQmakeEmptyPGresult       49
-PQprint                   50
-PQdisplayTuples           51
-PQprintTuples             52
 lo_open                   53
 lo_close                  54
 lo_read                   55

@@ -1,3 +1,7 @@
+2025-03-28  Tomoaki NISHIYAMA <tomoaki@sci.u-toyama.ac.jp>
+        * Makevars.win rely on pkgconfig to find libpq on windows envirionment.
+        * Drop PQprint and related routines from the attached libpq library.
+
 2024-09-30  Tomoaki NISHIYAMA <tomoaki@sci.u-toyama.ac.jp>
         * Simplify tests
 

@@ -167,23 +167,6 @@ typedef struct pgNotify
 typedef void (*PQnoticeReceiver) (void *arg, const PGresult *res);
 typedef void (*PQnoticeProcessor) (void *arg, const char *message);
 
-/* Print options for PQprint() */
-typedef char pqbool;
-
-typedef struct _PQprintOpt
-{
-	pqbool		header;			/* print output field headings and row count */
-	pqbool		align;			/* fill align the fields */
-	pqbool		standard;		/* old brain dead format */
-	pqbool		html3;			/* output html tables */
-	pqbool		expanded;		/* expand tables */
-	pqbool		pager;			/* use pager for output if needed */
-	char	   *fieldSep;		/* field separator */
-	char	   *tableOpt;		/* insert to HTML <table ...> */
-	char	   *caption;		/* HTML <caption> */
-	char	  **fieldName;		/* null terminated array of replacement field
-								 * names */
-} PQprintOpt;
 
 /* ----------------
  * Structure for the conninfo parameter definitions returned by PQconndefaults
@@ -532,28 +515,6 @@ extern unsigned char *PQescapeBytea(const unsigned char *from, size_t from_lengt
 			  size_t *to_length);
 
 
-
-/* === in fe-print.c === */
-
-extern void PQprint(FILE *fout,				/* output stream */
-		const PGresult *res,
-		const PQprintOpt *ps);	/* option structure */
-
-/*
- * really old printing routines
- */
-extern void PQdisplayTuples(const PGresult *res,
-				FILE *fp,		/* where to send the output */
-				int fillAlign,	/* pad the fields with spaces */
-				const char *fieldSep,	/* field separator */
-				int printHeader,	/* display headers? */
-				int quiet);
-
-extern void PQprintTuples(const PGresult *res,
-			  FILE *fout,		/* output stream */
-			  int printAttName, /* print attribute names */
-			  int terseOutput,	/* delimiter bars */
-			  int width);		/* width of column, if 0, use variable width */
 
 
 /* === in fe-lobj.c === */

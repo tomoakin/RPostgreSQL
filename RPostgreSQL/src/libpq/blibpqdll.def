@@ -50,9 +50,6 @@ EXPORTS
     _PQgetisnull               @ 47
     _PQclear                   @ 48
     _PQmakeEmptyPGresult       @ 49
-    _PQprint                   @ 50
-    _PQdisplayTuples           @ 51
-    _PQprintTuples             @ 52
     _lo_open                   @ 53
     _lo_close                  @ 54
     _lo_read                   @ 55
@@ -223,9 +220,6 @@ EXPORTS
     PQgetisnull               = _PQgetisnull
     PQclear                   = _PQclear
     PQmakeEmptyPGresult       = _PQmakeEmptyPGresult
-    PQprint                   = _PQprint
-    PQdisplayTuples           = _PQdisplayTuples
-    PQprintTuples             = _PQprintTuples
     lo_open                   = _lo_open
     lo_close                  = _lo_close
     lo_read                   = _lo_read
