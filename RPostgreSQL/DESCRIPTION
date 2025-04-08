@@ -38,6 +38,7 @@ Authors@R: c(person(given = "Joe",
                        family = "Tiffin",
                        role = "aut"))
 NeedsCompilation: yes
+SystemRequirements: libpq
 Packaged: 2025-03-28 01:35:52 UTC; tomoaki
 Author: Joe Conway [aut],
   Dirk Eddelbuettel [aut],
